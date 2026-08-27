@@ -1,0 +1,11 @@
+{
+  "spec": "SPEC.md#5-worth-it--not-worth-it-helper",
+  "comparePrecision": 4,
+  "note": "Given a monthly cost already in base currency, uses/month, and a threshold, verify cost-per-use and the verdict. verdict is one of UNKNOWN | WORTH | NOT_WORTH.",
+  "cases": [
+    { "id": "unknown-no-uses",   "monthlyBase": "199.00", "usesPerMonth": 0,  "threshold": "2.00", "expectedCostPerUse": "0.0000",  "expectedVerdict": "UNKNOWN" },
+    { "id": "worth-cheap-per-use","monthlyBase": "199.00", "usesPerMonth": 200,"threshold": "2.00", "expectedCostPerUse": "0.9950",  "expectedVerdict": "WORTH" },
+    { "id": "notworth-pricey",   "monthlyBase": "500.00", "usesPerMonth": 2,  "threshold": "2.00", "expectedCostPerUse": "250.0000","expectedVerdict": "NOT_WORTH" },
+    { "id": "boundary-equal",    "monthlyBase": "20.00",  "usesPerMonth": 10, "threshold": "2.00", "expectedCostPerUse": "2.0000",  "expectedVerdict": "WORTH" }
+  ]
+}

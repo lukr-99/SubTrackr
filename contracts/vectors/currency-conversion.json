@@ -1,0 +1,14 @@
+{
+  "spec": "SPEC.md#3-currency-conversion",
+  "comparePrecision": 6,
+  "note": "Given an anchor rate table (units of currency per 1 anchor), convert amount from->to. Routes through the anchor.",
+  "anchor": "EUR",
+  "ratesPerAnchor": { "USD": "1.10", "CZK": "25.00", "GBP": "0.85" },
+  "cases": [
+    { "id": "same-ccy",        "amount": "10.00",  "from": "USD", "to": "USD", "expected": "10.000000" },
+    { "id": "usd-to-eur",      "amount": "11.00",  "from": "USD", "to": "EUR", "expected": "10.000000" },
+    { "id": "eur-to-czk",      "amount": "10.00",  "from": "EUR", "to": "CZK", "expected": "250.000000" },
+    { "id": "usd-to-czk",      "amount": "22.00",  "from": "USD", "to": "CZK", "expected": "500.000000" },
+    { "id": "czk-to-gbp",      "amount": "250.00", "from": "CZK", "to": "GBP", "expected": "8.500000" }
+  ]
+}

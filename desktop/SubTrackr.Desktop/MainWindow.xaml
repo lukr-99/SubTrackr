@@ -1,12 +1,420 @@
-﻿<Window x:Class="SubTrackr.Desktop.MainWindow"
+<Window x:Class="SubTrackr.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SubTrackr.Desktop"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:c="clr-namespace:SubTrackr.Desktop.Controls"
+        xmlns:ctrl="clr-namespace:SubTrackr.Desktop"
+        xmlns:vm="clr-namespace:SubTrackr.Desktop.ViewModels"
+        Title="SubTrackr" Height="770" Width="1200" MinHeight="640" MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Bg}" Foreground="{StaticResource TextPrimary}"
+        FontFamily="Segoe UI Variable, Segoe UI">
 
+    <Window.Resources>
+        <ctrl:BoolToVisibilityConverter x:Key="BoolVis" />
+        <ctrl:StringToVisibilityConverter x:Key="StrVis" />
+
+        <Style x:Key="SegButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{StaticResource Border}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RightText" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+        <Style x:Key="RightTextBold" TargetType="TextBlock" BasedOn="{StaticResource RightText}">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style x:Key="RightHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+            <Setter Property="HorizontalContentAlignment" Value="Right" />
+        </Style>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="0,14,0,5" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="64" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ==================== NAV RAIL ==================== -->
+        <Border Grid.Column="0" Background="{StaticResource Surface}" BorderBrush="{StaticResource Border}" BorderThickness="0,0,1,0">
+            <StackPanel>
+                <Border Width="34" Height="34" CornerRadius="9" Margin="0,16,0,22" HorizontalAlignment="Center"
+                        Background="{StaticResource Accent}">
+                    <TextBlock Text="S" FontWeight="Bold" FontSize="19" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <RadioButton Style="{StaticResource NavButton}" ToolTip="Dashboard"
+                             IsChecked="{Binding IsDashboardPage, Mode=OneWay}" Click="Nav_Dashboard">
+                    <Viewbox Width="22" Height="22">
+                        <Path Data="M3,3h8v8H3V3z M13,3h8v5h-8V3z M13,10h8v11h-8V10z M3,13h8v8H3V13z"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                    </Viewbox>
+                </RadioButton>
+
+                <RadioButton Style="{StaticResource NavButton}" ToolTip="What-if calculator"
+                             IsChecked="{Binding IsWhatIfPage, Mode=OneWay}" Click="Nav_WhatIf">
+                    <Viewbox Width="22" Height="22">
+                        <Path Data="M6,2h12a2,2 0 0 1 2,2v16a2,2 0 0 1 -2,2H6a2,2 0 0 1 -2,-2V4a2,2 0 0 1 2,-2z M7,5h10v3H7V5z M7,11h2v2H7z M11,11h2v2h-2z M15,11h2v2h-2z M7,15h2v2H7z M11,15h2v4h-2z M15,15h2v2h-2z"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                    </Viewbox>
+                </RadioButton>
+
+                <RadioButton Style="{StaticResource NavButton}" ToolTip="Settings"
+                             IsChecked="{Binding IsSettingsPage, Mode=OneWay}" Click="Nav_Settings">
+                    <Viewbox Width="22" Height="22">
+                        <Path Data="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                    </Viewbox>
+                </RadioButton>
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== DASHBOARD PAGE ==================== -->
+        <Grid Grid.Column="1" Margin="22" Visibility="{Binding IsDashboardPage, Converter={StaticResource BoolVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="2,0,2,18">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="SubTrackr" FontSize="26" FontWeight="Bold" />
+                    <Border Background="{StaticResource SurfaceAlt}" CornerRadius="10" Padding="9,3" Margin="12,4,0,0" VerticalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource TextSecondary}">
+                            <Run Text="{Binding ActiveCount, Mode=OneWay}" /><Run Text=" active" />
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Base" VerticalAlignment="Center" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,8,0" />
+                    <ComboBox x:Name="BaseCurrencyBox" Width="92" VerticalAlignment="Center" SelectionChanged="BaseCurrency_Changed" />
+                    <TextBlock Text="{Binding RatesStatusText}" VerticalAlignment="Center" FontSize="11" Foreground="{StaticResource TextMuted}" Margin="12,0,10,0" />
+                    <Button Content="↻ Rates" Style="{StaticResource GhostButton}" Command="{Binding RefreshRatesCommand}" Margin="0,0,8,0" />
+                    <Button Content="+  Add subscription" Style="{StaticResource PrimaryButton}" Click="Add_Click" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="380" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Subscriptions DataGrid -->
+                <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,18,0" Padding="8,8,8,8">
+                    <DataGrid x:Name="Grid" ItemsSource="{Binding Subscriptions}" MouseDoubleClick="Grid_DoubleClick">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="NAME" Width="*" SortMemberPath="NameSort" MinWidth="180">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Icon}" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                            <StackPanel VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                                                    <Border Background="{StaticResource Border}" CornerRadius="6" Padding="6,1" Margin="8,0,0,0"
+                                                            VerticalAlignment="Center" Visibility="{Binding IsPaused, Converter={StaticResource BoolVis}}">
+                                                        <TextBlock Text="Paused" FontSize="10" Foreground="{StaticResource TextMuted}" />
+                                                    </Border>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Category}" FontSize="12" Foreground="{StaticResource TextSecondary}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="BILLING" Width="130" SortMemberPath="BillingText" MinWidth="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding BillingText}" FontSize="13" Foreground="{StaticResource TextSecondary}" />
+                                            <TextBlock Text="⟳" FontSize="12" Margin="6,0,0,0" Foreground="{StaticResource Accent}"
+                                                       ToolTip="Auto-pay" Visibility="{Binding AutoPay, Converter={StaticResource BoolVis}}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="COST" Binding="{Binding CostOwnText}" SortMemberPath="CostOwnValue"
+                                                Width="110" MinWidth="80" ElementStyle="{StaticResource RightText}" HeaderStyle="{StaticResource RightHeader}" />
+                            <DataGridTextColumn Header="PER MONTH" Binding="{Binding MonthlyBaseText}" SortMemberPath="MonthlyBaseValue"
+                                                Width="120" MinWidth="90" ElementStyle="{StaticResource RightTextBold}" HeaderStyle="{StaticResource RightHeader}" />
+                            <DataGridTextColumn Header="RENEWS" Binding="{Binding NextRenewalText}" SortMemberPath="NextRenewalDate"
+                                                Width="120" MinWidth="90">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                                        <Setter Property="FontSize" Value="13" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn Header="WORTH?" Width="96" SortMemberPath="VerdictSort" MinWidth="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
+                                        <Border VerticalAlignment="Center" HorizontalAlignment="Left" CornerRadius="6" Padding="8,3"
+                                                Background="#22FFFFFF" Visibility="{Binding HasVerdict, Converter={StaticResource BoolVis}}">
+                                            <TextBlock Text="{Binding VerdictText}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding VerdictBrush}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="" Width="82" CanUserSort="False" CanUserResize="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <Button Content="✎" Style="{StaticResource SegButton}" Click="EditRow_Click" Tag="{Binding}" ToolTip="Edit" />
+                                            <Button Content="🗑" Style="{StaticResource SegButton}" Click="DeleteRow_Click" Tag="{Binding}" ToolTip="Delete" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <!-- Right rail -->
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <TextBlock Text="OVERVIEW" Style="{StaticResource CardTitle}" />
+                                    <Button HorizontalAlignment="Right" Style="{StaticResource SegButton}" Click="ToggleView_Click"
+                                            Content="{Binding HeroCaption}" Foreground="{StaticResource Accent}" />
+                                </Grid>
+                                <c:SpendChart Height="230" Margin="0,4,0,8" Slices="{Binding ChartSlices}" ChartType="{Binding ChartType}"
+                                              CenterText="{Binding HeroAmountText}" CenterSubtext="{Binding HeroCaption}" />
+                                <Border Background="{StaticResource SurfaceAlt}" CornerRadius="9" Padding="3" HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Donut" Style="{StaticResource SegButton}" Click="ChartDonut_Click" />
+                                        <Button Content="Bars" Style="{StaticResource SegButton}" Click="ChartBars_Click" />
+                                        <Button Content="Trend" Style="{StaticResource SegButton}" Click="ChartTrend_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Height="1" Background="{StaticResource Border}" Margin="0,16,0,14" />
+                                <Grid>
+                                    <StackPanel HorizontalAlignment="Left">
+                                        <TextBlock Text="Per month" FontSize="11" Foreground="{StaticResource TextSecondary}" />
+                                        <TextBlock Text="{Binding MonthlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" />
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Right">
+                                        <TextBlock Text="Per year" FontSize="11" Foreground="{StaticResource TextSecondary}" HorizontalAlignment="Right" />
+                                        <TextBlock Text="{Binding YearlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+                            <StackPanel>
+                                <TextBlock Text="BY CURRENCY" Style="{StaticResource CardTitle}" />
+                                <ItemsControl ItemsSource="{Binding CurrencyBreakdown}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,5">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Background="{StaticResource SurfaceAlt}" CornerRadius="6" Padding="7,2">
+                                                        <TextBlock Text="{Binding Code}" FontWeight="SemiBold" FontSize="12" />
+                                                    </Border>
+                                                    <TextBlock Text="{Binding MonthlyOwnText}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="13" />
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding ConvertedText}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                           FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+                            <StackPanel>
+                                <TextBlock Text="UPCOMING RENEWALS" Style="{StaticResource CardTitle}" />
+                                <ItemsControl ItemsSource="{Binding UpcomingRenewals}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,6">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Icon}" FontSize="16" VerticalAlignment="Center" />
+                                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding WhenText}" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="0,1,0,0" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding AmountText}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="13" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!-- ==================== WHAT-IF PAGE ==================== -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsWhatIfPage, Converter={StaticResource BoolVis}}">
+            <Grid Margin="34" DataContext="{Binding WhatIf}" MaxWidth="560" HorizontalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="What-if calculator" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="See the impact of a new subscription before you commit."
+                               Foreground="{StaticResource TextSecondary}" FontSize="13" Margin="0,4,0,0" />
+
+                    <Border Style="{StaticResource Card}" Margin="0,20,0,0" Padding="18">
+                        <Grid>
+                            <StackPanel>
+                                <TextBlock Text="Currently" FontSize="11" Foreground="{StaticResource TextSecondary}" />
+                                <TextBlock Text="{Binding CurrentMonthlyText}" FontSize="22" FontWeight="Bold" Margin="0,2,0,0" />
+                                <TextBlock Text="per month" FontSize="11" Foreground="{StaticResource TextMuted}" />
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CurrentYearlyText}" FontSize="16" HorizontalAlignment="Right" />
+                                <TextBlock Text="per year" FontSize="11" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Right" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="120" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Amount" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Currency" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
+                                    <ComboBox ItemsSource="{Binding Currencies}" SelectedItem="{Binding Currency}" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="130" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Billing cycle" Style="{StaticResource FieldLabel}" />
+                                    <ComboBox ItemsSource="{Binding Cycles}" SelectedItem="{Binding SelectedCycle}" DisplayMemberPath="Label" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Uses / month" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding UsesPerMonth, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Visibility="{Binding ShowCustomDays, Converter={StaticResource BoolVis}}">
+                                <TextBlock Text="Interval (days)" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding CustomDays, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18" Background="{StaticResource SurfaceAlt}">
+                        <StackPanel>
+                            <Grid>
+                                <StackPanel>
+                                    <TextBlock Text="New total" FontSize="11" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock Text="{Binding NewMonthlyText}" FontSize="24" FontWeight="Bold" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding NewYearlyText}" FontSize="12" Foreground="{StaticResource TextMuted}" />
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding AddedMonthlyText}" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{StaticResource Warning}" HorizontalAlignment="Right" />
+                                    <TextBlock Text="added / mo" FontSize="11" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Right" />
+                                </StackPanel>
+                            </Grid>
+                            <Border Height="1" Background="{StaticResource Border}" Margin="0,14" />
+                            <TextBlock Text="{Binding CostPerUseText}" FontSize="13" Foreground="{StaticResource TextSecondary}" />
+                            <TextBlock Text="{Binding VerdictText}" FontSize="17" FontWeight="Bold" Foreground="{Binding VerdictBrush}"
+                                       Margin="0,4,0,0" Visibility="{Binding VerdictText, Converter={StaticResource StrVis}}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- ==================== SETTINGS PAGE ==================== -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsSettingsPage, Converter={StaticResource BoolVis}}">
+            <Grid Margin="34" MaxWidth="560" HorizontalAlignment="Left">
+                <StackPanel>
+                    <TextBlock Text="Settings" FontSize="24" FontWeight="Bold" />
+
+                    <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Base currency" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
+                            <TextBlock Text="All totals roll up into this currency." FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                            <ComboBox x:Name="SetBaseCurrencyBox" Width="150" HorizontalAlignment="Left" />
+
+                            <TextBlock Text="Worth-it threshold (cost per use, base currency)" Style="{StaticResource FieldLabel}" />
+                            <TextBlock Text="A subscription is &quot;worth it&quot; when its cost per use is at or below this." FontSize="11"
+                                       Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                            <TextBox x:Name="ThresholdBox" Width="150" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Exchange rates" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="RatesText" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                                <Button Content="Refresh now" Style="{StaticResource GhostButton}" Click="Settings_Refresh_Click" Margin="12,0,0,0" />
+                            </StackPanel>
+
+                            <TextBlock Text="Data file" Style="{StaticResource FieldLabel}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="PathText" VerticalAlignment="Center" FontSize="11" Foreground="{StaticResource TextMuted}"
+                                           TextTrimming="CharacterEllipsis" MaxWidth="330" />
+                                <Button Content="Open folder" Style="{StaticResource GhostButton}" Click="Settings_OpenFolder_Click" Margin="12,0,0,0" />
+                            </StackPanel>
+
+                            <TextBlock Text="About" Style="{StaticResource FieldLabel}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="VersionText" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                                <Button Content="Check for updates" Style="{StaticResource GhostButton}" Click="Settings_CheckUpdates_Click" Margin="12,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Button Content="Save settings" Style="{StaticResource PrimaryButton}" Click="Settings_Save_Click"
+                            HorizontalAlignment="Left" Margin="0,18,0,0" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>
