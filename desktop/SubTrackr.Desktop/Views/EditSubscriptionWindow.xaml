@@ -1,0 +1,101 @@
+<Window x:Class="SubTrackr.Desktop.EditSubscriptionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctrl="clr-namespace:SubTrackr.Desktop"
+        Title="{Binding Title}" Width="440" SizeToContent="Height" MaxHeight="820"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource Bg}" Foreground="{StaticResource TextPrimary}"
+        FontFamily="Segoe UI Variable, Segoe UI">
+    <Window.Resources>
+        <ctrl:BoolToVisibilityConverter x:Key="BoolVis" />
+        <ctrl:StringToVisibilityConverter x:Key="StrVis" />
+        <Style TargetType="TextBlock" x:Key="FieldLabel">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="0,12,0,5" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0,0,0,4" />
+
+        <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="64" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="Icon" Style="{StaticResource FieldLabel}" Margin="0,12,0,5" />
+                        <TextBox Text="{Binding Icon, UpdateSourceTrigger=PropertyChanged}" FontSize="18"
+                                 HorizontalContentAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Name" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="Amount (per billing period)" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Currency" Style="{StaticResource FieldLabel}" />
+                        <ComboBox ItemsSource="{Binding Currencies}" SelectedItem="{Binding Currency}" />
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="Billing cycle" Style="{StaticResource FieldLabel}" />
+                <ComboBox ItemsSource="{Binding Cycles}" SelectedItem="{Binding SelectedCycle}" DisplayMemberPath="Label" />
+
+                <StackPanel Visibility="{Binding ShowCustomDays, Converter={StaticResource BoolVis}}">
+                    <TextBlock Text="Interval (days)" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding CustomDays, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <TextBlock Text="Category" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="140" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="Next renewal" Style="{StaticResource FieldLabel}" />
+                        <DatePicker SelectedDate="{Binding NextRenewal}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Uses / month" Style="{StaticResource FieldLabel}"
+                                   ToolTip="For the worth-it check. Leave 0 if unknown." />
+                        <TextBox Text="{Binding UsesPerMonth, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Grid>
+
+                <CheckBox Content="Auto-paid" IsChecked="{Binding AutoPay}" Margin="0,16,0,0"
+                          Foreground="{StaticResource TextPrimary}" />
+                <CheckBox Content="Paused (kept, excluded from totals)" IsChecked="{Binding IsPaused}" Margin="0,8,0,0"
+                          Foreground="{StaticResource TextPrimary}" />
+
+                <TextBlock Text="{Binding Error}" Foreground="{StaticResource Negative}" TextWrapping="Wrap"
+                           Margin="0,14,0,0" Visibility="{Binding Error, Converter={StaticResource StrVis}}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button Content="Cancel" Style="{StaticResource GhostButton}" Click="Cancel_Click" Margin="0,0,10,0" />
+            <Button Content="Save" Style="{StaticResource PrimaryButton}" Click="Save_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
