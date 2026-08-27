@@ -7,7 +7,11 @@ using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
 
-public sealed record CycleOption(BillingCycle Cycle, string Label);
+public sealed record CycleOption(BillingCycle Cycle, string Label)
+{
+    // The ComboBox renders items via ToString(); show the friendly label, not the record dump.
+    public override string ToString() => Label;
+}
 
 /// <summary>Editable working copy for the add/edit dialog.</summary>
 public sealed partial class EditSubscriptionViewModel : ObservableObject
@@ -32,6 +36,15 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
     [ObservableProperty] private string? _error;
 
     public IReadOnlyList<string> Currencies => Formatting.CommonCurrencies;
+
+    /// <summary>Curated emoji for the icon picker.</summary>
+    public IReadOnlyList<string> IconChoices { get; } = new[]
+    {
+        "🎬", "📺", "🎵", "🎧", "🎮", "🤖", "✳️", "🧠", "💻", "🌐",
+        "📱", "☁️", "💳", "🛒", "📦", "🍔", "🍕", "☕", "🥡", "🛵",
+        "🚕", "🚊", "🚗", "✈️", "🏋️", "📰", "📚", "🎓", "🔒", "🔑",
+        "📸", "🎨", "⚡", "🏠", "🐱", "🐶", "💡", "🎁", "🩺", "💬",
+    };
 
     public IReadOnlyList<CycleOption> Cycles { get; } = new[]
     {

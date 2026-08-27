@@ -30,4 +30,11 @@ public partial class EditSubscriptionWindow : Window
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;
+
+    private void Icon_Pick(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button b && b.Content is string emoji)
+            _vm.Icon = emoji;
+        IconToggle.IsChecked = false;
+    }
 }

@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ctrl="clr-namespace:SubTrackr.Desktop"
-        Title="{Binding Title}" Width="440" SizeToContent="Height" MaxHeight="820"
+        Title="{Binding Title}" Width="460" SizeToContent="Height" MaxHeight="860"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource Bg}" Foreground="{StaticResource TextPrimary}"
         FontFamily="Segoe UI Variable, Segoe UI">
@@ -12,7 +12,7 @@
         <Style TargetType="TextBlock" x:Key="FieldLabel">
             <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Margin" Value="0,12,0,5" />
+            <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
     </Window.Resources>
 
@@ -23,77 +23,117 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0,0,0,4" />
+        <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="20" FontWeight="Bold" Margin="0,0,0,6" />
 
         <StackPanel Grid.Row="1" Margin="0,8,0,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="64" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                        <TextBlock Text="Icon" Style="{StaticResource FieldLabel}" Margin="0,12,0,5" />
-                        <TextBox Text="{Binding Icon, UpdateSourceTrigger=PropertyChanged}" FontSize="18"
-                                 HorizontalContentAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="Name" Style="{StaticResource FieldLabel}" />
-                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                </Grid>
+            <!-- Icon + Name -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="56" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Icon" Style="{StaticResource FieldLabel}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Name" Style="{StaticResource FieldLabel}" />
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="120" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                        <TextBlock Text="Amount (per billing period)" Style="{StaticResource FieldLabel}" />
-                        <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="Currency" Style="{StaticResource FieldLabel}" />
-                        <ComboBox ItemsSource="{Binding Currencies}" SelectedItem="{Binding Currency}" />
-                    </StackPanel>
-                </Grid>
+                <ToggleButton Grid.Row="1" Grid.Column="0" x:Name="IconToggle" Style="{StaticResource IconPickerButton}"
+                              Content="{Binding Icon}" />
+                <TextBox Grid.Row="1" Grid.Column="2" Height="34" VerticalContentAlignment="Center"
+                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock Text="Billing cycle" Style="{StaticResource FieldLabel}" />
-                <ComboBox ItemsSource="{Binding Cycles}" SelectedItem="{Binding SelectedCycle}" DisplayMemberPath="Label" />
+                <Popup PlacementTarget="{Binding ElementName=IconToggle}" Placement="Bottom" AllowsTransparency="True"
+                       StaysOpen="False" IsOpen="{Binding IsChecked, ElementName=IconToggle, Mode=TwoWay}">
+                    <Border Background="{StaticResource Surface}" BorderBrush="{StaticResource Border}" BorderThickness="1"
+                            CornerRadius="10" Padding="6" Margin="0,4,0,0" Width="292">
+                        <ItemsControl ItemsSource="{Binding IconChoices}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding}" Style="{StaticResource EmojiPick}" Click="Icon_Pick" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </Popup>
+            </Grid>
 
-                <StackPanel Visibility="{Binding ShowCustomDays, Converter={StaticResource BoolVis}}">
-                    <TextBlock Text="Interval (days)" Style="{StaticResource FieldLabel}" />
-                    <TextBox Text="{Binding CustomDays, UpdateSourceTrigger=PropertyChanged}" />
-                </StackPanel>
+            <!-- Amount + Currency -->
+            <Grid Margin="0,14,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="130" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Amount per period" Style="{StaticResource FieldLabel}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Currency" Style="{StaticResource FieldLabel}" />
+                <TextBox Grid.Row="1" Grid.Column="0" Height="34" VerticalContentAlignment="Center"
+                         Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" />
+                <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Currencies}" SelectedItem="{Binding Currency}" />
+            </Grid>
 
-                <TextBlock Text="Category" Style="{StaticResource FieldLabel}" />
-                <TextBox Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+            <!-- Billing cycle + Uses/month -->
+            <Grid Margin="0,14,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="130" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Billing cycle" Style="{StaticResource FieldLabel}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Uses / month" Style="{StaticResource FieldLabel}"
+                           ToolTip="How often you use it per month — powers the worth-it check. Leave 0 if unknown." />
+                <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Cycles}" SelectedItem="{Binding SelectedCycle}" />
+                <TextBox Grid.Row="1" Grid.Column="2" Height="34" VerticalContentAlignment="Center"
+                         Text="{Binding UsesPerMonth, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="140" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                        <TextBlock Text="Next renewal" Style="{StaticResource FieldLabel}" />
-                        <DatePicker SelectedDate="{Binding NextRenewal}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="Uses / month" Style="{StaticResource FieldLabel}"
-                                   ToolTip="For the worth-it check. Leave 0 if unknown." />
-                        <TextBox Text="{Binding UsesPerMonth, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                </Grid>
+            <!-- Custom interval (conditional) -->
+            <StackPanel Margin="0,14,0,0" Visibility="{Binding ShowCustomDays, Converter={StaticResource BoolVis}}">
+                <TextBlock Text="Interval (days)" Style="{StaticResource FieldLabel}" />
+                <TextBox Height="34" VerticalContentAlignment="Center" Width="130" HorizontalAlignment="Left"
+                         Text="{Binding CustomDays, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
 
-                <CheckBox Content="Auto-paid" IsChecked="{Binding AutoPay}" Margin="0,16,0,0"
-                          Foreground="{StaticResource TextPrimary}" />
-                <CheckBox Content="Paused (kept, excluded from totals)" IsChecked="{Binding IsPaused}" Margin="0,8,0,0"
-                          Foreground="{StaticResource TextPrimary}" />
+            <!-- Category + Next renewal -->
+            <Grid Margin="0,14,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="160" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category" Style="{StaticResource FieldLabel}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Next renewal" Style="{StaticResource FieldLabel}" />
+                <TextBox Grid.Row="1" Grid.Column="0" Height="34" VerticalContentAlignment="Center"
+                         Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+                <DatePicker Grid.Row="1" Grid.Column="2" SelectedDate="{Binding NextRenewal}" />
+            </Grid>
 
-                <TextBlock Text="{Binding Error}" Foreground="{StaticResource Negative}" TextWrapping="Wrap"
-                           Margin="0,14,0,0" Visibility="{Binding Error, Converter={StaticResource StrVis}}" />
+            <!-- Toggles -->
+            <CheckBox Content="Auto-paid" IsChecked="{Binding AutoPay}" Margin="0,18,0,0" />
+            <CheckBox Content="Paused (kept, excluded from totals)" IsChecked="{Binding IsPaused}" Margin="0,10,0,0" />
+
+            <TextBlock Text="{Binding Error}" Foreground="{StaticResource Negative}" TextWrapping="Wrap"
+                       Margin="0,14,0,0" Visibility="{Binding Error, Converter={StaticResource StrVis}}" />
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
             <Button Content="Cancel" Style="{StaticResource GhostButton}" Click="Cancel_Click" Margin="0,0,10,0" />
             <Button Content="Save" Style="{StaticResource PrimaryButton}" Click="Save_Click" />
         </StackPanel>
