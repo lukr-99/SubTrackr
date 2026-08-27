@@ -1,0 +1,15 @@
+{
+  "spec": "SPEC.md#2-monthly-equivalent-normalization",
+  "comparePrecision": 6,
+  "note": "expectedMonthly is the monthly-equivalent in the SAME currency as cost, half-up rounded to 6 dp. Implementations compute in exact decimal and compare rounded to 6 dp.",
+  "cases": [
+    { "id": "weekly-5eur",       "cost": "5.00",   "currency": "EUR", "cycle": "WEEKLY",      "customDays": 0,   "expectedMonthly": "21.666667" },
+    { "id": "monthly-1299eur",   "cost": "12.99",  "currency": "EUR", "cycle": "MONTHLY",     "customDays": 0,   "expectedMonthly": "12.990000" },
+    { "id": "quarterly-30usd",   "cost": "30.00",  "currency": "USD", "cycle": "QUARTERLY",   "customDays": 0,   "expectedMonthly": "10.000000" },
+    { "id": "semiannual-60usd",  "cost": "60.00",  "currency": "USD", "cycle": "SEMIANNUAL",  "customDays": 0,   "expectedMonthly": "10.000000" },
+    { "id": "annual-6144czk",    "cost": "6144.00","currency": "CZK", "cycle": "ANNUAL",      "customDays": 0,   "expectedMonthly": "512.000000" },
+    { "id": "annual-2300czk",    "cost": "2300.00","currency": "CZK", "cycle": "ANNUAL",      "customDays": 0,   "expectedMonthly": "191.666667" },
+    { "id": "custom-30d-30eur",  "cost": "30.00",  "currency": "EUR", "cycle": "CUSTOM_DAYS", "customDays": 30,  "expectedMonthly": "30.436875" },
+    { "id": "custom-365d-365eur","cost": "365.00", "currency": "EUR", "cycle": "CUSTOM_DAYS", "customDays": 365, "expectedMonthly": "30.436875" }
+  ]
+}

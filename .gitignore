@@ -1,0 +1,29 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Rider
+.idea/
+
+# Build / publish output
+publish/
+Releases/
+artifacts/
+
+# Local app data / secrets
+*.db
+*.db-shm
+*.db-wal
+appsettings.Local.json
+
+# Android (later)
+android/.gradle/
+android/local.properties
+android/**/build/
+android/.idea/
+
+# OS
+Thumbs.db
+.DS_Store
