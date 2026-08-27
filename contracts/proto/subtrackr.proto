@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package subtrackr;
+
+option csharp_namespace = "SubTrackr.Core.Contracts";
+option java_package = "com.subtrackr.contracts";
+option java_multiple_files = true;
+
+// ---------------------------------------------------------------------------
+// SubTrackr shared data contract.
+// This file is the single source of truth for the data SHAPE. Both the WPF
+// (C#) and Android (Kotlin) apps generate their model classes from it.
+// Behavior (totals, conversion, worth-it) is pinned separately by the golden
+// vectors in contracts/vectors/. See contracts/SPEC.md.
+// ---------------------------------------------------------------------------
+
+enum BillingCycle {
+  BILLING_CYCLE_UNSPECIFIED = 0;
+  WEEKLY      = 1;
+  MONTHLY     = 2;
+  QUARTERLY   = 3;
+  SEMIANNUAL  = 4;
+  ANNUAL      = 5;
+  CUSTOM_DAYS = 6; // interval defined by Subscription.custom_days
+}
+
+enum SubStatus {
+  SUB_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  PAUSED = 2; // still tracked, excluded from active spend totals
+}
+
+// Money is stored as integer minor units to avoid binary-float drift.
+// value = minor_units / 10^exponent   (e.g. 5.12 EUR -> {EUR, 512, 2})
+message Money {
+  string currency    = 1; // ISO 4217, uppercase, e.g. "EUR", "CZK", "USD"
+  int64  minor_units = 2;
+  int32  exponent    = 3; // decimal places for this currency (usually 2)
+}
+
+message Subscription {
+  string       id            = 1;  // UUID v4, stable across devices
+  string       name          = 2;
+  Money        cost          = 3;  // amount charged each billing cycle
+  BillingCycle billing_cycle = 4;
+  int32        custom_days    = 5;  // only when billing_cycle == CUSTOM_DAYS
+  string       next_renewal  = 6;  // ISO-8601 date, "YYYY-MM-DD"
+  string       category      = 7;
+  string       icon_ref      = 8;  // emoji or asset key, e.g. "netflix"
+  bool         auto_pay      = 9;
+  SubStatus    status        = 10;
+  double       uses_per_month = 11; // optional; 0 = unset (for worth-it calc)
+  string       notes         = 12;
+
+  // --- audit / sync (sync-ready from day one) ---
+  string created_at = 13; // ISO-8601 UTC timestamp
+  string updated_at = 14; // ISO-8601 UTC timestamp
+  string deleted_at = 15; // soft delete; empty string = live record
+}
+
+message Settings {
+  string base_currency  = 1; // ISO 4217; totals roll up into this
+  string schema_version = 2;
+}
+
+// Root document. This is exactly what gets persisted / synced.
+message Database {
+  string       schema_version = 1;
+  Settings     settings       = 2;
+  repeated Subscription subscriptions = 3;
+}

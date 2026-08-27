@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/desktop/">
+    <Project Path="desktop/SubTrackr.Core.Tests/SubTrackr.Core.Tests.csproj" />
+    <Project Path="desktop/SubTrackr.Core/SubTrackr.Core.csproj" />
+    <Project Path="desktop/SubTrackr.Desktop/SubTrackr.Desktop.csproj" />
+  </Folder>
+</Solution>
