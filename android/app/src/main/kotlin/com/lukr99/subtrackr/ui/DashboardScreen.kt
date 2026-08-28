@@ -1,7 +1,7 @@
 package com.lukr99.subtrackr.ui
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,165 +15,191 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lukr99.subtrackr.domain.ExchangeRateTable
 import com.lukr99.subtrackr.domain.SpendSummary
 import com.lukr99.subtrackr.domain.SubscriptionSpend
+import com.lukr99.subtrackr.domain.WorthVerdict
 import com.lukr99.subtrackr.model.BillingCycle
 import com.lukr99.subtrackr.model.SubStatus
+import com.lukr99.subtrackr.model.Subscription
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 @Composable
-fun DashboardScreen(summary: SpendSummary) {
+fun DashboardScreen(
+    summary: SpendSummary,
+    baseCurrency: String,
+    rates: ExchangeRateTable,
+    onEdit: (Subscription) -> Unit,
+) {
     val active = summary.perSub.count { it.subscription.status == SubStatus.ACTIVE }
+    var chart by remember { mutableStateOf(ChartType.DONUT) }
+
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Palette.Bg)
-            .padding(horizontal = 16.dp),
+        Modifier.fillMaxSize().background(Palette.Bg).padding(horizontal = 16.dp),
     ) {
-        item { Spacer(Modifier.height(24.dp)) }
+        item { Spacer(Modifier.height(20.dp)) }
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("SubTrackr", color = Palette.TextPrimary, fontSize = 26.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.width(10.dp))
-                Chip("$active active")
+                Box(
+                    Modifier.background(Palette.SurfaceAlt, RoundedCornerShape(10.dp)).padding(horizontal = 9.dp, vertical = 3.dp),
+                ) { Text("$active active", color = Palette.TextSecondary, fontSize = 12.sp) }
             }
         }
         item { Spacer(Modifier.height(16.dp)) }
-        item { OverviewCard(summary) }
+        item { OverviewCard(summary, baseCurrency, chart) { chart = it } }
+        item { Spacer(Modifier.height(12.dp)) }
+        item { CurrencyCard(summary, baseCurrency, rates) }
+        item { Spacer(Modifier.height(12.dp)) }
+        item { RenewalsCard(summary) }
         item { Spacer(Modifier.height(16.dp)) }
         item {
-            Text(
-                "SUBSCRIPTIONS",
-                color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
-            )
+            Text("SUBSCRIPTIONS", color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp))
         }
         items(summary.perSub.sortedByDescending { it.monthlyBase }) { spend ->
-            SubscriptionRow(spend, summary.baseCurrency)
+            SubscriptionRow(spend, baseCurrency, onEdit)
         }
-        item { Spacer(Modifier.height(24.dp)) }
+        item { Spacer(Modifier.height(90.dp)) }
     }
 }
 
 @Composable
-private fun Chip(text: String) {
-    Box(
-        Modifier
-            .background(Palette.SurfaceAlt, RoundedCornerShape(10.dp))
-            .padding(horizontal = 9.dp, vertical = 3.dp),
-    ) { Text(text, color = Palette.TextSecondary, fontSize = 12.sp) }
-}
-
-@Composable
-private fun OverviewCard(summary: SpendSummary) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Palette.Surface, RoundedCornerShape(14.dp))
-            .padding(18.dp),
-    ) {
+private fun OverviewCard(summary: SpendSummary, base: String, chart: ChartType, onChart: (ChartType) -> Unit) {
+    SectionCard {
         Text("OVERVIEW", color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(12.dp))
-
+        Spacer(Modifier.height(8.dp))
         val slices = summary.byCategory
             .filter { it.monthlyBase > BigDecimal.ZERO }
-            .mapIndexed { i, c -> c.monthlyBase.toDouble() to Palette.category(i) }
+            .mapIndexed { i, c -> ChartSlice(c.category, c.monthlyBase.toDouble(), Palette.category(i)) }
 
-        Box(Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
-            Donut(slices)
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    Format.moneyWhole(summary.monthlyBase, summary.baseCurrency),
-                    color = Palette.TextPrimary, fontSize = 30.sp, fontWeight = FontWeight.Bold,
-                )
-                Text("Total per month", color = Palette.TextMuted, fontSize = 12.sp)
-            }
+        SpendChart(
+            type = chart,
+            slices = slices,
+            monthlyBase = summary.monthlyBase.toDouble(),
+            centerText = Format.moneyWhole(summary.monthlyBase, base),
+            centerSub = "Total per month",
+        )
+        Spacer(Modifier.height(8.dp))
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            ChartSwitcher(chart, onChart)
         }
-
         Spacer(Modifier.height(14.dp))
         Box(Modifier.fillMaxWidth().height(1.dp).background(Palette.Border))
         Spacer(Modifier.height(14.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 Text("Per month", color = Palette.TextSecondary, fontSize = 11.sp)
-                Text(
-                    Format.money(summary.monthlyBase, summary.baseCurrency),
-                    color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
-                )
+                Text(Format.money(summary.monthlyBase, base), color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text("Per year", color = Palette.TextSecondary, fontSize = 11.sp)
-                Text(
-                    Format.money(summary.yearlyBase, summary.baseCurrency),
-                    color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
-                )
+                Text(Format.money(summary.yearlyBase, base), color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
 }
 
 @Composable
-private fun Donut(slices: List<Pair<Double, androidx.compose.ui.graphics.Color>>) {
-    val total = slices.sumOf { it.first }
-    Canvas(Modifier.size(200.dp)) {
-        val stroke = size.minDimension * 0.13f
-        val inset = stroke / 2
-        val arcSize = Size(size.minDimension - stroke, size.minDimension - stroke)
-        val topLeft = Offset(inset, inset)
-        // track
-        drawArc(
-            color = Palette.Border, startAngle = 0f, sweepAngle = 360f, useCenter = false,
-            topLeft = topLeft, size = arcSize, style = Stroke(width = stroke),
-        )
-        if (total <= 0.0) return@Canvas
-        var start = -90f
-        for ((value, color) in slices) {
-            val sweep = (value / total * 360.0).toFloat()
-            drawArc(
-                color = color, startAngle = start, sweepAngle = sweep, useCenter = false,
-                topLeft = topLeft, size = arcSize, style = Stroke(width = stroke),
-            )
-            start += sweep
+private fun CurrencyCard(summary: SpendSummary, base: String, rates: ExchangeRateTable) {
+    if (summary.perCurrency.isEmpty()) return
+    SectionCard {
+        Text("BY CURRENCY", color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(Modifier.height(6.dp))
+        summary.perCurrency.forEach { c ->
+            val converted = if (rates.knows(c.currency)) rates.convert(c.monthly, c.currency, base) else c.monthly
+            Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.background(Palette.SurfaceAlt, RoundedCornerShape(6.dp)).padding(horizontal = 7.dp, vertical = 2.dp)) {
+                    Text(c.currency, color = Palette.TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                }
+                Spacer(Modifier.width(10.dp))
+                Text(Format.money(c.monthly, c.currency) + " / mo", color = Palette.TextPrimary, fontSize = 13.sp)
+                Spacer(Modifier.weight(1f))
+                Text("≈ " + Format.money(converted, base), color = Palette.TextSecondary, fontSize = 12.sp)
+            }
         }
     }
 }
 
 @Composable
-private fun SubscriptionRow(spend: SubscriptionSpend, base: String) {
+private fun RenewalsCard(summary: SpendSummary) {
+    val today = LocalDate.now()
+    val upcoming = summary.perSub
+        .filter { it.subscription.status == SubStatus.ACTIVE }
+        .mapNotNull { p -> runCatching { LocalDate.parse(p.subscription.nextRenewal) }.getOrNull()?.let { p to it } }
+        .sortedBy { it.second }
+        .take(5)
+    if (upcoming.isEmpty()) return
+    SectionCard {
+        Text("UPCOMING RENEWALS", color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(Modifier.height(6.dp))
+        upcoming.forEach { (p, date) ->
+            val days = ChronoUnit.DAYS.between(today, date)
+            val whenText = when {
+                days <= 0L -> "due"
+                days == 1L -> "tomorrow"
+                else -> "in $days days"
+            } + " · " + date.dayOfMonth + " " + date.month.getDisplayName(TextStyle.SHORT, Locale.US)
+            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(p.subscription.iconRef.ifBlank { "•" }, fontSize = 16.sp)
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(p.subscription.name, color = Palette.TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Text(whenText, color = Palette.TextSecondary, fontSize = 11.sp)
+                }
+                Text(Format.money(p.subscription.cost.toBigDecimal(), p.subscription.cost.currency), color = Palette.TextPrimary, fontSize = 13.sp)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SubscriptionRow(spend: SubscriptionSpend, base: String, onEdit: (Subscription) -> Unit) {
     val s = spend.subscription
     Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
+        Modifier.fillMaxWidth().clickable { onEdit(s) }.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(s.iconRef.ifBlank { "•" }, fontSize = 20.sp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(s.name, color = Palette.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(
-                s.category.ifBlank { "Uncategorized" },
-                color = Palette.TextSecondary, fontSize = 12.sp,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(s.name, color = Palette.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                if (spend.verdict != WorthVerdict.UNKNOWN) {
+                    Spacer(Modifier.width(8.dp))
+                    val worth = spend.verdict == WorthVerdict.WORTH
+                    Box(Modifier.background(Color(0x22FFFFFF), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 1.dp)) {
+                        Text(if (worth) "Worth" else "Not worth", color = if (worth) Palette.Positive else Palette.Negative, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            }
+            Text(s.category.ifBlank { "Uncategorized" }, color = Palette.TextSecondary, fontSize = 12.sp)
         }
         Column(horizontalAlignment = Alignment.End) {
+            Text(Format.money(spend.monthlyBase, base), color = Palette.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
             Text(
-                Format.money(spend.monthlyBase, base),
-                color = Palette.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold,
+                Format.money(s.cost.toBigDecimal(), s.cost.currency) + " / " + cycleShort(s.billingCycle),
+                color = Palette.TextMuted, fontSize = 11.sp,
             )
-            Text(Format.money(s.cost.toBigDecimal(), s.cost.currency) + " / " + cycleShort(s.billingCycle),
-                color = Palette.TextMuted, fontSize = 11.sp)
         }
     }
 }
