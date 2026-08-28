@@ -5,6 +5,8 @@ import com.lukr99.subtrackr.domain.FrankfurterRateProvider
 import com.lukr99.subtrackr.domain.OfflineFallback
 import com.lukr99.subtrackr.domain.SpendCalculator
 import com.lukr99.subtrackr.domain.SpendSummary
+import com.lukr99.subtrackr.domain.SupabaseSyncProvider
+import com.lukr99.subtrackr.domain.SyncService
 import com.lukr99.subtrackr.domain.WorthIt
 import com.lukr99.subtrackr.model.Database
 import com.lukr99.subtrackr.model.Subscription
@@ -64,5 +66,24 @@ class AppRepository(file: File) {
 
     suspend fun refreshRates(provider: FrankfurterRateProvider) {
         rates = provider.getRates(baseCurrency)
+    }
+
+    // ----- sync (device-local config; only subscriptions sync) -----
+
+    val syncUrl: String get() = db.settings.syncUrl
+    val syncKey: String get() = db.settings.syncKey
+    val syncConfigured: Boolean get() = syncUrl.isNotBlank() && syncKey.isNotBlank()
+
+    fun setSyncConfig(url: String, key: String) {
+        db = db.copy(settings = db.settings.copy(syncUrl = url.trim(), syncKey = key.trim()))
+        store.save(db)
+    }
+
+    suspend fun syncNow(): Int {
+        val provider = SupabaseSyncProvider(syncUrl, syncKey)
+        val merged = SyncService.sync(db.subscriptions, provider)
+        db = db.copy(subscriptions = merged)
+        store.save(db)
+        return merged.size
     }
 }

@@ -61,6 +61,9 @@ message Subscription {
 message Settings {
   string base_currency  = 1; // ISO 4217; totals roll up into this
   string schema_version = 2;
+  // Sync config is DEVICE-LOCAL (never pushed to the remote). See SPEC.md §8.
+  string sync_url = 3; // Supabase project URL, e.g. https://xxxx.supabase.co
+  string sync_key = 4; // Supabase anon key
 }
 
 // Root document. This is exactly what gets persisted / synced.

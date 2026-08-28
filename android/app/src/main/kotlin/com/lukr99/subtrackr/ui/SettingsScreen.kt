@@ -31,11 +31,17 @@ fun SettingsScreen(
     baseCurrency: String,
     worthThreshold: BigDecimal,
     ratesLabel: String,
+    syncUrl: String,
+    syncKey: String,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onRefreshRates: () -> Unit,
+    onSync: (String, String, (String) -> Unit) -> Unit,
 ) {
     var threshold by remember { mutableStateOf(worthThreshold.stripTrailingZeros().toPlainString()) }
+    var url by remember { mutableStateOf(syncUrl) }
+    var key by remember { mutableStateOf(syncKey) }
+    var syncStatus by remember { mutableStateOf("") }
 
     Column(
         Modifier
@@ -79,6 +85,25 @@ fun SettingsScreen(
                     onClick = onRefreshRates,
                     colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
                 ) { Text("Refresh", color = Palette.TextPrimary) }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+
+        SectionCard {
+            Text("Sync (Supabase)", color = Palette.TextSecondary, fontSize = 12.sp)
+            Text("Syncs subscriptions across your devices. See docs/SYNC-SETUP.md.", color = Palette.TextMuted, fontSize = 11.sp)
+            Spacer(Modifier.height(8.dp))
+            LabeledTextField("Project URL", url, { url = it })
+            Spacer(Modifier.height(10.dp))
+            LabeledTextField("Anon key", key, { key = it })
+            Spacer(Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Button(
+                    onClick = { onSync(url, key) { syncStatus = it } },
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
+                ) { Text("Sync now") }
+                Spacer(Modifier.width(12.dp))
+                Text(syncStatus, color = Palette.TextSecondary, fontSize = 12.sp)
             }
         }
         Spacer(Modifier.height(12.dp))

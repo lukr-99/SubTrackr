@@ -67,6 +67,9 @@ data class Subscription(
 data class Settings(
     val baseCurrency: String = "EUR",
     val schemaVersion: String = "0.1",
+    // Device-local sync config (never pushed to the remote). See SPEC.md §8.
+    val syncUrl: String = "",
+    val syncKey: String = "",
 )
 
 @Serializable
