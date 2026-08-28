@@ -113,13 +113,18 @@
         <Setter Property="BorderBrush" Value="{StaticResource Border}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Padding" Value="9,7" />
+        <Setter Property="Padding" Value="9,0" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
                     <Border Background="{TemplateBinding Background}" CornerRadius="8"
                             BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                        <ScrollViewer x:Name="PART_ContentHost" Focusable="False"
+                                      HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                                      Padding="{TemplateBinding Padding}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -591,6 +596,7 @@
     <Style x:Key="EmojiPick" TargetType="Button">
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="40" />
+        <Setter Property="FontFamily" Value="Segoe UI Emoji" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Background" Value="Transparent" />
@@ -613,6 +619,7 @@
     <!-- Icon-picker trigger button (shows the current emoji) -->
     <Style x:Key="IconPickerButton" TargetType="ToggleButton">
         <Setter Property="Height" Value="34" />
+        <Setter Property="FontFamily" Value="Segoe UI Emoji" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">

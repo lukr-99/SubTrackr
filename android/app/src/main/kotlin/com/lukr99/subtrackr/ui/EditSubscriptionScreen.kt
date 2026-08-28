@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -143,16 +144,20 @@ fun EditSubscriptionScreen(
         Modifier
             .fillMaxSize()
             .background(Palette.Bg)
+            .statusBarsPadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onCancel) { Text("Cancel", color = Palette.TextSecondary) }
+            TextButton(onClick = onCancel) { Text("Cancel", color = Palette.TextSecondary, fontSize = 15.sp) }
             Spacer(Modifier.weight(1f))
             Text(if (isNew) "Add subscription" else "Edit", color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
-            TextButton(onClick = { build()?.let(onSave) }) { Text("Save", color = Palette.Accent, fontWeight = FontWeight.Bold) }
+            Button(
+                onClick = { build()?.let(onSave) },
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
+            ) { Text("Save", color = Color.White, fontWeight = FontWeight.Bold) }
         }
         Spacer(Modifier.height(12.dp))
 
