@@ -23,6 +23,11 @@ public sealed class SubscriptionRowViewModel
 
     public string Icon => string.IsNullOrWhiteSpace(Model.IconRef) ? "•" : Model.IconRef;
     public string Name => Model.Name;
+
+    public bool HasLogo => !string.IsNullOrWhiteSpace(Model.Website);
+    public string? LogoUrl => HasLogo
+        ? $"https://www.google.com/s2/favicons?domain={Model.Website.Trim()}&sz=64"
+        : null;
     public string Category => string.IsNullOrWhiteSpace(Model.Category) ? "Uncategorized" : Model.Category;
     public bool AutoPay => Model.AutoPay;
     public bool IsPaused => Model.Status == SubStatus.Paused;

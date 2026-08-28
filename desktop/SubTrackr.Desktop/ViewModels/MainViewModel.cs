@@ -13,6 +13,7 @@ namespace SubTrackr.Desktop.ViewModels;
 
 public sealed record CurrencyLine(string Code, string MonthlyOwnText, string ConvertedText);
 public sealed record RenewalLine(string Icon, string Name, string WhenText, string AmountText, bool Soon);
+public sealed record AlertLine(string Icon, string Title, string Detail, bool Urgent);
 
 public enum AppPage { Dashboard, WhatIf, Settings }
 
@@ -33,6 +34,8 @@ public sealed partial class MainViewModel : ObservableObject
     public ObservableCollection<ChartSlice> ChartSlices { get; } = new();
     public ObservableCollection<CurrencyLine> CurrencyBreakdown { get; } = new();
     public ObservableCollection<RenewalLine> UpcomingRenewals { get; } = new();
+    public ObservableCollection<AlertLine> Alerts { get; } = new();
+    public bool HasAlerts => Alerts.Count > 0;
 
     [ObservableProperty] private ChartType _chartType = ChartType.Donut;
     [ObservableProperty] private bool _showYearly;
@@ -133,6 +136,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         BuildRenewals();
+        BuildAlerts();
         BuildChart();
 
         OnPropertyChanged(nameof(HeroAmountText));
@@ -236,6 +240,33 @@ public sealed partial class MainViewModel : ObservableObject
                 days <= 7));
         }
     }
+
+    private void BuildAlerts()
+    {
+        Alerts.Clear();
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        foreach (var p in _summary.PerSub.Where(p => p.Subscription.Status == SubStatus.Active))
+        {
+            var s = p.Subscription;
+            if (DateOnly.TryParse(s.TrialEnd, out var te))
+            {
+                var d = te.DayNumber - today.DayNumber;
+                if (d >= 0 && d <= 7)
+                    Alerts.Add(new AlertLine("🆓", $"{s.Name} trial ends",
+                        $"{When(d)} · then {Formatting.Money(s.Cost.ToDecimal(), s.Cost.Currency)}", d <= 2));
+            }
+            if (DateOnly.TryParse(s.NextRenewal, out var nr))
+            {
+                var d = nr.DayNumber - today.DayNumber;
+                if (d >= 0 && d <= 3)
+                    Alerts.Add(new AlertLine(string.IsNullOrWhiteSpace(s.IconRef) ? "🔔" : s.IconRef,
+                        $"{s.Name} renews", $"{When(d)} · {Formatting.Money(s.Cost.ToDecimal(), s.Cost.Currency)}", d <= 1));
+            }
+        }
+        OnPropertyChanged(nameof(HasAlerts));
+    }
+
+    private static string When(int days) => days <= 0 ? "today" : days == 1 ? "tomorrow" : $"in {days} days";
 
     private async Task RefreshRatesAsync()
     {

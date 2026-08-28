@@ -15,14 +15,14 @@ public static class SeedData
             Settings = new Settings { BaseCurrency = "CZK", SchemaVersion = DataStore.CurrentSchemaVersion },
         };
 
-        db.Subscriptions.Add(Sub("Netflix", 199m, "CZK", BillingCycle.Monthly, "Entertainment", "🎬", now, 8, autoPay: true, day: 4));
-        db.Subscriptions.Add(Sub("ChatGPT", 20m, "USD", BillingCycle.Monthly, "AI & Productivity", "🤖", now, 40, autoPay: true, day: 2));
-        db.Subscriptions.Add(Sub("Claude", 20m, "USD", BillingCycle.Monthly, "AI & Productivity", "✳️", now, 60, autoPay: true, day: 26));
-        db.Subscriptions.Add(Sub("Mobile plan", 450m, "CZK", BillingCycle.Monthly, "Phone & Internet", "📱", now, 0, autoPay: true, day: 6));
-        db.Subscriptions.Add(Sub("Meal kit", 149m, "CZK", BillingCycle.Monthly, "Food", "🍔", now, 6, autoPay: true, day: 19));
-        db.Subscriptions.Add(Sub("Ride pass", 119m, "CZK", BillingCycle.Monthly, "Transport", "🚕", now, 3, autoPay: true, day: 26));
-        db.Subscriptions.Add(Sub("Spotify", 10.99m, "EUR", BillingCycle.Monthly, "Music", "🎧", now, 90, autoPay: true, day: 12));
-        db.Subscriptions.Add(Sub("City transit pass", 2400m, "CZK", BillingCycle.Annual, "Transport", "🚊", now, 40, autoPay: false, day: 10, monthsAhead: 6));
+        db.Subscriptions.Add(Sub("Netflix", 199m, "CZK", BillingCycle.Monthly, "Entertainment", "🎬", now, 8, autoPay: true, day: 4, website: "netflix.com"));
+        db.Subscriptions.Add(Sub("ChatGPT", 20m, "USD", BillingCycle.Monthly, "AI & Productivity", "🤖", now, 40, autoPay: true, day: 2, website: "openai.com"));
+        db.Subscriptions.Add(Sub("Claude", 20m, "USD", BillingCycle.Monthly, "AI & Productivity", "✳️", now, 60, autoPay: true, day: 26, website: "claude.ai"));
+        db.Subscriptions.Add(Sub("Mobile plan", 450m, "CZK", BillingCycle.Monthly, "Phone & Internet", "📱", now, 0, autoPay: true, day: 6, website: ""));
+        db.Subscriptions.Add(Sub("Meal kit", 149m, "CZK", BillingCycle.Monthly, "Food", "🍔", now, 6, autoPay: true, day: 19, website: ""));
+        db.Subscriptions.Add(Sub("Ride pass", 119m, "CZK", BillingCycle.Monthly, "Transport", "🚕", now, 3, autoPay: true, day: 26, website: ""));
+        db.Subscriptions.Add(Sub("Spotify", 10.99m, "EUR", BillingCycle.Monthly, "Music", "🎧", now, 90, autoPay: true, day: 12, website: "spotify.com"));
+        db.Subscriptions.Add(Sub("City transit pass", 2400m, "CZK", BillingCycle.Annual, "Transport", "🚊", now, 40, autoPay: false, day: 10, monthsAhead: 6, website: ""));
 
         return db;
     }
@@ -30,7 +30,7 @@ public static class SeedData
     private static Subscription Sub(
         string name, decimal amount, string currency, BillingCycle cycle,
         string category, string icon, DateTime now, double usesPerMonth,
-        bool autoPay, int day, int monthsAhead = 0)
+        bool autoPay, int day, int monthsAhead = 0, string website = "")
     {
         var minor = (long)decimal.Round(amount * 100m, 0, MidpointRounding.AwayFromZero);
         var renewal = NextRenewalOnDay(now, day, monthsAhead);
@@ -45,6 +45,7 @@ public static class SeedData
             Category = category,
             IconRef = icon,
             AutoPay = autoPay,
+            Website = website,
             Status = SubStatus.Active,
             UsesPerMonth = usesPerMonth,
             Notes = "",

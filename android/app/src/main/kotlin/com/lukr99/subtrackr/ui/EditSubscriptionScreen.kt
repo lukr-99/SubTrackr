@@ -108,6 +108,9 @@ fun EditSubscriptionScreen(
     var autoPay by remember { mutableStateOf(initial?.autoPay ?: true) }
     var paused by remember { mutableStateOf(initial?.status == SubStatus.PAUSED) }
     var worth by remember { mutableStateOf(worthLabel(initial?.worthMode ?: WorthMode.AUTO)) }
+    var website by remember { mutableStateOf(initial?.website ?: "") }
+    var isTrial by remember { mutableStateOf((initial?.trialEnd ?: "").isNotBlank()) }
+    var trialEnd by remember { mutableStateOf(initial?.trialEnd ?: "") }
     var error by remember { mutableStateOf<String?>(null) }
 
     fun build(): Subscription? {
@@ -130,6 +133,8 @@ fun EditSubscriptionScreen(
             status = if (paused) SubStatus.PAUSED else SubStatus.ACTIVE,
             usesPerMonth = uses.toDoubleOrNull() ?: 0.0,
             worthMode = worthFor(worth),
+            website = website.trim(),
+            trialEnd = if (isTrial) trialEnd.trim() else "",
             createdAt = initial?.createdAt ?: "",
         )
     }
@@ -190,10 +195,17 @@ fun EditSubscriptionScreen(
         }
         Spacer(Modifier.height(12.dp))
         PickerField("Worth-it", worth, WORTH_LABELS, { worth = it })
+        Spacer(Modifier.height(12.dp))
+        LabeledTextField("Website (for logo, e.g. netflix.com)", website, { website = it })
         Spacer(Modifier.height(16.dp))
 
         ToggleRow("Auto-paid", autoPay) { autoPay = it }
         ToggleRow("Paused (kept, excluded from totals)", paused) { paused = it }
+        ToggleRow("Free trial", isTrial) { isTrial = it }
+        if (isTrial) {
+            Spacer(Modifier.height(6.dp))
+            LabeledTextField("Trial ends (YYYY-MM-DD)", trialEnd, { trialEnd = it })
+        }
 
         error?.let {
             Spacer(Modifier.height(12.dp))
