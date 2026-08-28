@@ -132,9 +132,20 @@
                 <ComboBox ItemsSource="{Binding WorthModes}" SelectedItem="{Binding SelectedWorth}" />
             </StackPanel>
 
+            <!-- Website (for logo) -->
+            <StackPanel Margin="0,14,0,0">
+                <TextBlock Text="Website (for the logo, e.g. netflix.com)" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding Website, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
             <!-- Toggles -->
             <CheckBox Content="Auto-paid" IsChecked="{Binding AutoPay}" Margin="0,18,0,0" />
             <CheckBox Content="Paused (kept, excluded from totals)" IsChecked="{Binding IsPaused}" Margin="0,10,0,0" />
+            <CheckBox Content="Free trial" IsChecked="{Binding IsTrial}" Margin="0,10,0,0" />
+            <StackPanel Margin="0,10,0,0" Visibility="{Binding IsTrial, Converter={StaticResource BoolVis}}">
+                <TextBlock Text="Trial ends" Style="{StaticResource FieldLabel}" />
+                <DatePicker SelectedDate="{Binding TrialEnd}" Width="160" HorizontalAlignment="Left" />
+            </StackPanel>
 
             <TextBlock Text="{Binding Error}" Foreground="{StaticResource Negative}" TextWrapping="Wrap"
                        Margin="0,14,0,0" Visibility="{Binding Error, Converter={StaticResource StrVis}}" />

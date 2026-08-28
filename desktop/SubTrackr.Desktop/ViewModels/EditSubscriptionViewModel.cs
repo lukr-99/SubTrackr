@@ -39,6 +39,9 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
     [ObservableProperty] private string _usesPerMonth = "0";
     [ObservableProperty] private DateTime _nextRenewal = DateTime.Today.AddMonths(1);
     [ObservableProperty] private WorthOption _selectedWorth;
+    [ObservableProperty] private bool _isTrial;
+    [ObservableProperty] private DateTime _trialEnd = DateTime.Today.AddDays(14);
+    [ObservableProperty] private string _website = "";
     [ObservableProperty] private string? _error;
 
     public IReadOnlyList<WorthOption> WorthModes { get; } = new[]
@@ -81,6 +84,12 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
         if (existing is null) return;
 
         SelectedWorth = WorthModes.FirstOrDefault(w => w.Mode == existing.WorthMode) ?? WorthModes[0];
+        Website = existing.Website;
+        if (!string.IsNullOrEmpty(existing.TrialEnd) && DateOnly.TryParse(existing.TrialEnd, out var te))
+        {
+            IsTrial = true;
+            TrialEnd = te.ToDateTime(TimeOnly.MinValue);
+        }
 
         _existingId = existing.Id;
         _createdAt = existing.CreatedAt;
@@ -128,6 +137,8 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
             Status = IsPaused ? SubStatus.Paused : SubStatus.Active,
             UsesPerMonth = uses,
             WorthMode = SelectedWorth.Mode,
+            Website = Website.Trim(),
+            TrialEnd = IsTrial ? DateOnly.FromDateTime(TrialEnd).ToString("yyyy-MM-dd") : "",
             Notes = "",
             CreatedAt = _createdAt ?? "",
             UpdatedAt = "",

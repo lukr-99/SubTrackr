@@ -100,8 +100,32 @@
         <Grid Grid.Column="1" Margin="22" Visibility="{Binding IsDashboardPage, Converter={StaticResource BoolVis}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
+            <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,14" Padding="14"
+                    BorderBrush="{StaticResource Warning}"
+                    Visibility="{Binding HasAlerts, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <TextBlock Text="⏰ ALERTS" Style="{StaticResource CardTitle}" />
+                    <ItemsControl ItemsSource="{Binding Alerts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Icon}" FontSize="15" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Title}" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                   FontSize="13" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Detail}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
 
             <Grid Grid.Row="0" Margin="2,0,2,18">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -121,7 +145,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="380" />
@@ -155,7 +179,13 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Icon}" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                            <Grid Width="26" Height="26" Margin="0,0,10,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Icon}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Visibility="{Binding HasLogo, Converter={StaticResource BoolVis}, ConverterParameter=invert}" />
+                                                <Image Source="{Binding LogoUrl}" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                                       Visibility="{Binding HasLogo, Converter={StaticResource BoolVis}}" />
+                                            </Grid>
                                             <StackPanel VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />

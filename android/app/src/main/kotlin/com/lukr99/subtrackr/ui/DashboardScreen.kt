@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.lukr99.subtrackr.domain.ExchangeRateTable
 import com.lukr99.subtrackr.domain.SpendSummary
 import com.lukr99.subtrackr.domain.SubscriptionSpend
@@ -75,6 +76,22 @@ fun DashboardScreen(
             }
         }
 
+    val today = LocalDate.now()
+    val alerts = summary.perSub
+        .filter { it.subscription.status == SubStatus.ACTIVE }
+        .mapNotNull { p ->
+            val s = p.subscription
+            val trial = runCatching { LocalDate.parse(s.trialEnd) }.getOrNull()
+            val renew = runCatching { LocalDate.parse(s.nextRenewal) }.getOrNull()
+            when {
+                trial != null && ChronoUnit.DAYS.between(today, trial) in 0..7 ->
+                    Alert("🆓", "${s.name} trial ends", whenText(ChronoUnit.DAYS.between(today, trial)))
+                renew != null && ChronoUnit.DAYS.between(today, renew) in 0..3 ->
+                    Alert(s.iconRef.ifBlank { "🔔" }, "${s.name} renews", whenText(ChronoUnit.DAYS.between(today, renew)))
+                else -> null
+            }
+        }
+
     LazyColumn(
         Modifier.fillMaxSize().background(Palette.Bg).padding(horizontal = 16.dp),
     ) {
@@ -89,6 +106,9 @@ fun DashboardScreen(
             }
         }
         item { Spacer(Modifier.height(16.dp)) }
+        if (alerts.isNotEmpty()) {
+            item { AlertsCard(alerts); Spacer(Modifier.height(12.dp)) }
+        }
         item { OverviewCard(summary, baseCurrency, chart) { chart = it } }
         item { Spacer(Modifier.height(12.dp)) }
         item { CurrencyCard(summary, baseCurrency, rates) }
@@ -207,7 +227,17 @@ private fun SubscriptionRow(spend: SubscriptionSpend, base: String, onEdit: (Sub
         Modifier.fillMaxWidth().clickable { onEdit(s) }.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(s.iconRef.ifBlank { "•" }, fontSize = 20.sp)
+        Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            if (s.website.isNotBlank()) {
+                AsyncImage(
+                    model = "https://www.google.com/s2/favicons?domain=${s.website}&sz=64",
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                )
+            } else {
+                Text(s.iconRef.ifBlank { "•" }, fontSize = 20.sp)
+            }
+        }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -233,6 +263,32 @@ private fun SubscriptionRow(spend: SubscriptionSpend, base: String, onEdit: (Sub
                 Format.money(s.cost.toBigDecimal(), s.cost.currency) + " / " + cycleShort(s.billingCycle),
                 color = Palette.TextMuted, fontSize = 11.sp,
             )
+        }
+    }
+}
+
+private data class Alert(val icon: String, val title: String, val detail: String)
+
+private fun whenText(days: Long) = when {
+    days <= 0L -> "today"
+    days == 1L -> "tomorrow"
+    else -> "in $days days"
+}
+
+@Composable
+private fun AlertsCard(alerts: List<Alert>) {
+    Column(
+        Modifier.fillMaxWidth().background(Palette.Surface, RoundedCornerShape(14.dp)).padding(16.dp),
+    ) {
+        Text("⏰ ALERTS", color = Palette.category(2), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(Modifier.height(6.dp))
+        alerts.forEach { a ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(a.icon, fontSize = 15.sp)
+                Spacer(Modifier.width(8.dp))
+                Text(a.title, color = Palette.TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                Text(a.detail, color = Palette.TextSecondary, fontSize = 12.sp)
+            }
         }
     }
 }

@@ -16,14 +16,14 @@ import java.util.UUID
 object SeedData {
     fun createInitialDatabase(): Database {
         val subs = listOf(
-            sub("Netflix", "199", "CZK", BillingCycle.MONTHLY, "Entertainment", "🎬", 8.0, true, 4),
-            sub("ChatGPT", "20", "USD", BillingCycle.MONTHLY, "AI & Productivity", "🤖", 40.0, true, 2),
-            sub("Claude", "20", "USD", BillingCycle.MONTHLY, "AI & Productivity", "✳️", 60.0, true, 26),
-            sub("Vodafone", "529", "CZK", BillingCycle.MONTHLY, "Phone & Internet", "📱", 0.0, true, 6),
-            sub("Foodora", "100", "CZK", BillingCycle.MONTHLY, "Food", "🍔", 6.0, true, 19),
-            sub("Bolt Plus", "99", "CZK", BillingCycle.MONTHLY, "Transport", "🚕", 3.0, true, 26),
-            sub("Spotify", "10.99", "EUR", BillingCycle.MONTHLY, "Music", "🎧", 90.0, true, 12),
-            sub("Brno DPMB pass", "2300", "CZK", BillingCycle.ANNUAL, "Transport", "🚊", 40.0, false, 10, 6),
+            sub("Netflix", "199", "CZK", BillingCycle.MONTHLY, "Entertainment", "🎬", 8.0, true, 4, website = "netflix.com"),
+            sub("ChatGPT", "20", "USD", BillingCycle.MONTHLY, "AI & Productivity", "🤖", 40.0, true, 2, website = "openai.com"),
+            sub("Claude", "20", "USD", BillingCycle.MONTHLY, "AI & Productivity", "✳️", 60.0, true, 26, website = "claude.ai"),
+            sub("Vodafone", "529", "CZK", BillingCycle.MONTHLY, "Phone & Internet", "📱", 0.0, true, 6, website = "vodafone.cz"),
+            sub("Foodora", "100", "CZK", BillingCycle.MONTHLY, "Food", "🍔", 6.0, true, 19, website = "foodora.cz"),
+            sub("Bolt Plus", "99", "CZK", BillingCycle.MONTHLY, "Transport", "🚕", 3.0, true, 26, website = "bolt.eu"),
+            sub("Spotify", "10.99", "EUR", BillingCycle.MONTHLY, "Music", "🎧", 90.0, true, 12, website = "spotify.com"),
+            sub("Brno DPMB pass", "2300", "CZK", BillingCycle.ANNUAL, "Transport", "🚊", 40.0, false, 10, 6, website = "dpmb.cz"),
         )
         return Database(
             schemaVersion = "0.1",
@@ -35,7 +35,7 @@ object SeedData {
     private fun sub(
         name: String, amount: String, currency: String, cycle: BillingCycle,
         category: String, icon: String, usesPerMonth: Double, autoPay: Boolean,
-        day: Int, monthsAhead: Long = 0,
+        day: Int, monthsAhead: Long = 0, website: String = "",
     ): Subscription {
         val now = java.time.Instant.now().toString()
         val minor = BigDecimal(amount).movePointRight(2).setScale(0, RoundingMode.HALF_UP).toLong()
@@ -50,6 +50,7 @@ object SeedData {
             autoPay = autoPay,
             status = SubStatus.ACTIVE,
             usesPerMonth = usesPerMonth,
+            website = website,
             createdAt = now,
             updatedAt = now,
         )
