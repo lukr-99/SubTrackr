@@ -12,16 +12,40 @@ last-writer-wins per subscription — see [SPEC §8](../contracts/SPEC.md#8-sync
 Open **SQL Editor → New query**, paste this, and **Run**:
 
 ```sql
-create table if not exists subtrackr_docs (
-  id text primary key,
-  subscriptions jsonb not null default '[]'::jsonb
+create table if not exists subscriptions (
+  id             uuid primary key,
+  name           text    not null default '',
+  cost_currency  text    not null default 'EUR',
+  cost_minor     bigint  not null default 0,
+  cost_exponent  int     not null default 2,
+  billing_cycle  text    not null default 'MONTHLY',
+  custom_days    int     not null default 0,
+  next_renewal   text    not null default '',
+  category       text    not null default '',
+  icon_ref       text    not null default '',
+  auto_pay       boolean not null default false,
+  status         text    not null default 'ACTIVE',
+  uses_per_month double precision not null default 0,
+  worth_mode     text    not null default 'AUTO',
+  trial_end      text    not null default '',
+  website        text    not null default '',
+  notes          text    not null default '',
+  created_at     text    not null default '',
+  updated_at     text    not null default '',
+  deleted_at     text    not null default ''
 );
-alter table subtrackr_docs enable row level security;
-create policy "anon read"   on subtrackr_docs for select to anon using (true);
-create policy "anon insert" on subtrackr_docs for insert to anon with check (true);
-create policy "anon update" on subtrackr_docs for update to anon using (true) with check (true);
-insert into subtrackr_docs (id) values ('main') on conflict (id) do nothing;
+alter table subscriptions enable row level security;
+create policy "anon read"   on subscriptions for select to anon using (true);
+create policy "anon insert" on subscriptions for insert to anon with check (true);
+create policy "anon update" on subscriptions for update to anon using (true) with check (true);
+
+-- Removes the single-JSON-blob store from the first sync version (safe if it never existed).
+drop table if exists subtrackr_docs;
 ```
+
+Each subscription is a real row (typed columns) — queryable, per-row policies, and ready for
+real-time later. Conflict handling stays last-writer-wins per row via `updated_at`; deletes are
+soft (a `deleted_at` timestamp), so they propagate to your other device on the next sync.
 
 ## 3. Get your keys
 **Project Settings → API**:
