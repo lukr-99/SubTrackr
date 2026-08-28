@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,6 +52,28 @@ fun DashboardScreen(
 ) {
     val active = summary.perSub.count { it.subscription.status == SubStatus.ACTIVE }
     var chart by remember { mutableStateOf(ChartType.DONUT) }
+    var search by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("All categories") }
+    var sortLabel by remember { mutableStateOf("Monthly ↓") }
+
+    val categories = listOf("All categories") +
+        summary.perSub.map { it.subscription.category.ifBlank { "Uncategorized" } }.distinct().sorted()
+    if (category != "All categories" && category !in categories) category = "All categories"
+
+    val rows = summary.perSub
+        .filter { category == "All categories" || it.subscription.category.ifBlank { "Uncategorized" } == category }
+        .filter {
+            search.isBlank() ||
+                it.subscription.name.contains(search, true) ||
+                it.subscription.category.contains(search, true)
+        }
+        .let { list ->
+            when (sortLabel) {
+                "Name A–Z" -> list.sortedBy { it.subscription.name.lowercase() }
+                "Renewal" -> list.sortedBy { it.subscription.nextRenewal.ifBlank { "9999" } }
+                else -> list.sortedByDescending { it.monthlyBase }
+            }
+        }
 
     LazyColumn(
         Modifier.fillMaxSize().background(Palette.Bg).padding(horizontal = 16.dp),
@@ -76,9 +99,14 @@ fun DashboardScreen(
             Text("SUBSCRIPTIONS", color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(start = 4.dp, bottom = 8.dp))
         }
-        items(summary.perSub.sortedByDescending { it.monthlyBase }) { spend ->
-            SubscriptionRow(spend, baseCurrency, onEdit)
+        item {
+            FilterBar(
+                search, { search = it }, categories, category, { category = it },
+                sortLabel, { sortLabel = it },
+            )
+            Spacer(Modifier.height(8.dp))
         }
+        items(rows) { spend -> SubscriptionRow(spend, baseCurrency, onEdit) }
         item { Spacer(Modifier.height(90.dp)) }
     }
 }
@@ -205,6 +233,35 @@ private fun SubscriptionRow(spend: SubscriptionSpend, base: String, onEdit: (Sub
                 Format.money(s.cost.toBigDecimal(), s.cost.currency) + " / " + cycleShort(s.billingCycle),
                 color = Palette.TextMuted, fontSize = 11.sp,
             )
+        }
+    }
+}
+
+@Composable
+private fun FilterBar(
+    search: String,
+    onSearch: (String) -> Unit,
+    categories: List<String>,
+    category: String,
+    onCategory: (String) -> Unit,
+    sortLabel: String,
+    onSort: (String) -> Unit,
+) {
+    Column {
+        OutlinedTextField(
+            value = search,
+            onValueChange = onSearch,
+            placeholder = { Text("Search subscriptions…", color = Palette.TextMuted) },
+            singleLine = true,
+            colors = darkFieldColors(),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(8.dp))
+        Row {
+            PickerField("Category", category, categories, onCategory, Modifier.weight(1f))
+            Spacer(Modifier.width(10.dp))
+            PickerField("Sort", sortLabel, listOf("Monthly ↓", "Name A–Z", "Renewal"), onSort, Modifier.weight(1f))
         }
     }
 }

@@ -66,6 +66,8 @@ data class Subscription(
     val status: SubStatus = SubStatus.ACTIVE,
     val usesPerMonth: Double = 0.0,
     val worthMode: WorthMode = WorthMode.AUTO,
+    val trialEnd: String = "",
+    val website: String = "",
     val notes: String = "",
     val createdAt: String = "",
     val updatedAt: String = "",

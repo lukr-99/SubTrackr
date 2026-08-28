@@ -34,7 +34,12 @@ public partial class MainWindow : Window
         {
             await _state.RefreshRatesAsync();
             _vm.Refresh();
+            _vm.AutoSync();
         };
+
+        var syncTimer = new System.Windows.Threading.DispatcherTimer { Interval = System.TimeSpan.FromMinutes(5) };
+        syncTimer.Tick += (_, _) => _vm.AutoSync();
+        syncTimer.Start();
     }
 
     // ----- navigation -----

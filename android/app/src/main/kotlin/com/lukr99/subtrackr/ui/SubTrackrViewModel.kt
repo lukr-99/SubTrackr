@@ -30,6 +30,15 @@ class SubTrackrViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             repo.refreshRates(rateProvider)
             refresh()
+            autoSync()
+        }
+    }
+
+    /** Best-effort silent sync when configured (launch + after every change). */
+    private fun autoSync() {
+        if (!repo.syncConfigured) return
+        viewModelScope.launch {
+            try { repo.syncNow(); refresh() } catch (_: Exception) {}
         }
     }
 
@@ -44,8 +53,8 @@ class SubTrackrViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun ratesText() = "${repo.rates.anchor} · ${repo.rates.date}"
 
-    fun upsert(sub: Subscription) { repo.upsert(sub); refresh() }
-    fun delete(id: String) { repo.delete(id); refresh() }
+    fun upsert(sub: Subscription) { repo.upsert(sub); refresh(); autoSync() }
+    fun delete(id: String) { repo.delete(id); refresh(); autoSync() }
 
     fun changeBaseCurrency(currency: String) {
         repo.setBaseCurrency(currency)
