@@ -136,6 +136,8 @@
             <StackPanel Margin="0,14,0,0">
                 <TextBlock Text="Website (for the logo, e.g. netflix.com)" Style="{StaticResource FieldLabel}" />
                 <TextBox Text="{Binding Website, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Shows the real logo. Clear this to use the emoji icon instead."
+                           FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
 
             <!-- Toggles -->

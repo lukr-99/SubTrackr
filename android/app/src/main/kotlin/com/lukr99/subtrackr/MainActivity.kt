@@ -2,6 +2,7 @@ package com.lukr99.subtrackr
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,10 @@ private fun AppRoot(vm: SubTrackrViewModel = viewModel()) {
     var tab by remember { mutableStateOf(Tab.DASHBOARD) }
     var editorOpen by remember { mutableStateOf(false) }
     var editorSub by remember { mutableStateOf<Subscription?>(null) }
+
+    // Back closes the editor first, then returns to Home, before exiting the app.
+    BackHandler(enabled = editorOpen) { editorOpen = false }
+    BackHandler(enabled = !editorOpen && tab != Tab.DASHBOARD) { tab = Tab.DASHBOARD }
 
     if (editorOpen) {
         EditSubscriptionScreen(
