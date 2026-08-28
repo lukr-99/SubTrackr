@@ -41,6 +41,7 @@ import com.lukr99.subtrackr.model.BillingCycle
 import com.lukr99.subtrackr.model.Money
 import com.lukr99.subtrackr.model.SubStatus
 import com.lukr99.subtrackr.model.Subscription
+import com.lukr99.subtrackr.model.WorthMode
 import java.math.BigDecimal
 
 private val ICONS = listOf(
@@ -69,6 +70,22 @@ private fun cycleFor(label: String) = when (label) {
     else -> BillingCycle.MONTHLY
 }
 
+private val WORTH_LABELS = listOf("Auto (by usage)", "Essential", "Always worth", "Not worth")
+
+private fun worthLabel(mode: WorthMode) = when (mode) {
+    WorthMode.ESSENTIAL -> "Essential"
+    WorthMode.WORTH -> "Always worth"
+    WorthMode.NOT_WORTH -> "Not worth"
+    WorthMode.AUTO -> "Auto (by usage)"
+}
+
+private fun worthFor(label: String) = when (label) {
+    "Essential" -> WorthMode.ESSENTIAL
+    "Always worth" -> WorthMode.WORTH
+    "Not worth" -> WorthMode.NOT_WORTH
+    else -> WorthMode.AUTO
+}
+
 @Composable
 fun EditSubscriptionScreen(
     initial: Subscription?,
@@ -90,6 +107,7 @@ fun EditSubscriptionScreen(
     var nextRenewal by remember { mutableStateOf(initial?.nextRenewal ?: "") }
     var autoPay by remember { mutableStateOf(initial?.autoPay ?: true) }
     var paused by remember { mutableStateOf(initial?.status == SubStatus.PAUSED) }
+    var worth by remember { mutableStateOf(worthLabel(initial?.worthMode ?: WorthMode.AUTO)) }
     var error by remember { mutableStateOf<String?>(null) }
 
     fun build(): Subscription? {
@@ -111,6 +129,7 @@ fun EditSubscriptionScreen(
             autoPay = autoPay,
             status = if (paused) SubStatus.PAUSED else SubStatus.ACTIVE,
             usesPerMonth = uses.toDoubleOrNull() ?: 0.0,
+            worthMode = worthFor(worth),
             createdAt = initial?.createdAt ?: "",
         )
     }
@@ -169,6 +188,8 @@ fun EditSubscriptionScreen(
             LabeledTextField("Category", category, { category = it }, Modifier.weight(1f))
             LabeledTextField("Renews (YYYY-MM-DD)", nextRenewal, { nextRenewal = it }, Modifier.weight(1f))
         }
+        Spacer(Modifier.height(12.dp))
+        PickerField("Worth-it", worth, WORTH_LABELS, { worth = it })
         Spacer(Modifier.height(16.dp))
 
         ToggleRow("Auto-paid", autoPay) { autoPay = it }

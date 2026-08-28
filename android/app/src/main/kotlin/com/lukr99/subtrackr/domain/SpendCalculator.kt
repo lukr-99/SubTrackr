@@ -46,7 +46,7 @@ object SpendCalculator {
                     monthlyBase = monthlyBase,
                     yearlyBase = monthlyBase.multiply(BigDecimal(12)),
                     costPerUse = WorthIt.costPerUse(monthlyBase, s.usesPerMonth),
-                    verdict = WorthIt.evaluate(monthlyBase, s.usesPerMonth, worthThreshold),
+                    verdict = WorthIt.evaluate(monthlyBase, s.usesPerMonth, worthThreshold, s.worthMode),
                 )
             }
 

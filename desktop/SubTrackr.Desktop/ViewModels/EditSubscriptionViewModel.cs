@@ -13,6 +13,11 @@ public sealed record CycleOption(BillingCycle Cycle, string Label)
     public override string ToString() => Label;
 }
 
+public sealed record WorthOption(WorthMode Mode, string Label)
+{
+    public override string ToString() => Label;
+}
+
 /// <summary>Editable working copy for the add/edit dialog.</summary>
 public sealed partial class EditSubscriptionViewModel : ObservableObject
 {
@@ -33,7 +38,16 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
     [ObservableProperty] private bool _isPaused;
     [ObservableProperty] private string _usesPerMonth = "0";
     [ObservableProperty] private DateTime _nextRenewal = DateTime.Today.AddMonths(1);
+    [ObservableProperty] private WorthOption _selectedWorth;
     [ObservableProperty] private string? _error;
+
+    public IReadOnlyList<WorthOption> WorthModes { get; } = new[]
+    {
+        new WorthOption(WorthMode.Auto, "Auto (by usage)"),
+        new WorthOption(WorthMode.Essential, "Essential"),
+        new WorthOption(WorthMode.Worth, "Always worth"),
+        new WorthOption(WorthMode.NotWorth, "Not worth"),
+    };
 
     public IReadOnlyList<string> Currencies => Formatting.CommonCurrencies;
 
@@ -63,7 +77,10 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
     public EditSubscriptionViewModel(Subscription? existing = null)
     {
         _selectedCycle = Cycles[1]; // Monthly default
+        _selectedWorth = WorthModes[0]; // Auto default
         if (existing is null) return;
+
+        SelectedWorth = WorthModes.FirstOrDefault(w => w.Mode == existing.WorthMode) ?? WorthModes[0];
 
         _existingId = existing.Id;
         _createdAt = existing.CreatedAt;
@@ -110,6 +127,7 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
             AutoPay = AutoPay,
             Status = IsPaused ? SubStatus.Paused : SubStatus.Active,
             UsesPerMonth = uses,
+            WorthMode = SelectedWorth.Mode,
             Notes = "",
             CreatedAt = _createdAt ?? "",
             UpdatedAt = "",

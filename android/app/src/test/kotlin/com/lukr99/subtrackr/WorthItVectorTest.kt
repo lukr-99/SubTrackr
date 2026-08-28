@@ -1,6 +1,7 @@
 package com.lukr99.subtrackr
 
 import com.lukr99.subtrackr.domain.WorthIt
+import com.lukr99.subtrackr.model.WorthMode
 import kotlinx.serialization.Serializable
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -14,7 +15,7 @@ class WorthItVectorTest {
 
     @Serializable
     data class Case(
-        val id: String, val monthlyBase: String, val usesPerMonth: Double,
+        val id: String, val mode: String, val monthlyBase: String, val usesPerMonth: Double,
         val threshold: String, val expectedCostPerUse: String, val expectedVerdict: String,
     )
 
@@ -28,7 +29,7 @@ class WorthItVectorTest {
             val expectedCpu = BigDecimal(c.expectedCostPerUse).setScale(doc.comparePrecision, RoundingMode.HALF_UP)
             assertEquals("cpu ${c.id}", 0, expectedCpu.compareTo(cpu))
 
-            val verdict = WorthIt.evaluate(monthly, c.usesPerMonth, BigDecimal(c.threshold)).name
+            val verdict = WorthIt.evaluate(monthly, c.usesPerMonth, BigDecimal(c.threshold), WorthMode.valueOf(c.mode)).name
             assertEquals("verdict ${c.id}", c.expectedVerdict, verdict)
         }
     }

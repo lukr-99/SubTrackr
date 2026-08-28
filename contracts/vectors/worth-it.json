@@ -1,11 +1,14 @@
 {
   "spec": "SPEC.md#5-worth-it--not-worth-it-helper",
   "comparePrecision": 4,
-  "note": "Given a monthly cost already in base currency, uses/month, and a threshold, verify cost-per-use and the verdict. verdict is one of UNKNOWN | WORTH | NOT_WORTH.",
+  "note": "mode is AUTO|ESSENTIAL|WORTH|NOT_WORTH (default AUTO). Manual modes override the computed verdict. expectedVerdict is UNKNOWN|WORTH|NOT_WORTH|ESSENTIAL; expectedCostPerUse is computed regardless of mode.",
   "cases": [
-    { "id": "unknown-no-uses",   "monthlyBase": "199.00", "usesPerMonth": 0,  "threshold": "2.00", "expectedCostPerUse": "0.0000",  "expectedVerdict": "UNKNOWN" },
-    { "id": "worth-cheap-per-use","monthlyBase": "199.00", "usesPerMonth": 200,"threshold": "2.00", "expectedCostPerUse": "0.9950",  "expectedVerdict": "WORTH" },
-    { "id": "notworth-pricey",   "monthlyBase": "500.00", "usesPerMonth": 2,  "threshold": "2.00", "expectedCostPerUse": "250.0000","expectedVerdict": "NOT_WORTH" },
-    { "id": "boundary-equal",    "monthlyBase": "20.00",  "usesPerMonth": 10, "threshold": "2.00", "expectedCostPerUse": "2.0000",  "expectedVerdict": "WORTH" }
+    { "id": "auto-unknown-no-uses",   "mode": "AUTO",      "monthlyBase": "199.00", "usesPerMonth": 0,    "threshold": "2.00", "expectedCostPerUse": "0.0000",   "expectedVerdict": "UNKNOWN" },
+    { "id": "auto-worth-cheap",       "mode": "AUTO",      "monthlyBase": "199.00", "usesPerMonth": 200,  "threshold": "2.00", "expectedCostPerUse": "0.9950",   "expectedVerdict": "WORTH" },
+    { "id": "auto-notworth-pricey",   "mode": "AUTO",      "monthlyBase": "500.00", "usesPerMonth": 2,    "threshold": "2.00", "expectedCostPerUse": "250.0000", "expectedVerdict": "NOT_WORTH" },
+    { "id": "auto-boundary-equal",    "mode": "AUTO",      "monthlyBase": "20.00",  "usesPerMonth": 10,   "threshold": "2.00", "expectedCostPerUse": "2.0000",   "expectedVerdict": "WORTH" },
+    { "id": "essential-overrides",    "mode": "ESSENTIAL", "monthlyBase": "500.00", "usesPerMonth": 1,    "threshold": "2.00", "expectedCostPerUse": "500.0000", "expectedVerdict": "ESSENTIAL" },
+    { "id": "force-worth",            "mode": "WORTH",     "monthlyBase": "500.00", "usesPerMonth": 1,    "threshold": "2.00", "expectedCostPerUse": "500.0000", "expectedVerdict": "WORTH" },
+    { "id": "force-notworth",         "mode": "NOT_WORTH", "monthlyBase": "1.00",   "usesPerMonth": 1000, "threshold": "2.00", "expectedCostPerUse": "0.0010",   "expectedVerdict": "NOT_WORTH" }
   ]
 }

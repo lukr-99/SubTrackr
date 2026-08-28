@@ -129,17 +129,22 @@
 
                 <!-- Subscriptions DataGrid -->
                 <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,18,0" Padding="8,8,8,8">
-                    <DataGrid x:Name="Grid" ItemsSource="{Binding Subscriptions}" MouseDoubleClick="Grid_DoubleClick">
+                    <DataGrid x:Name="Grid" ItemsSource="{Binding Subscriptions}" MouseDoubleClick="Grid_DoubleClick"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="NAME" Width="*" SortMemberPath="NameSort" MinWidth="180">
+                            <DataGridTemplateColumn Header="NAME" Width="*" SortMemberPath="NameSort" MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{Binding Icon}" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0" />
                                             <StackPanel VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
-                                                    <Border Background="{StaticResource Border}" CornerRadius="6" Padding="6,1" Margin="8,0,0,0"
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
+                                                    <Border CornerRadius="6" Padding="7,2" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                            Background="#22FFFFFF" Visibility="{Binding HasVerdict, Converter={StaticResource BoolVis}}">
+                                                        <TextBlock Text="{Binding VerdictText}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding VerdictBrush}" />
+                                                    </Border>
+                                                    <Border Background="{StaticResource Border}" CornerRadius="6" Padding="6,1" Margin="6,0,0,0"
                                                             VerticalAlignment="Center" Visibility="{Binding IsPaused, Converter={StaticResource BoolVis}}">
                                                         <TextBlock Text="Paused" FontSize="10" Foreground="{StaticResource TextMuted}" />
                                                     </Border>
@@ -151,24 +156,27 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="BILLING" Width="130" SortMemberPath="BillingText" MinWidth="90">
+                            <DataGridTemplateColumn Header="PER MONTH" Width="150" MinWidth="120" SortMemberPath="MonthlyBaseValue"
+                                                    HeaderStyle="{StaticResource RightHeader}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding BillingText}" FontSize="13" Foreground="{StaticResource TextSecondary}" />
-                                            <TextBlock Text="⟳" FontSize="12" Margin="6,0,0,0" Foreground="{StaticResource Accent}"
-                                                       ToolTip="Auto-pay" Visibility="{Binding AutoPay, Converter={StaticResource BoolVis}}" />
+                                        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding MonthlyBaseText}" FontSize="14" FontWeight="SemiBold"
+                                                       HorizontalAlignment="Right" Foreground="{StaticResource TextPrimary}" />
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,0">
+                                                <TextBlock Text="{Binding CostOwnText}" FontSize="11" Foreground="{StaticResource TextMuted}" />
+                                                <TextBlock Text=" · " FontSize="11" Foreground="{StaticResource TextMuted}" />
+                                                <TextBlock Text="{Binding BillingText}" FontSize="11" Foreground="{StaticResource TextMuted}" />
+                                                <TextBlock Text=" ⟳" FontSize="11" Foreground="{StaticResource Accent}" ToolTip="Auto-pay"
+                                                           Visibility="{Binding AutoPay, Converter={StaticResource BoolVis}}" />
+                                            </StackPanel>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="COST" Binding="{Binding CostOwnText}" SortMemberPath="CostOwnValue"
-                                                Width="110" MinWidth="80" ElementStyle="{StaticResource RightText}" HeaderStyle="{StaticResource RightHeader}" />
-                            <DataGridTextColumn Header="PER MONTH" Binding="{Binding MonthlyBaseText}" SortMemberPath="MonthlyBaseValue"
-                                                Width="120" MinWidth="90" ElementStyle="{StaticResource RightTextBold}" HeaderStyle="{StaticResource RightHeader}" />
                             <DataGridTextColumn Header="RENEWS" Binding="{Binding NextRenewalText}" SortMemberPath="NextRenewalDate"
-                                                Width="120" MinWidth="90">
+                                                Width="110" MinWidth="84">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center" />
@@ -178,18 +186,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
 
-                            <DataGridTemplateColumn Header="WORTH?" Width="96" SortMemberPath="VerdictSort" MinWidth="80">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
-                                        <Border VerticalAlignment="Center" HorizontalAlignment="Left" CornerRadius="6" Padding="8,3"
-                                                Background="#22FFFFFF" Visibility="{Binding HasVerdict, Converter={StaticResource BoolVis}}">
-                                            <TextBlock Text="{Binding VerdictText}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding VerdictBrush}" />
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTemplateColumn Header="" Width="78" CanUserSort="False" CanUserResize="False">
+                            <DataGridTemplateColumn Header="" Width="76" CanUserSort="False" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate DataType="{x:Type vm:SubscriptionRowViewModel}">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">

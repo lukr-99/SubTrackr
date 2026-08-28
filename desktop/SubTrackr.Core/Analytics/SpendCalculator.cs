@@ -51,7 +51,7 @@ public static class SpendCalculator
                 : monthlyOwn; // unknown currency: leave as-is rather than crash
             var yearlyBase = monthlyBase * 12m;
             var cpu = WorthIt.CostPerUse(monthlyBase, s.UsesPerMonth);
-            var verdict = WorthIt.Evaluate(monthlyBase, s.UsesPerMonth, worthThreshold);
+            var verdict = WorthIt.Evaluate(monthlyBase, s.UsesPerMonth, worthThreshold, s.WorthMode);
 
             perSub.Add(new SubscriptionSpend(s, monthlyOwn, monthlyBase, yearlyBase, cpu, verdict));
         }

@@ -68,15 +68,18 @@ currency. Compute in exact decimal (no binary float). Constant:
 
 ## 5. Worth-it / not-worth-it helper
 
-For a sub with `uses_per_month > 0`:
+Each subscription has a **`worth_mode`** that decides its badge:
 
-- `cost_per_use = monthly_equivalent_base / uses_per_month` (round display to 4 dp).
-- Verdict vs a threshold `T` (global default, overridable per sub):
-  - `cost_per_use <= T`  → **WORTH**
-  - `cost_per_use >  T`  → **NOT_WORTH**
-  - `uses_per_month == 0` → **UNKNOWN** (not enough data)
+- `ESSENTIAL` → verdict **ESSENTIAL** (never flagged not-worth — for essentials like rent/phone/AI you rely on).
+- `WORTH` → verdict **WORTH** (user override).
+- `NOT_WORTH` → verdict **NOT_WORTH** (user override).
+- `AUTO` (default) → computed from usage:
+  - `cost_per_use = monthly_equivalent_base / uses_per_month` (round display to 4 dp).
+  - `cost_per_use <= T` → **WORTH**; `> T` → **NOT_WORTH**; `uses_per_month == 0` → **UNKNOWN**.
 
-Default `T` is configurable in settings; v0.1 default = `2.00` in base currency.
+`cost_per_use` is always computed (shown as info) regardless of mode. Default `T` is
+configurable in settings; v0.1 default = `2.00` in base currency. The manual modes exist
+because cost-per-use is a poor judge for high-value daily-use subscriptions.
 
 ## 6. "What-if" calculator
 

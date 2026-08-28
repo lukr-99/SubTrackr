@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using SubTrackr.Core;
+using SubTrackr.Core.Contracts;
 
 namespace SubTrackr.Core.Tests;
 
@@ -25,7 +26,8 @@ public class WorthItVectorTests
         var threshold = decimal.Parse(c.Threshold, CultureInfo.InvariantCulture);
 
         var cpu = decimal.Round(WorthIt.CostPerUse(monthly, c.UsesPerMonth), precision, MidpointRounding.AwayFromZero);
-        var verdict = WorthIt.Evaluate(monthly, c.UsesPerMonth, threshold);
+        var mode = Enum.Parse<WorthMode>(ToPascal(c.Mode));
+        var verdict = WorthIt.Evaluate(monthly, c.UsesPerMonth, threshold, mode);
 
         Assert.Equal(decimal.Parse(c.ExpectedCostPerUse, CultureInfo.InvariantCulture), cpu);
         Assert.Equal(c.ExpectedVerdict, ToScreamingSnake(verdict));
@@ -36,10 +38,15 @@ public class WorthItVectorTests
         WorthVerdict.Unknown => "UNKNOWN",
         WorthVerdict.Worth => "WORTH",
         WorthVerdict.NotWorth => "NOT_WORTH",
+        WorthVerdict.Essential => "ESSENTIAL",
         _ => "UNKNOWN",
     };
 
+    private static string ToPascal(string screamingSnake) =>
+        string.Concat(screamingSnake.Split('_')
+            .Select(p => char.ToUpperInvariant(p[0]) + p[1..].ToLowerInvariant()));
+
     public record File_(int ComparePrecision, Case[] Cases);
-    public record Case(string Id, string MonthlyBase, double UsesPerMonth, string Threshold,
+    public record Case(string Id, string Mode, string MonthlyBase, double UsesPerMonth, string Threshold,
         string ExpectedCostPerUse, string ExpectedVerdict);
 }

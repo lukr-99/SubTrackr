@@ -138,6 +138,7 @@ fun WhatIfScreen(
                     when (verdict) {
                         WorthVerdict.WORTH -> "Worth it 👍"
                         WorthVerdict.NOT_WORTH -> "Not worth it 👎"
+                        WorthVerdict.ESSENTIAL -> "Essential 👍"
                         WorthVerdict.UNKNOWN -> ""
                     },
                     color = if (verdict == WorthVerdict.WORTH) Palette.Positive else Palette.Negative,

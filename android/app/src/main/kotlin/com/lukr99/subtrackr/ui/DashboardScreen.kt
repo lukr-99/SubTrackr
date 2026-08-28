@@ -186,9 +186,14 @@ private fun SubscriptionRow(spend: SubscriptionSpend, base: String, onEdit: (Sub
                 Text(s.name, color = Palette.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 if (spend.verdict != WorthVerdict.UNKNOWN) {
                     Spacer(Modifier.width(8.dp))
-                    val worth = spend.verdict == WorthVerdict.WORTH
+                    val (label, color) = when (spend.verdict) {
+                        WorthVerdict.WORTH -> "Worth" to Palette.Positive
+                        WorthVerdict.NOT_WORTH -> "Not worth" to Palette.Negative
+                        WorthVerdict.ESSENTIAL -> "Essential" to Palette.Accent
+                        else -> "" to Palette.TextMuted
+                    }
                     Box(Modifier.background(Color(0x22FFFFFF), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 1.dp)) {
-                        Text(if (worth) "Worth" else "Not worth", color = if (worth) Palette.Positive else Palette.Negative, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                        Text(label, color = color, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }

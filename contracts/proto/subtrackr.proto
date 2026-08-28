@@ -30,6 +30,14 @@ enum SubStatus {
   PAUSED = 2; // still tracked, excluded from active spend totals
 }
 
+// How the worth-it badge is decided for a subscription.
+enum WorthMode {
+  AUTO = 0;       // compute from cost-per-use vs the threshold (default)
+  ESSENTIAL = 1;  // always "essential" — never flagged not-worth
+  WORTH = 2;      // user forces "worth it"
+  NOT_WORTH = 3;  // user forces "not worth it"
+}
+
 // Money is stored as integer minor units to avoid binary-float drift.
 // value = minor_units / 10^exponent   (e.g. 5.12 EUR -> {EUR, 512, 2})
 message Money {
@@ -51,6 +59,7 @@ message Subscription {
   SubStatus    status        = 10;
   double       uses_per_month = 11; // optional; 0 = unset (for worth-it calc)
   string       notes         = 12;
+  WorthMode    worth_mode    = 16;  // how the worth badge is decided (default AUTO)
 
   // --- audit / sync (sync-ready from day one) ---
   string created_at = 13; // ISO-8601 UTC timestamp
