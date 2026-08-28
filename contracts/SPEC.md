@@ -89,6 +89,26 @@ Uses the exact same normalization + conversion functions — no separate math.
 - `schema_version` in `Database`/`Settings` gates migrations.
 - App releases follow **SemVer**; see repo README for the release pipeline.
 
+## 8. Sync
+
+Sync is **last-writer-wins per subscription record**, transport-agnostic. Only the
+`subscriptions` list syncs; `Settings` (base currency, worth threshold) stay **device-local**
+— they're viewing preferences, not shared data.
+
+**Merge rules** (`Merge(local, remote) -> merged`), verified by `vectors/merge.json`:
+
+- Records are identified by `id` (UUID). `updated_at` MUST be ISO-8601 **UTC**
+  (`2026-08-28T10:00:00Z`), so lexicographic string comparison equals chronological order.
+- For every `id` in either side, keep the record with the **greater `updated_at`**.
+- **Ties** (equal `updated_at`): a **tombstone wins** (`deleted_at` non-empty beats live);
+  if still tied, **remote wins** (deterministic).
+- **Tombstones are kept** in the merged result so deletions propagate to the other device.
+- The merged list is written back to the local store **and** pushed to the remote.
+
+**Transport** is behind a `SyncProvider` seam — `pull()` returns the remote subscriptions,
+`push(merged)` stores them. The concrete backend (cloud file / self-hosted API / BaaS) plugs in
+here without touching the merge logic. A sync pass is: `pull → Merge(local, remote) → save → push`.
+
 ---
 
 *v0.1 — foundation. Expect fields to be added (never renumbered) as we go.*

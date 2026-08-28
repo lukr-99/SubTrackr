@@ -1,0 +1,39 @@
+{
+  "spec": "SPEC.md#8-sync",
+  "note": "Merge(local, remote) last-writer-wins per id. Records here carry only id/updatedAt/deletedAt (enough to verify which record wins). Expected is sorted by id. deletedAt empty string = live.",
+  "cases": [
+    {
+      "id": "remote-newer",
+      "local":  [ { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" } ],
+      "remote": [ { "id": "a", "updatedAt": "2026-08-28T11:00:00Z", "deletedAt": "" } ],
+      "expected": [ { "id": "a", "updatedAt": "2026-08-28T11:00:00Z", "deletedAt": "" } ]
+    },
+    {
+      "id": "local-newer",
+      "local":  [ { "id": "a", "updatedAt": "2026-08-28T12:00:00Z", "deletedAt": "" } ],
+      "remote": [ { "id": "a", "updatedAt": "2026-08-28T11:00:00Z", "deletedAt": "" } ],
+      "expected": [ { "id": "a", "updatedAt": "2026-08-28T12:00:00Z", "deletedAt": "" } ]
+    },
+    {
+      "id": "disjoint-union",
+      "local":  [ { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" } ],
+      "remote": [ { "id": "b", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" } ],
+      "expected": [
+        { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" },
+        { "id": "b", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" }
+      ]
+    },
+    {
+      "id": "delete-propagates",
+      "local":  [ { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" } ],
+      "remote": [ { "id": "a", "updatedAt": "2026-08-28T11:00:00Z", "deletedAt": "2026-08-28T11:00:00Z" } ],
+      "expected": [ { "id": "a", "updatedAt": "2026-08-28T11:00:00Z", "deletedAt": "2026-08-28T11:00:00Z" } ]
+    },
+    {
+      "id": "tie-tombstone-wins",
+      "local":  [ { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "2026-08-28T10:00:00Z" } ],
+      "remote": [ { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "" } ],
+      "expected": [ { "id": "a", "updatedAt": "2026-08-28T10:00:00Z", "deletedAt": "2026-08-28T10:00:00Z" } ]
+    }
+  ]
+}
