@@ -5,6 +5,7 @@ using SubTrackr.Core.Analytics;
 using SubTrackr.Core.Contracts;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Storage;
+using SubTrackr.Core.Sync;
 
 namespace SubTrackr.Desktop.Services;
 
@@ -29,6 +30,31 @@ public sealed class AppState
     }
 
     public decimal WorthThreshold { get; set; } = WorthIt.DefaultThreshold;
+
+    public string SyncUrl
+    {
+        get => Db.Settings?.SyncUrl ?? "";
+        set { Db.Settings ??= new Settings(); Db.Settings.SyncUrl = value.Trim(); }
+    }
+
+    public string SyncKey
+    {
+        get => Db.Settings?.SyncKey ?? "";
+        set { Db.Settings ??= new Settings(); Db.Settings.SyncKey = value.Trim(); }
+    }
+
+    public bool SyncConfigured => !string.IsNullOrWhiteSpace(SyncUrl) && !string.IsNullOrWhiteSpace(SyncKey);
+
+    /// <summary>Pull → merge → push. Returns the merged subscription count.</summary>
+    public async Task<int> SyncNowAsync(CancellationToken ct = default)
+    {
+        var provider = new SupabaseSyncProvider(SyncUrl, SyncKey);
+        var merged = await SyncService.SyncAsync(Db.Subscriptions.ToList(), provider, ct);
+        Db.Subscriptions.Clear();
+        Db.Subscriptions.AddRange(merged);
+        Save();
+        return merged.Count;
+    }
 
     public AppState(DataStore? store = null, IRateProvider? rateProvider = null)
     {

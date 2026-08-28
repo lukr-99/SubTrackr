@@ -97,9 +97,12 @@ private fun AppRoot(vm: SubTrackrViewModel = viewModel()) {
                     baseCurrency = vm.baseCurrency,
                     worthThreshold = vm.worthThreshold,
                     ratesLabel = vm.ratesLabel,
+                    syncUrl = vm.syncUrl,
+                    syncKey = vm.syncKey,
                     onSetBaseCurrency = vm::changeBaseCurrency,
                     onSetThreshold = vm::setWorthThreshold,
                     onRefreshRates = { vm.refreshRates() },
+                    onSync = { u, k, cb -> vm.saveSyncConfig(u, k); vm.syncNow(cb) },
                 )
             }
         }

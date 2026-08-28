@@ -49,6 +49,9 @@ public partial class MainWindow : Window
         PathText.Text = new Core.Storage.DataStore().FilePath;
         VersionText.Text = $"SubTrackr v{Updater.CurrentVersion}";
         RatesText.Text = $"{_state.Rates.Anchor} · {_state.Rates.Date:MMM d, yyyy}";
+        SyncUrlBox.Text = _state.SyncUrl;
+        SyncKeyBox.Text = _state.SyncKey;
+        SyncStatus.Text = "";
         _vm.ShowSettings();
     }
 
@@ -153,10 +156,38 @@ public partial class MainWindow : Window
         if (decimal.TryParse(ThresholdBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out var t) && t >= 0)
             _state.WorthThreshold = t;
 
+        _state.SyncUrl = SyncUrlBox.Text;
+        _state.SyncKey = SyncKeyBox.Text;
         _state.ReanchorRatesOffline();
         _state.Save();
         _vm.Refresh();
         RefreshRatesFireAndForget();
         _vm.ShowDashboard();
+    }
+
+    private async void SyncNow_Click(object sender, RoutedEventArgs e)
+    {
+        _state.SyncUrl = SyncUrlBox.Text;
+        _state.SyncKey = SyncKeyBox.Text;
+        _state.Save();
+
+        if (!_state.SyncConfigured)
+        {
+            SyncStatus.Text = "Enter the project URL and anon key first.";
+            return;
+        }
+
+        SyncStatus.Text = "Syncing…";
+        try
+        {
+            var count = await _state.SyncNowAsync();
+            SyncStatus.Text = $"Synced · {count} items · {DateTime.Now:HH:mm}";
+            _vm.Refresh();
+        }
+        catch (Exception ex)
+        {
+            Services.Log.Error("Sync failed", ex);
+            SyncStatus.Text = "Sync failed — check URL/key and connection.";
+        }
     }
 }

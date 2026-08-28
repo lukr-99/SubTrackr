@@ -57,6 +57,24 @@ class SubTrackrViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refreshRates() = viewModelScope.launch { repo.refreshRates(rateProvider); refresh() }
 
+    val syncUrl: String get() = repo.syncUrl
+    val syncKey: String get() = repo.syncKey
+
+    fun saveSyncConfig(url: String, key: String) = repo.setSyncConfig(url, key)
+
+    fun syncNow(onResult: (String) -> Unit) {
+        if (!repo.syncConfigured) { onResult("Enter the URL and key first."); return }
+        viewModelScope.launch {
+            try {
+                val n = repo.syncNow()
+                refresh()
+                onResult("Synced · $n items")
+            } catch (e: Exception) {
+                onResult("Sync failed — check URL/key and connection.")
+            }
+        }
+    }
+
     /** Current summary of a hypothetical portfolio (existing actives + one extra sub). */
     fun summaryWith(extra: Subscription): SpendSummary {
         val hypothetical = repo.db.subscriptions + extra
