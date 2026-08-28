@@ -401,6 +401,7 @@
         <Setter Property="Background" Value="{StaticResource SurfaceAlt}" />
         <Setter Property="BorderBrush" Value="{StaticResource Border}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CalendarStyle" Value="{DynamicResource DarkCalendar}" />
     </Style>
     <Style x:Key="CalNavButton" TargetType="Button">
         <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
@@ -412,7 +413,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="b" Background="Transparent" CornerRadius="6">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -433,7 +435,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="b" Background="Transparent" CornerRadius="6" Padding="8,4">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -445,6 +448,13 @@
         </Setter>
     </Style>
 
+    <!-- Calendar parts must be scoped to the Calendar itself (app-level implicit
+         styles don't reach them); attached to the DatePicker via CalendarStyle. -->
+    <Style x:Key="DarkCalendar" TargetType="Calendar">
+        <Setter Property="Background" Value="{StaticResource Surface}" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Border}" />
+        <Style.Resources>
     <Style TargetType="CalendarDayButton">
         <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
         <Setter Property="FontSize" Value="12" />
@@ -453,7 +463,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CalendarDayButton">
                     <Border x:Name="b" Background="Transparent" CornerRadius="6" Margin="1" BorderThickness="1" BorderBrush="Transparent">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -486,7 +497,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CalendarButton">
                     <Border x:Name="b" Background="Transparent" CornerRadius="6" Margin="2" Padding="6,8">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -496,12 +508,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-    <Style TargetType="Calendar">
-        <Setter Property="Background" Value="{StaticResource Surface}" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Border}" />
     </Style>
 
     <Style TargetType="CalendarItem">
@@ -520,7 +526,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Margin="0,0,0,4">
+                            <Grid Grid.Row="0" Margin="0,0,0,4" Background="{StaticResource Surface}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
@@ -553,6 +559,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+        </Style.Resources>
     </Style>
 
     <!-- ===================== Small buttons ===================== -->
