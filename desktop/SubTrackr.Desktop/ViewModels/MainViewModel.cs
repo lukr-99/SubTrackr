@@ -37,6 +37,21 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty] private ChartType _chartType = ChartType.Donut;
     [ObservableProperty] private bool _showYearly;
     [ObservableProperty] private string _ratesStatusText = "";
+    [ObservableProperty] private string _searchText = "";
+    [ObservableProperty] private string _selectedCategory = AllCategories;
+
+    public const string AllCategories = "All categories";
+    public ObservableCollection<string> Categories { get; } = new();
+    private List<SubscriptionRowViewModel> _allRows = new();
+    public bool ShowSearchPlaceholder => string.IsNullOrEmpty(SearchText);
+
+    partial void OnSearchTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(ShowSearchPlaceholder));
+        ApplyFilter();
+    }
+
+    partial void OnSelectedCategoryChanged(string value) => ApplyFilter();
     [ObservableProperty] private AppPage _currentPage = AppPage.Dashboard;
     [ObservableProperty] private WhatIfViewModel? _whatIf;
 
@@ -98,9 +113,12 @@ public sealed partial class MainViewModel : ObservableObject
     {
         _summary = _state.Summarize();
 
-        Subscriptions.Clear();
-        foreach (var p in _summary.PerSub.OrderByDescending(p => p.MonthlyBase))
-            Subscriptions.Add(new SubscriptionRowViewModel(p, _state.BaseCurrency));
+        _allRows = _summary.PerSub
+            .OrderByDescending(p => p.MonthlyBase)
+            .Select(p => new SubscriptionRowViewModel(p, _state.BaseCurrency))
+            .ToList();
+        RebuildCategories();
+        ApplyFilter();
 
         CurrencyBreakdown.Clear();
         foreach (var c in _summary.PerCurrency)
@@ -124,6 +142,31 @@ public sealed partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(BaseCurrency));
         OnPropertyChanged(nameof(ActiveCount));
         UpdateRatesStatus();
+    }
+
+    private void RebuildCategories()
+    {
+        var cats = _allRows.Select(r => r.Category).Distinct().OrderBy(c => c).ToList();
+        var current = SelectedCategory;
+        Categories.Clear();
+        Categories.Add(AllCategories);
+        foreach (var c in cats) Categories.Add(c);
+        if (!Categories.Contains(current)) SelectedCategory = AllCategories;
+    }
+
+    private void ApplyFilter()
+    {
+        var q = (SearchText ?? "").Trim();
+        IEnumerable<SubscriptionRowViewModel> rows = _allRows;
+        if (SelectedCategory != AllCategories)
+            rows = rows.Where(r => r.Category == SelectedCategory);
+        if (q.Length > 0)
+            rows = rows.Where(r =>
+                r.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                r.Category.Contains(q, StringComparison.OrdinalIgnoreCase));
+
+        Subscriptions.Clear();
+        foreach (var r in rows) Subscriptions.Add(r);
     }
 
     private void BuildChart()
@@ -205,7 +248,15 @@ public sealed partial class MainViewModel : ObservableObject
         RatesStatusText = $"Rates · {_state.Rates.Anchor} · {_state.Rates.Date:MMM d, yyyy}";
 
     // Called by the window after dialogs commit changes.
-    public void Upsert(Subscription sub) { _state.Upsert(sub); Refresh(); }
-    public void Delete(string id) { _state.Delete(id); Refresh(); }
+    public void Upsert(Subscription sub) { _state.Upsert(sub); Refresh(); AutoSync(); }
+    public void Delete(string id) { _state.Delete(id); Refresh(); AutoSync(); }
     public AppState State => _state;
+
+    /// <summary>Best-effort background sync when configured (launch, after edits, periodic).</summary>
+    public async void AutoSync()
+    {
+        if (!_state.SyncConfigured) return;
+        try { await _state.SyncNowAsync(); Refresh(); }
+        catch (Exception ex) { Log.Error("Auto-sync failed", ex); }
+    }
 }

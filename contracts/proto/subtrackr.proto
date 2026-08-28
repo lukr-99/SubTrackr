@@ -60,6 +60,8 @@ message Subscription {
   double       uses_per_month = 11; // optional; 0 = unset (for worth-it calc)
   string       notes         = 12;
   WorthMode    worth_mode    = 16;  // how the worth badge is decided (default AUTO)
+  string       trial_end     = 17;  // ISO-8601 date; non-empty = free trial ending then
+  string       website       = 18;  // domain for the logo, e.g. "netflix.com"
 
   // --- audit / sync (sync-ready from day one) ---
   string created_at = 13; // ISO-8601 UTC timestamp
