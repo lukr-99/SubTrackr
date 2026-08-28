@@ -125,6 +125,13 @@
                 <DatePicker Grid.Row="1" Grid.Column="2" SelectedDate="{Binding NextRenewal}" />
             </Grid>
 
+            <!-- Worth-it -->
+            <StackPanel Margin="0,14,0,0">
+                <TextBlock Text="Worth-it" Style="{StaticResource FieldLabel}"
+                           ToolTip="Essential = never flagged not-worth. Auto = judged by cost per use." />
+                <ComboBox ItemsSource="{Binding WorthModes}" SelectedItem="{Binding SelectedWorth}" />
+            </StackPanel>
+
             <!-- Toggles -->
             <CheckBox Content="Auto-paid" IsChecked="{Binding AutoPay}" Margin="0,18,0,0" />
             <CheckBox Content="Paused (kept, excluded from totals)" IsChecked="{Binding IsPaused}" Margin="0,10,0,0" />

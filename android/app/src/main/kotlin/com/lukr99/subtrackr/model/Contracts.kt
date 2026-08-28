@@ -26,6 +26,14 @@ enum class SubStatus {
     PAUSED,
 }
 
+/** How the worth-it badge is decided for a subscription. */
+enum class WorthMode {
+    AUTO,
+    ESSENTIAL,
+    WORTH,
+    NOT_WORTH,
+}
+
 /** Money as integer minor units + exponent (never a float). value = minorUnits / 10^exponent. */
 @Serializable
 data class Money(
@@ -57,6 +65,7 @@ data class Subscription(
     val autoPay: Boolean = false,
     val status: SubStatus = SubStatus.ACTIVE,
     val usesPerMonth: Double = 0.0,
+    val worthMode: WorthMode = WorthMode.AUTO,
     val notes: String = "",
     val createdAt: String = "",
     val updatedAt: String = "",
