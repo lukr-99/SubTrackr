@@ -280,6 +280,15 @@
                                         <TextBlock Text="{Binding YearlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" HorizontalAlignment="Right" />
                                     </StackPanel>
                                 </Grid>
+                                <StackPanel Margin="0,16,0,0" Visibility="{Binding HasBudget, Converter={StaticResource BoolVis}}">
+                                    <Grid Margin="0,0,0,6">
+                                        <TextBlock Text="Budget" FontSize="11" Foreground="{StaticResource TextSecondary}" />
+                                        <TextBlock Text="{Binding BudgetRemainingText}" HorizontalAlignment="Right" FontSize="11"
+                                                   FontWeight="SemiBold" Foreground="{Binding BudgetBrush}" />
+                                    </Grid>
+                                    <ProgressBar Value="{Binding BudgetFraction, Mode=OneWay}" Minimum="0" Maximum="1" Foreground="{Binding BudgetBrush}" />
+                                    <TextBlock Text="{Binding BudgetText}" FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
@@ -437,6 +446,11 @@
                             <TextBlock Text="A subscription is &quot;worth it&quot; when its cost per use is at or below this." FontSize="11"
                                        Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
                             <TextBox x:Name="ThresholdBox" Width="150" HorizontalAlignment="Left" />
+
+                            <TextBlock Text="Monthly budget (base currency; 0 = off)" Style="{StaticResource FieldLabel}" />
+                            <TextBlock Text="Shows a budget bar on the dashboard, red when you're over."
+                                       FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                            <TextBox x:Name="BudgetBox" Width="150" HorizontalAlignment="Left" />
                         </StackPanel>
                     </Border>
 

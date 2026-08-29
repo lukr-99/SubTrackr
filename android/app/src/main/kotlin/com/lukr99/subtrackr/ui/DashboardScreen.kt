@@ -49,6 +49,7 @@ fun DashboardScreen(
     summary: SpendSummary,
     baseCurrency: String,
     rates: ExchangeRateTable,
+    budget: BigDecimal,
     onEdit: (Subscription) -> Unit,
 ) {
     val active = summary.perSub.count { it.subscription.status == SubStatus.ACTIVE }
@@ -109,7 +110,7 @@ fun DashboardScreen(
         if (alerts.isNotEmpty()) {
             item { AlertsCard(alerts); Spacer(Modifier.height(12.dp)) }
         }
-        item { OverviewCard(summary, baseCurrency, chart) { chart = it } }
+        item { OverviewCard(summary, baseCurrency, chart, budget) { chart = it } }
         item { Spacer(Modifier.height(12.dp)) }
         item { CurrencyCard(summary, baseCurrency, rates) }
         item { Spacer(Modifier.height(12.dp)) }
@@ -132,7 +133,7 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun OverviewCard(summary: SpendSummary, base: String, chart: ChartType, onChart: (ChartType) -> Unit) {
+private fun OverviewCard(summary: SpendSummary, base: String, chart: ChartType, budget: BigDecimal, onChart: (ChartType) -> Unit) {
     SectionCard {
         Text("OVERVIEW", color = Palette.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(8.dp))
@@ -163,6 +164,28 @@ private fun OverviewCard(summary: SpendSummary, base: String, chart: ChartType, 
                 Text("Per year", color = Palette.TextSecondary, fontSize = 11.sp)
                 Text(Format.money(summary.yearlyBase, base), color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
+        }
+        if (budget > BigDecimal.ZERO) {
+            val spent = summary.monthlyBase
+            val over = spent > budget
+            val color = if (over) Palette.Negative else Palette.Positive
+            val frac = (spent.toDouble() / budget.toDouble()).coerceIn(0.0, 1.0).toFloat()
+            val remaining = if (over) Format.money(spent - budget, base) + " over"
+            else Format.money(budget - spent, base) + " left"
+            Spacer(Modifier.height(16.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Budget", color = Palette.TextSecondary, fontSize = 11.sp)
+                Text(remaining, color = color, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+            }
+            Spacer(Modifier.height(6.dp))
+            Box(Modifier.fillMaxWidth().height(8.dp).background(Palette.SurfaceAlt, RoundedCornerShape(4.dp))) {
+                Box(Modifier.fillMaxWidth(frac).height(8.dp).background(color, RoundedCornerShape(4.dp)))
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                Format.money(spent, base) + " of " + Format.money(budget, base),
+                color = Palette.TextMuted, fontSize = 11.sp,
+            )
         }
     }
 }

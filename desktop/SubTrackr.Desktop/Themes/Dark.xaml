@@ -642,4 +642,23 @@
         </Setter>
     </Style>
 
+    <!-- ===================== ProgressBar (budget bar) ===================== -->
+    <Style TargetType="ProgressBar">
+        <Setter Property="Background" Value="{StaticResource SurfaceAlt}" />
+        <Setter Property="Foreground" Value="{StaticResource Accent}" />
+        <Setter Property="Height" Value="8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                        <Grid x:Name="PART_Track" ClipToBounds="True">
+                            <Border x:Name="PART_Indicator" Background="{TemplateBinding Foreground}"
+                                    CornerRadius="4" HorizontalAlignment="Left" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

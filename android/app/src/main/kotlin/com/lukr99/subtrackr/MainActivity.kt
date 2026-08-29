@@ -90,6 +90,7 @@ private fun AppRoot(vm: SubTrackrViewModel = viewModel()) {
                     summary = vm.summary,
                     baseCurrency = vm.baseCurrency,
                     rates = vm.rates,
+                    budget = vm.monthlyBudget,
                     onEdit = { editorSub = it; editorOpen = true },
                 )
                 Tab.WHATIF -> WhatIfScreen(
@@ -101,11 +102,13 @@ private fun AppRoot(vm: SubTrackrViewModel = viewModel()) {
                 Tab.SETTINGS -> SettingsScreen(
                     baseCurrency = vm.baseCurrency,
                     worthThreshold = vm.worthThreshold,
+                    monthlyBudget = vm.monthlyBudget,
                     ratesLabel = vm.ratesLabel,
                     syncUrl = vm.syncUrl,
                     syncKey = vm.syncKey,
                     onSetBaseCurrency = vm::changeBaseCurrency,
                     onSetThreshold = vm::setWorthThreshold,
+                    onSetBudget = vm::setMonthlyBudget,
                     onRefreshRates = { vm.refreshRates() },
                     onSync = { u, k, cb -> vm.saveSyncConfig(u, k); vm.syncNow(cb) },
                 )

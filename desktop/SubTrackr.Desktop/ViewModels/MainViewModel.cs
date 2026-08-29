@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SubTrackr.Core;
@@ -90,6 +91,39 @@ public sealed partial class MainViewModel : ObservableObject
     public string MonthlyText => Formatting.Money(_summary.MonthlyBase, _state.BaseCurrency);
     public string YearlyText => Formatting.Money(_summary.YearlyBase, _state.BaseCurrency);
 
+    public bool HasBudget => _state.MonthlyBudget > 0;
+    public bool OverBudget => HasBudget && _summary.MonthlyBase > _state.MonthlyBudget;
+
+    public double BudgetFraction
+    {
+        get
+        {
+            if (!HasBudget) return 0;
+            var f = (double)(_summary.MonthlyBase / _state.MonthlyBudget);
+            return f < 0 ? 0 : f > 1 ? 1 : f;
+        }
+    }
+
+    public string BudgetText => HasBudget
+        ? $"{Formatting.Money(_summary.MonthlyBase, _state.BaseCurrency)} of {Formatting.Money(_state.MonthlyBudget, _state.BaseCurrency)}"
+        : "";
+
+    public string BudgetRemainingText
+    {
+        get
+        {
+            if (!HasBudget) return "";
+            var diff = _state.MonthlyBudget - _summary.MonthlyBase;
+            return OverBudget
+                ? Formatting.Money(-diff, _state.BaseCurrency) + " over"
+                : Formatting.Money(diff, _state.BaseCurrency) + " left";
+        }
+    }
+
+    public Brush BudgetBrush => OverBudget
+        ? new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B))
+        : new SolidColorBrush(Color.FromRgb(0x3D, 0xD6, 0x8C));
+
     [RelayCommand]
     private void SetChart(ChartType type) => ChartType = type;
 
@@ -145,6 +179,12 @@ public sealed partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(YearlyText));
         OnPropertyChanged(nameof(BaseCurrency));
         OnPropertyChanged(nameof(ActiveCount));
+        OnPropertyChanged(nameof(HasBudget));
+        OnPropertyChanged(nameof(OverBudget));
+        OnPropertyChanged(nameof(BudgetFraction));
+        OnPropertyChanged(nameof(BudgetText));
+        OnPropertyChanged(nameof(BudgetRemainingText));
+        OnPropertyChanged(nameof(BudgetBrush));
         UpdateRatesStatus();
     }
 
