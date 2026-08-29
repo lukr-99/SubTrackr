@@ -3,7 +3,9 @@
 ; adds a Start-menu shortcut, and registers an uninstaller in "Installed apps".
 
 #define MyAppName "SubTrackr"
-#define MyAppVersion "0.2.1"
+#ifndef MyAppVersion
+  #define MyAppVersion "0.2.2"
+#endif
 #define MyAppPublisher "lukr-99"
 #define MyAppExeName "SubTrackr.exe"
 #define MyAppURL "https://github.com/lukr-99/SubTrackr"
@@ -35,7 +37,7 @@ UninstallDisplayName={#MyAppName}
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-VersionInfoVersion=0.2.1.0
+VersionInfoVersion={#MyAppVersion}.0
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoProductName={#MyAppName}
 LicenseFile=..\LICENSE.md

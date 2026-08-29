@@ -27,10 +27,12 @@ class SubTrackrViewModel(app: Application) : AndroidViewModel(app) {
         private set
 
     init {
+        // Subscription sync is independent of exchange rates and must still run if that endpoint
+        // is slow or offline.
+        autoSync()
         viewModelScope.launch {
-            repo.refreshRates(rateProvider)
+            runCatching { repo.refreshRates(rateProvider) }
             refresh()
-            autoSync()
         }
     }
 

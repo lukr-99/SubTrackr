@@ -9,9 +9,9 @@
     <AssemblyName>SubTrackr</AssemblyName>
     <RootNamespace>SubTrackr.Desktop</RootNamespace>
     <ApplicationIcon>Assets\SubTrackr.ico</ApplicationIcon>
-    <Version>0.2.1</Version>
-    <FileVersion>0.2.1.0</FileVersion>
-    <AssemblyVersion>0.2.1.0</AssemblyVersion>
+    <Version>0.2.2</Version>
+    <FileVersion>0.2.2.0</FileVersion>
+    <AssemblyVersion>0.2.2.0</AssemblyVersion>
     <Product>SubTrackr</Product>
     <Company>lukr-99</Company>
     <Authors>lukr-99</Authors>

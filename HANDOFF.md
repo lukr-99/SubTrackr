@@ -1,7 +1,7 @@
 # SubTrackr — Handoff
 
 Everything needed to pick this project up on a **new machine**. Written 2026-08-28.
-Repo: **https://github.com/lukr-99/SubTrackr** (private). Current version: **0.2.0**.
+Repo: **https://github.com/lukr-99/SubTrackr** (private). Current version: **0.2.2**.
 
 ---
 
@@ -16,11 +16,11 @@ not code**.
 
 | Area | State |
 |---|---|
-| Contracts (`contracts/`) | ✅ protobuf data shape + golden vectors; C# 25 tests, Android vector tests, all green |
-| Desktop (WPF) | ✅ installed as **0.2.0** (`%LOCALAPPDATA%\Programs\SubTrackr`, Start-menu searchable) |
-| Android (Compose) | ✅ builds + runs on device; APK 0.2.0 installed |
+| Contracts (`contracts/`) | ✅ protobuf data shape + golden vectors; C# 27 tests, Android vector tests, all green |
+| Desktop (WPF) | ✅ installed as **0.2.2** (`%LOCALAPPDATA%\Programs\SubTrackr`, Start-menu searchable) |
+| Android (Compose) | ✅ builds + runs on device; APK 0.2.2 installed |
 | Sync (Supabase) | ✅ real relational `subscriptions` table, verified desktop↔cloud↔phone |
-| Installer + release | ✅ Inno Setup per-user installer; GitHub release **v0.2.0** with the .exe |
+| Installer + release | ✅ Inno Setup per-user installer; public binary feed **v0.2.2** with .exe + .apk |
 
 **Features:** add/edit/delete, dashboard totals, 3 switchable custom charts (donut/bars/trend),
 multi-currency with live Frankfurter rates (+offline fallback), what-if calculator, worth-it verdict
@@ -79,6 +79,22 @@ dotnet run --project desktop/SubTrackr.Desktop
 ./installer/build-installer.ps1            # needs Inno Setup 6; outputs installer/SubTrackr-Setup-<v>.exe
 ```
 
+### Signed Android release + auto-update feed
+
+The phone updater checks the public binaries-only repo `lukr-99/SubTrackr-Releases`. Every release
+APK must use the same signing key or Android rejects in-place upgrades. This machine has the
+gitignored key/config in `android/` and a second local copy under
+`%USERPROFILE%\.android\SubTrackr\`. Back that directory up off-machine before moving builds.
+
+```bash
+cd android
+./gradlew :app:assembleRelease
+# app/build/outputs/apk/release/app-release.apk
+```
+
+Publish the APK and desktop installer on the same public-feed release. Neither artifact embeds the
+device-local Supabase URL/key; those remain in app-private data across in-place upgrades.
+
 ### Android — build, test, run
 1. Create **`android/local.properties`** (gitignored) — **use forward slashes**:
    ```
@@ -120,9 +136,8 @@ rows). On every new install:
 - **WPF DatePicker** — its calendar parts ignore app-level implicit styles; scope them in a `Calendar`
   style attached via `DatePicker.CalendarStyle` (see `DarkCalendar` in `Themes/Dark.xaml`).
 - **WPF TextBox** — center `PART_ContentHost` vertically or single-line text clips to the top.
-- **First-run duplicate on sync** — both apps seed sample data with different UUIDs; a fresh install
-  that already has seed data will union to duplicates on first sync. Consider skipping seeding when
-  sync is configured (see §7).
+- **First-run seed identity** — both apps use the fixed IDs in `contracts/vectors/seed-data.json`.
+  Existing random-ID seed rows migrate to tombstones on load so sync cannot resurrect them.
 - **Screenshots of a WPF window** — `PrintWindow(hwnd, hdc, 2)` is occlusion-proof; `CopyFromScreen`
   grabs whatever is on top. Android: `adb exec-out screencap -p > f.png` via a byte-clean shell
   (PowerShell `>` corrupts the PNG).
@@ -134,14 +149,13 @@ rows). On every new install:
 - **What-if calculator** still judges by cost-per-use only; could add the worth-mode dropdown there.
 - **OS-level notifications** — reminders are currently an in-app alerts card only; real desktop
   toast / Android scheduled notifications (WorkManager + POST_NOTIFICATIONS) are a follow-up.
-- **Seeding vs sync** — skip first-run seed when sync is configured, or ship a fixed-ID sample set.
 - Feature backlog the user liked: budgets, payment-method/card tracking + expiry reminders,
   light-theme toggle, Android home-screen widget, CSV import/export, annual-vs-monthly savings hint.
 
 ## 8. Key facts
 
-- GitHub: owner **lukr-99**, repo **SubTrackr** (private). Updater is pointed at this repo's public
-  `releases/latest` — auto-update only works once releases are public (repo is private for now).
+- GitHub: source repo **lukr-99/SubTrackr** is private. Desktop and Android updaters use the public,
+  binaries-only **lukr-99/SubTrackr-Releases** feed so neither app stores a GitHub credential.
 - License: PolyForm Noncommercial 1.0.0.
 - Toolchain: .NET 10, WPF, CommunityToolkit.Mvvm, Google.Protobuf + Grpc.Tools (C# codegen);
   Kotlin 2.0.21, AGP 8.5.2, Compose BOM 2024.12, kotlinx.serialization, Coil, OkHttp.

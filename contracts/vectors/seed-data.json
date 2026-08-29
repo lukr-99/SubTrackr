@@ -1,0 +1,12 @@
+{
+  "subscriptions": [
+    { "name": "Netflix", "id": "eb90294c-78d8-40d1-83a3-0596708b1797" },
+    { "name": "ChatGPT", "id": "b62ad93b-16c8-4825-add9-6aab0e8dcfd2" },
+    { "name": "Claude", "id": "8ff64ab3-b632-4c2f-9c32-1ea448c1e792" },
+    { "name": "Mobile plan", "id": "f62d5d85-9c59-4342-b33c-59d3e17cc535" },
+    { "name": "Meal kit", "id": "48a9c9b1-daaa-40c5-9eec-5fa18476511a" },
+    { "name": "Ride pass", "id": "510b0f45-bd90-491b-aff9-621d2332c429" },
+    { "name": "Spotify", "id": "e84fa49a-7e51-4904-9241-7e0f7ec34d0f" },
+    { "name": "City transit pass", "id": "0280b4d6-4b7c-4b86-afec-044c1be90b49" }
+  ]
+}

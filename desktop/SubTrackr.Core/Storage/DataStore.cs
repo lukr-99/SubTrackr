@@ -45,6 +45,7 @@ public sealed class DataStore
         var db = JsonParser.Default.Parse<Database>(json);
         if (string.IsNullOrEmpty(db.SchemaVersion))
             db.SchemaVersion = CurrentSchemaVersion;
+        if (SeedData.MigrateLegacyIds(db)) Save(db);
         return db;
     }
 

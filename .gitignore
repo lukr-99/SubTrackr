@@ -21,6 +21,9 @@ appsettings.Local.json
 # Android (later)
 android/.gradle/
 android/local.properties
+android/keystore.properties
+android/*.jks
+android/*.keystore
 android/**/build/
 android/.idea/
 

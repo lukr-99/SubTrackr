@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -34,11 +35,15 @@ fun SettingsScreen(
     ratesLabel: String,
     syncUrl: String,
     syncKey: String,
+    appVersion: String,
+    updateStatus: String,
+    updateBusy: Boolean,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onSetBudget: (BigDecimal) -> Unit,
     onRefreshRates: () -> Unit,
     onSync: (String, String, (String) -> Unit) -> Unit,
+    onCheckUpdate: () -> Unit,
 ) {
     var threshold by remember { mutableStateOf(worthThreshold.stripTrailingZeros().toPlainString()) }
     var budget by remember {
@@ -127,9 +132,35 @@ fun SettingsScreen(
         Spacer(Modifier.height(12.dp))
 
         SectionCard {
+            Text("Updates", color = Palette.TextSecondary, fontSize = 12.sp)
+            Text(
+                updateStatus.ifBlank { "Installed version: v$appVersion" },
+                color = Palette.TextMuted,
+                fontSize = 11.sp,
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Button(
+                    enabled = !updateBusy,
+                    onClick = onCheckUpdate,
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
+                ) { Text("Check latest", color = Palette.TextPrimary) }
+                if (updateBusy) {
+                    Spacer(Modifier.width(12.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier.width(22.dp).height(22.dp),
+                        strokeWidth = 2.dp,
+                        color = Palette.Accent,
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+
+        SectionCard {
             Text("About", color = Palette.TextSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(4.dp))
-            Text("SubTrackr for Android · v0.1.0", color = Palette.TextPrimary, fontSize = 13.sp)
+            Text("SubTrackr for Android · v$appVersion", color = Palette.TextPrimary, fontSize = 13.sp)
             Text("Shares its data contract with the desktop app.", color = Palette.TextMuted, fontSize = 11.sp)
         }
         Spacer(Modifier.height(28.dp))

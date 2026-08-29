@@ -17,5 +17,6 @@ matches. If either app drifts from the spec, its own test suite goes red.
 | File | Verifies |
 |---|---|
 | `monthly-normalization.json` | SPEC §2 — billing cycle → monthly-equivalent |
+| `seed-data.json` | Stable cross-platform IDs for first-run subscriptions |
 
 _(more added as we implement conversion, totals, and the worth-it verdict)_

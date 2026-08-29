@@ -11,7 +11,9 @@ namespace SubTrackr.Desktop.Services;
 public static class Updater
 {
     public const string Owner = "lukr-99";
-    public const string Repo = "SubTrackr";
+    // The source repo is private. Public binaries live in a separate releases-only repo so
+    // desktop and Android can check for updates without embedding a GitHub credential.
+    public const string Repo = "SubTrackr-Releases";
 
     // Inno Setup silent switches — install without prompts, then relaunch is up to the user.
     private const string SilentArgs = "/SILENT /SUPPRESSMSGBOXES /NORESTART";
