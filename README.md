@@ -1,8 +1,10 @@
 # SubTrackr
 
 A personal subscription tracker for **Windows (WPF)** and **Android (Kotlin)** —
-multi-currency, custom charts, and a "worth it?" decision helper. Private, versioned,
-auto-updating.
+multi-currency, custom charts, a "worth it?" decision helper, free-trial tracking,
+real service logos, and cross-device sync via Supabase. Private, versioned, auto-updating.
+
+> **Picking this up on another machine? Start with [HANDOFF.md](HANDOFF.md).**
 
 ## Layout
 
@@ -19,8 +21,9 @@ android/             # Kotlin / Jetpack Compose app (later phase)
 
 ## Status
 
-Phase 0 — foundation. See [`contracts/SPEC.md`](contracts/SPEC.md) and the
-roadmap in the project chat.
+**v0.2.0 — feature-complete and running on real hardware** (desktop installed, Android on device,
+Supabase sync live). Full status, setup on a new machine, gotchas, and next steps are in
+[HANDOFF.md](HANDOFF.md). Spec: [`contracts/SPEC.md`](contracts/SPEC.md).
 
 ## Desktop — build & run
 
