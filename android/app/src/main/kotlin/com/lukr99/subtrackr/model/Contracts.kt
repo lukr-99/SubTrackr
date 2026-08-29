@@ -81,6 +81,7 @@ data class Settings(
     // Device-local sync config (never pushed to the remote). See SPEC.md §8.
     val syncUrl: String = "",
     val syncKey: String = "",
+    val worthThreshold: Double = 0.0, // cost-per-use cutoff in base currency; 0 = currency-aware default
 )
 
 @Serializable

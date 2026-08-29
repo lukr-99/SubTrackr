@@ -75,6 +75,7 @@ message Settings {
   // Sync config is DEVICE-LOCAL (never pushed to the remote). See SPEC.md §8.
   string sync_url = 3; // Supabase project URL, e.g. https://xxxx.supabase.co
   string sync_key = 4; // Supabase anon key
+  double worth_threshold = 5; // cost-per-use cutoff in base currency; 0 = currency-aware default
 }
 
 // Root document. This is exactly what gets persisted / synced.
