@@ -27,3 +27,7 @@ android/.idea/
 # OS
 Thumbs.db
 .DS_Store
+
+# Installer build artifacts (attach to GitHub Releases, do not commit)
+installer/*.exe
+installer/publish/
