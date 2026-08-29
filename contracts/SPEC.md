@@ -77,9 +77,11 @@ Each subscription has a **`worth_mode`** that decides its badge:
   - `cost_per_use = monthly_equivalent_base / uses_per_month` (round display to 4 dp).
   - `cost_per_use <= T` → **WORTH**; `> T` → **NOT_WORTH**; `uses_per_month == 0` → **UNKNOWN**.
 
-`cost_per_use` is always computed (shown as info) regardless of mode. Default `T` is
-configurable in settings; v0.1 default = `2.00` in base currency. The manual modes exist
-because cost-per-use is a poor judge for high-value daily-use subscriptions.
+`cost_per_use` is always computed (shown as info) regardless of mode. `T` is stored in
+`Settings.worth_threshold` (device-local); **`0` means use the currency-aware default**
+(~1.50 for EUR/USD/GBP, 35 for CZK, 500 for HUF, 200 for JPY, …) so it isn't nonsense in
+high-denomination currencies. The manual modes exist because cost-per-use is a poor judge
+for high-value daily-use subscriptions.
 
 ## 6. "What-if" calculator
 

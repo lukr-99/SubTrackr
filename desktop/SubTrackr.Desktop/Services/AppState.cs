@@ -29,7 +29,16 @@ public sealed class AppState
         }
     }
 
-    public decimal WorthThreshold { get; set; } = WorthIt.DefaultThreshold;
+    /// <summary>Cost-per-use cutoff in base currency. Stored 0 = use the currency-aware default.</summary>
+    public decimal WorthThreshold
+    {
+        get
+        {
+            var stored = (decimal)(Db.Settings?.WorthThreshold ?? 0);
+            return stored > 0 ? stored : WorthIt.DefaultThresholdFor(BaseCurrency);
+        }
+        set { Db.Settings ??= new Settings(); Db.Settings.WorthThreshold = (double)value; }
+    }
 
     public string SyncUrl
     {

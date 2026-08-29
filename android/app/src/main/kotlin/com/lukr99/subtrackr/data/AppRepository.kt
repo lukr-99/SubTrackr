@@ -23,8 +23,12 @@ class AppRepository(file: File) {
         private set
     var rates: ExchangeRateTable = OfflineFallback.forAnchor(db.settings.baseCurrency)
         private set
-    var worthThreshold: BigDecimal = WorthIt.DEFAULT_THRESHOLD
-        private set
+    /** Cost-per-use cutoff in base currency; stored 0 = currency-aware default. */
+    val worthThreshold: BigDecimal
+        get() {
+            val stored = db.settings.worthThreshold
+            return if (stored > 0.0) BigDecimal(stored.toString()) else WorthIt.defaultThresholdFor(baseCurrency)
+        }
 
     val baseCurrency: String get() = db.settings.baseCurrency.ifBlank { "EUR" }
 
@@ -61,7 +65,8 @@ class AppRepository(file: File) {
     }
 
     fun setWorthThreshold(threshold: BigDecimal) {
-        worthThreshold = threshold
+        db = db.copy(settings = db.settings.copy(worthThreshold = threshold.toDouble()))
+        store.save(db)
     }
 
     suspend fun refreshRates(provider: FrankfurterRateProvider) {
