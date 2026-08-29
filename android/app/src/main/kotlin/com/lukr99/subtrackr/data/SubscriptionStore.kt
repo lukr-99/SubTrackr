@@ -22,8 +22,11 @@ class SubscriptionStore(private val file: File) {
             save(seeded)
             return seeded
         }
-        return runCatching { json.decodeFromString<Database>(file.readText()) }
+        val loaded = runCatching { json.decodeFromString<Database>(file.readText()) }
             .getOrElse { SeedData.createInitialDatabase() }
+        val migrated = SeedData.migrateLegacyIds(loaded)
+        if (migrated != loaded) save(migrated)
+        return migrated
     }
 
     fun save(db: Database) {

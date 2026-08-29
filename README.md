@@ -21,7 +21,7 @@ android/             # Kotlin / Jetpack Compose app (later phase)
 
 ## Status
 
-**v0.2.0 — feature-complete and running on real hardware** (desktop installed, Android on device,
+**v0.2.2 — feature-complete and running on real hardware** (desktop installed, Android on device,
 Supabase sync live). Full status, setup on a new machine, gotchas, and next steps are in
 [HANDOFF.md](HANDOFF.md). Spec: [`contracts/SPEC.md`](contracts/SPEC.md).
 

@@ -30,11 +30,12 @@ public partial class MainWindow : Window
         SetBaseCurrencyBox.ItemsSource = Formatting.CommonCurrencies;
         _initializing = false;
 
-        Loaded += async (_, _) =>
+        Loaded += (_, _) =>
         {
-            await _state.RefreshRatesAsync();
-            _vm.Refresh();
+            // Sync must not wait behind the unrelated exchange-rate request. If rates are slow or
+            // offline, subscriptions still need to converge on launch.
             _vm.AutoSync();
+            RefreshRatesFireAndForget();
         };
 
         var syncTimer = new System.Windows.Threading.DispatcherTimer { Interval = System.TimeSpan.FromMinutes(5) };
