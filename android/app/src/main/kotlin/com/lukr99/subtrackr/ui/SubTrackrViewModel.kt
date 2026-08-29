@@ -64,6 +64,9 @@ class SubTrackrViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setWorthThreshold(threshold: BigDecimal) { repo.setWorthThreshold(threshold); refresh() }
 
+    val monthlyBudget: BigDecimal get() = repo.monthlyBudget
+    fun setMonthlyBudget(budget: BigDecimal) { repo.setMonthlyBudget(budget); refresh() }
+
     fun refreshRates() = viewModelScope.launch { repo.refreshRates(rateProvider); refresh() }
 
     val syncUrl: String get() = repo.syncUrl

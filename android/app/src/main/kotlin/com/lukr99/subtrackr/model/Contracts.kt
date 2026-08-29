@@ -82,6 +82,7 @@ data class Settings(
     val syncUrl: String = "",
     val syncKey: String = "",
     val worthThreshold: Double = 0.0, // cost-per-use cutoff in base currency; 0 = currency-aware default
+    val monthlyBudget: Double = 0.0,  // optional monthly spend budget in base currency; 0 = no budget
 )
 
 @Serializable

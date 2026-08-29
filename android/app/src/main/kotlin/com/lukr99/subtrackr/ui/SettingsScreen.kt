@@ -30,15 +30,20 @@ import java.math.BigDecimal
 fun SettingsScreen(
     baseCurrency: String,
     worthThreshold: BigDecimal,
+    monthlyBudget: BigDecimal,
     ratesLabel: String,
     syncUrl: String,
     syncKey: String,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
+    onSetBudget: (BigDecimal) -> Unit,
     onRefreshRates: () -> Unit,
     onSync: (String, String, (String) -> Unit) -> Unit,
 ) {
     var threshold by remember { mutableStateOf(worthThreshold.stripTrailingZeros().toPlainString()) }
+    var budget by remember {
+        mutableStateOf(if (monthlyBudget > BigDecimal.ZERO) monthlyBudget.stripTrailingZeros().toPlainString() else "")
+    }
     var url by remember { mutableStateOf(syncUrl) }
     var key by remember { mutableStateOf(syncKey) }
     var syncStatus by remember { mutableStateOf("") }
@@ -69,6 +74,19 @@ fun SettingsScreen(
                 Spacer(Modifier.width(12.dp))
                 Button(
                     onClick = { threshold.toBigDecimalOrNull()?.let(onSetThreshold) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
+                ) { Text("Apply") }
+            }
+
+            Spacer(Modifier.height(16.dp))
+            Text("Monthly budget (0 = off)", color = Palette.TextSecondary, fontSize = 12.sp)
+            Text("Shows a budget bar on the dashboard, red when over.", color = Palette.TextMuted, fontSize = 11.sp)
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                LabeledTextField("Budget", budget, { budget = it }, Modifier.width(160.dp))
+                Spacer(Modifier.width(12.dp))
+                Button(
+                    onClick = { onSetBudget(budget.toBigDecimalOrNull() ?: BigDecimal.ZERO) },
                     colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
                 ) { Text("Apply") }
             }

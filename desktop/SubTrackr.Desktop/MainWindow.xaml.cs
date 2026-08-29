@@ -51,6 +51,7 @@ public partial class MainWindow : Window
     {
         SetBaseCurrencyBox.SelectedItem = _state.BaseCurrency;
         ThresholdBox.Text = _state.WorthThreshold.ToString("0.##", CultureInfo.InvariantCulture);
+        BudgetBox.Text = _state.MonthlyBudget.ToString("0.##", CultureInfo.InvariantCulture);
         PathText.Text = new Core.Storage.DataStore().FilePath;
         VersionText.Text = $"SubTrackr v{Updater.CurrentVersion}";
         RatesText.Text = $"{_state.Rates.Anchor} · {_state.Rates.Date:MMM d, yyyy}";
@@ -160,6 +161,8 @@ public partial class MainWindow : Window
         }
         if (decimal.TryParse(ThresholdBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out var t) && t >= 0)
             _state.WorthThreshold = t;
+        if (decimal.TryParse(BudgetBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out var b) && b >= 0)
+            _state.MonthlyBudget = b;
 
         _state.SyncUrl = SyncUrlBox.Text;
         _state.SyncKey = SyncKeyBox.Text;

@@ -40,6 +40,13 @@ public sealed class AppState
         set { Db.Settings ??= new Settings(); Db.Settings.WorthThreshold = (double)value; }
     }
 
+    /// <summary>Optional monthly spend budget in base currency; 0 = none.</summary>
+    public decimal MonthlyBudget
+    {
+        get => (decimal)(Db.Settings?.MonthlyBudget ?? 0);
+        set { Db.Settings ??= new Settings(); Db.Settings.MonthlyBudget = (double)value; }
+    }
+
     public string SyncUrl
     {
         get => Db.Settings?.SyncUrl ?? "";

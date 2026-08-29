@@ -69,6 +69,13 @@ class AppRepository(file: File) {
         store.save(db)
     }
 
+    val monthlyBudget: BigDecimal get() = BigDecimal(db.settings.monthlyBudget.toString())
+
+    fun setMonthlyBudget(budget: BigDecimal) {
+        db = db.copy(settings = db.settings.copy(monthlyBudget = budget.toDouble()))
+        store.save(db)
+    }
+
     suspend fun refreshRates(provider: FrankfurterRateProvider) {
         rates = provider.getRates(baseCurrency)
     }
