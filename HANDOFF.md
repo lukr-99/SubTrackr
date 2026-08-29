@@ -43,8 +43,10 @@ desktop/             WPF / C# / .NET 10
 android/             Kotlin / Jetpack Compose (AGP 8.5.2, Kotlin 2.0.21, Compose BOM 2024.12)
 installer/           Inno Setup script + build-installer.ps1
 docs/SYNC-SETUP.md   Supabase setup (table SQL + steps)
-ARCHITECTURE.md, ROADMAP.md, SPEC lives in contracts/
+ARCHITECTURE.md      component/dependency overview   (spec is contracts/SPEC.md)
 ```
+
+Roadmap / next steps live in §7 of this file.
 
 ## 4. New-machine setup
 
