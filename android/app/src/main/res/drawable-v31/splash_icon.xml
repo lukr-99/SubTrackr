@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The launch icon on Android 12+: drawable/splash_icon.xml with each bar in a group that starts
+    flat (scaleY 0, pivot on the logo baseline) and grows in order with the timing and easing of
+    contracts/design/logo.json. With animations off the animators jump to their end, so the
+    whole mark shows at once. SplashIconTest checks this file against logo.json.
+-->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <path android:pathData="M36.5,26 H71.5 A10.5,10.5 0 0 1 82,36.5 V71.5 A10.5,10.5 0 0 1 71.5,82 H36.5 A10.5,10.5 0 0 1 26,71.5 V36.5 A10.5,10.5 0 0 1 36.5,26 Z">
+                <aapt:attr name="android:fillColor">
+                    <gradient
+                        android:type="linear"
+                        android:startX="26"
+                        android:startY="26"
+                        android:endX="82"
+                        android:endY="82"
+                        android:startColor="#4C8DFF"
+                        android:endColor="#B084FF" />
+                </aapt:attr>
+            </path>
+            <group
+                android:name="bar0"
+                android:pivotX="44.8125"
+                android:pivotY="66.6875"
+                android:scaleY="0">
+                <path
+                    android:fillColor="#F5F6FF"
+                    android:pathData="M42.40625,55.75 H47.21875 A0.875,0.875 0 0 1 48.09375,56.625 V65.8125 A0.875,0.875 0 0 1 47.21875,66.6875 H42.40625 A0.875,0.875 0 0 1 41.53125,65.8125 V56.625 A0.875,0.875 0 0 1 42.40625,55.75 Z" />
+            </group>
+            <group
+                android:name="bar1"
+                android:pivotX="54"
+                android:pivotY="66.6875"
+                android:scaleY="0">
+                <path
+                    android:fillColor="#F5F6FF"
+                    android:pathData="M51.59375,48.3125 H56.40625 A0.875,0.875 0 0 1 57.28125,49.1875 V65.8125 A0.875,0.875 0 0 1 56.40625,66.6875 H51.59375 A0.875,0.875 0 0 1 50.71875,65.8125 V49.1875 A0.875,0.875 0 0 1 51.59375,48.3125 Z" />
+            </group>
+            <group
+                android:name="bar2"
+                android:pivotX="63.1875"
+                android:pivotY="66.6875"
+                android:scaleY="0">
+                <path
+                    android:fillColor="#F5F6FF"
+                    android:pathData="M60.78125,41.3125 H65.59375 A0.875,0.875 0 0 1 66.46875,42.1875 V65.8125 A0.875,0.875 0 0 1 65.59375,66.6875 H60.78125 A0.875,0.875 0 0 1 59.90625,65.8125 V42.1875 A0.875,0.875 0 0 1 60.78125,41.3125 Z" />
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="bar0">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:duration="320"
+                android:startOffset="0"
+                android:interpolator="@android:anim/decelerate_interpolator" />
+        </aapt:attr>
+    </target>
+    <target android:name="bar1">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:duration="320"
+                android:startOffset="110"
+                android:interpolator="@android:anim/decelerate_interpolator" />
+        </aapt:attr>
+    </target>
+    <target android:name="bar2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:duration="320"
+                android:startOffset="220"
+                android:interpolator="@android:anim/decelerate_interpolator" />
+        </aapt:attr>
+    </target>
+</animated-vector>
