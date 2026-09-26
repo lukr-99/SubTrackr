@@ -12,6 +12,14 @@ All notable changes to SubTrackr. The format follows
   the Android debug build installs beside the release as "SubTrackr Dev".
 - The installer build writes `installer/dist/SubTrackr-Setup-X.Y.Z.exe` with a `.sha256` file and
   waits for a running SubTrackr to close.
+- The Android APK is signed with a dedicated release key instead of a development key. Moving a
+  phone from 0.2.x to this version needs one uninstall and reinstall; back up or sync first.
+
+### Added
+
+- GitHub Actions CI for the repository baseline, the Supabase migrations and row security, the
+  desktop app, and the Android app, plus a tag-driven release that drafts both installers with
+  SHA-256 files.
 
 ## [0.2.2] - 2026-08-29
 

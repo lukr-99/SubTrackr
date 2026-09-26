@@ -35,3 +35,7 @@ Setup, SDK paths, and the gotchas that already cost time are in
 
 State what changed, how you verified it, screenshots for UI work, and the data or migration
 impact. Risky delivery changes also need a rollback note. CI must be green before merge.
+
+## Releases
+
+See [docs/releasing.md](docs/releasing.md).

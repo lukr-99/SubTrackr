@@ -1,0 +1,136 @@
+name: CI
+
+# Every push to main and every pull request. Make all four jobs required checks on main.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository:
+    name: Repository baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Validate repository (CodePrint)
+        run: python tools/validate_repository.py --root .
+
+      - name: Migration names, lock, and fixtures
+        run: python tools/supabase_migrations.py verify
+
+      - name: Check PowerShell syntax
+        shell: pwsh
+        run: ./tools/test-powershell-syntax.ps1
+
+  supabase:
+    name: Supabase migrations and row security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install the pinned Supabase CLI
+        run: npm ci
+
+      - name: Start the local stack
+        # Only the database, auth, and the REST gateway are needed.
+        run: npx supabase start -x studio,imgproxy,vector,logflare,supavisor,storage-api,realtime,edge-runtime,postgres-meta
+
+      - name: Full chain, pgTAP, and isolated migrations
+        run: python tools/supabase_migrations.py test
+
+      - name: Stop the local stack
+        if: always()
+        run: npx supabase stop --no-backup
+
+  windows:
+    name: Desktop format, build, and tests
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: "**/*.csproj"
+
+      - name: Restore
+        run: dotnet restore SubTrackr.slnx
+
+      - name: Check formatting
+        run: dotnet format SubTrackr.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build SubTrackr.slnx -c Release --no-restore
+
+      - name: Test
+        run: dotnet test SubTrackr.slnx -c Release --no-build --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-test-results
+          path: TestResults/
+          if-no-files-found: warn
+
+  android:
+    name: Android build, unit tests, and lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - uses: android-actions/setup-android@v4
+        with:
+          # The action's default also asks for the retired "tools" package.
+          packages: platform-tools
+
+      - name: Build, unit test, and lint
+        # AGP downloads the compile SDK and build tools it needs; setup-android accepted the licenses.
+        run: ./gradlew testDebugUnitTest lintDebug assembleDebug --stacktrace
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-reports
+          path: |
+            android/app/build/reports/
+            android/app/build/test-results/
+          if-no-files-found: warn
