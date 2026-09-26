@@ -8,14 +8,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 
 @Composable
 fun SectionCard(content: @Composable () -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
-            .background(Palette.Surface, RoundedCornerShape(14.dp))
+            .background(SubTrackrTheme.colors.surface, RoundedCornerShape(14.dp))
             .padding(16.dp),
     ) { content() }
 }

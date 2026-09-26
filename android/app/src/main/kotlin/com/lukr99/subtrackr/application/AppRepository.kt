@@ -11,6 +11,7 @@ import com.lukr99.subtrackr.domain.spend.SpendSummary
 import com.lukr99.subtrackr.domain.worth.WorthIt
 import com.lukr99.subtrackr.model.Database
 import com.lukr99.subtrackr.model.Subscription
+import com.lukr99.subtrackr.model.ThemeMode
 import java.math.BigDecimal
 import java.time.Clock
 
@@ -76,6 +77,12 @@ class AppRepository(
 
     fun setMonthlyBudget(budget: BigDecimal) {
         save(db.copy(settings = db.settings.copy(monthlyBudget = budget.toDouble())))
+    }
+
+    val themeMode: ThemeMode get() = db.settings.themeMode
+
+    fun setThemeMode(mode: ThemeMode) {
+        save(db.copy(settings = db.settings.copy(themeMode = mode)))
     }
 
     suspend fun refreshRates() {

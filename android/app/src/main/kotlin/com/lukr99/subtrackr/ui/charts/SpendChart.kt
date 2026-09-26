@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 
 @Composable
 fun SpendChart(
@@ -35,31 +35,32 @@ fun SpendChart(
     centerSub: String,
     modifier: Modifier = Modifier,
 ) {
+    val colors = SubTrackrTheme.colors
     Box(modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxWidth().height(220.dp)) {
             when (type) {
-                ChartType.DONUT -> drawDonut(slices)
+                ChartType.DONUT -> drawDonut(slices, track = colors.border)
                 ChartType.BARS -> drawBars(slices)
-                ChartType.TREND -> drawTrend(monthlyBase)
+                ChartType.TREND -> drawTrend(monthlyBase, line = colors.chartColor(0))
             }
         }
         if (type == ChartType.DONUT) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(centerText, color = Palette.TextPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                Text(centerSub, color = Palette.TextMuted, fontSize = 12.sp)
+                Text(centerText, color = SubTrackrTheme.colors.textPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                Text(centerSub, color = SubTrackrTheme.colors.textMuted, fontSize = 12.sp)
             }
         }
     }
 }
 
-private fun DrawScope.drawDonut(slices: List<ChartSlice>) {
+private fun DrawScope.drawDonut(slices: List<ChartSlice>, track: Color) {
     val positive = slices.filter { it.value > 0 }
     val total = positive.sumOf { it.value }
     val stroke = size.minDimension * 0.13f
     val diameter = size.minDimension - stroke
     val topLeft = Offset((size.width - diameter) / 2f, (size.height - diameter) / 2f)
     val arcSize = Size(diameter, diameter)
-    drawArc(Palette.Border, 0f, 360f, false, topLeft, arcSize, style = Stroke(stroke))
+    drawArc(track, 0f, 360f, false, topLeft, arcSize, style = Stroke(stroke))
     if (total <= 0.0) return
     var start = -90f
     for (s in positive) {
@@ -90,7 +91,7 @@ private fun DrawScope.drawBars(slices: List<ChartSlice>) {
     }
 }
 
-private fun DrawScope.drawTrend(monthlyBase: Double) {
+private fun DrawScope.drawTrend(monthlyBase: Double, line: Color) {
     if (monthlyBase <= 0.0) return
     val n = 12
     val points = (1..n).map { it * monthlyBase }
@@ -110,21 +111,21 @@ private fun DrawScope.drawTrend(monthlyBase: Double) {
         lineTo(right, bottom)
         close()
     }
-    drawPath(area, Palette.Accent.copy(alpha = 0.18f))
+    drawPath(area, line.copy(alpha = 0.18f))
     for (i in 1 until n) {
         drawLine(
-            Palette.Accent, Offset(px(i - 1), py(i - 1)), Offset(px(i), py(i)),
+            line, Offset(px(i - 1), py(i - 1)), Offset(px(i), py(i)),
             strokeWidth = 5f, cap = StrokeCap.Round,
         )
     }
-    for (i in 0 until n) drawCircle(Palette.Accent, 6f, Offset(px(i), py(i)))
+    for (i in 0 until n) drawCircle(line, 6f, Offset(px(i), py(i)))
 }
 
 @Composable
 fun ChartSwitcher(selected: ChartType, onSelect: (ChartType) -> Unit) {
     Row(
         Modifier
-            .background(Palette.SurfaceAlt, RoundedCornerShape(9.dp))
+            .background(SubTrackrTheme.colors.surfaceAlt, RoundedCornerShape(9.dp))
             .padding(3.dp),
     ) {
         ChartType.entries.forEach { t ->
@@ -132,7 +133,7 @@ fun ChartSwitcher(selected: ChartType, onSelect: (ChartType) -> Unit) {
             Box(
                 Modifier
                     .background(
-                        if (active) Palette.Accent else Color.Transparent,
+                        if (active) SubTrackrTheme.colors.accent else Color.Transparent,
                         RoundedCornerShape(7.dp),
                     )
                     .clickable { onSelect(t) }
@@ -140,7 +141,7 @@ fun ChartSwitcher(selected: ChartType, onSelect: (ChartType) -> Unit) {
             ) {
                 Text(
                     t.name.lowercase().replaceFirstChar { it.uppercase() },
-                    color = if (active) Color.White else Palette.TextSecondary,
+                    color = if (active) SubTrackrTheme.colors.onAccent else SubTrackrTheme.colors.textSecondary,
                     fontSize = 12.sp,
                 )
             }

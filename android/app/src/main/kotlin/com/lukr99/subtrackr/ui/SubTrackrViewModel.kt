@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.lukr99.subtrackr.application.AppRepository
 import com.lukr99.subtrackr.domain.currency.ExchangeRateTable
 import com.lukr99.subtrackr.model.Subscription
+import com.lukr99.subtrackr.model.ThemeMode
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
@@ -19,6 +20,8 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
     var baseCurrency by mutableStateOf(repo.baseCurrency)
         private set
     var ratesLabel by mutableStateOf(ratesText())
+        private set
+    var themeMode by mutableStateOf(repo.themeMode)
         private set
 
     init {
@@ -50,6 +53,12 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
         summary = repo.summarize()
         baseCurrency = repo.baseCurrency
         ratesLabel = ratesText()
+        themeMode = repo.themeMode
+    }
+
+    fun changeThemeMode(mode: ThemeMode) {
+        repo.setThemeMode(mode)
+        refresh()
     }
 
     private fun ratesText() = "${repo.rates.anchor} · ${repo.rates.date}"

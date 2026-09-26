@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,7 +31,7 @@ import com.lukr99.subtrackr.model.Subscription
 import com.lukr99.subtrackr.ui.dashboard.DashboardScreen
 import com.lukr99.subtrackr.ui.editor.EditSubscriptionScreen
 import com.lukr99.subtrackr.ui.settings.SettingsScreen
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import com.lukr99.subtrackr.ui.update.UpdatePrompt
 import com.lukr99.subtrackr.ui.update.UpdateViewModel
 import com.lukr99.subtrackr.ui.whatif.WhatIfScreen
@@ -69,9 +68,9 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
     }
 
     Scaffold(
-        containerColor = Palette.Bg,
+        containerColor = SubTrackrTheme.colors.background,
         bottomBar = {
-            NavigationBar(containerColor = Palette.Surface) {
+            NavigationBar(containerColor = SubTrackrTheme.colors.surface) {
                 NavItem(tab == AppTab.DASHBOARD, "Home", { tab = AppTab.DASHBOARD }) { Icon(Icons.Filled.Dashboard, null) }
                 NavItem(tab == AppTab.WHATIF, "What-if", { tab = AppTab.WHATIF }) { Icon(Icons.Filled.Calculate, null) }
                 NavItem(tab == AppTab.SETTINGS, "Settings", { tab = AppTab.SETTINGS }) { Icon(Icons.Filled.Settings, null) }
@@ -84,8 +83,8 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
                         editorSub = null
                         editorOpen = true
                     },
-                    containerColor = Palette.Accent,
-                ) { Icon(Icons.Filled.Add, "Add", tint = Color.White) }
+                    containerColor = SubTrackrTheme.colors.accent,
+                ) { Icon(Icons.Filled.Add, "Add", tint = SubTrackrTheme.colors.onAccent) }
             }
         },
     ) { padding ->
@@ -114,7 +113,9 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
                     ratesLabel = vm.ratesLabel,
                     syncUrl = vm.syncUrl,
                     syncKey = vm.syncKey,
+                    themeMode = vm.themeMode,
                     update = update,
+                    onSetThemeMode = vm::changeThemeMode,
                     onSetBaseCurrency = vm::changeBaseCurrency,
                     onSetThreshold = vm::setWorthThreshold,
                     onSetBudget = vm::setMonthlyBudget,
@@ -147,11 +148,11 @@ private fun RowScope.NavItem(
         icon = icon,
         label = { Text(label) },
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = Palette.Accent,
-            unselectedIconColor = Palette.TextSecondary,
-            selectedTextColor = Palette.Accent,
-            unselectedTextColor = Palette.TextSecondary,
-            indicatorColor = Palette.SurfaceAlt,
+            selectedIconColor = SubTrackrTheme.colors.accent,
+            unselectedIconColor = SubTrackrTheme.colors.textSecondary,
+            selectedTextColor = SubTrackrTheme.colors.accent,
+            unselectedTextColor = SubTrackrTheme.colors.textSecondary,
+            indicatorColor = SubTrackrTheme.colors.surfaceAlt,
         ),
     )
 }

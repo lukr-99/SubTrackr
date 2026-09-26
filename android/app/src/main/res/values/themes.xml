@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.SubTrackr" parent="@android:style/Theme.Material.NoActionBar">
+    <!-- The launch window before Compose draws; the app's own theme then comes from tokens.json. -->
+    <style name="Theme.SubTrackr" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/bg</item>
-        <item name="android:statusBarColor">@color/bg</item>
-        <item name="android:navigationBarColor">@color/bg</item>
-        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

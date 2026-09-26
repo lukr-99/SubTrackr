@@ -46,7 +46,7 @@ import com.lukr99.subtrackr.model.WorthMode
 import com.lukr99.subtrackr.ui.components.Format
 import com.lukr99.subtrackr.ui.components.LabeledTextField
 import com.lukr99.subtrackr.ui.components.PickerField
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import java.math.BigDecimal
 
 private val ICONS = listOf(
@@ -147,25 +147,25 @@ fun EditSubscriptionScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(Palette.Bg)
+            .background(SubTrackrTheme.colors.background)
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onCancel) { Text("Cancel", color = Palette.TextSecondary, fontSize = 15.sp) }
+            TextButton(onClick = onCancel) { Text("Cancel", color = SubTrackrTheme.colors.textSecondary, fontSize = 15.sp) }
             Spacer(Modifier.weight(1f))
-            Text(if (isNew) "Add subscription" else "Edit", color = Palette.TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(if (isNew) "Add subscription" else "Edit", color = SubTrackrTheme.colors.textPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = { build()?.let(onSave) },
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
-            ) { Text("Save", color = Color.White, fontWeight = FontWeight.Bold) }
+                colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.accent),
+            ) { Text("Save", color = SubTrackrTheme.colors.onAccent, fontWeight = FontWeight.Bold) }
         }
         Spacer(Modifier.height(12.dp))
 
-        Text("Icon", color = Palette.TextSecondary, fontSize = 12.sp)
+        Text("Icon", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
         Spacer(Modifier.height(6.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp), contentPadding = PaddingValues(vertical = 2.dp)) {
             items(ICONS) { e ->
@@ -173,8 +173,8 @@ fun EditSubscriptionScreen(
                 Box(
                     Modifier
                         .size(44.dp)
-                        .background(if (selected) Palette.Accent.copy(alpha = 0.25f) else Palette.SurfaceAlt, RoundedCornerShape(10.dp))
-                        .then(if (selected) Modifier.border(1.dp, Palette.Accent, RoundedCornerShape(10.dp)) else Modifier)
+                        .background(if (selected) SubTrackrTheme.colors.accent.copy(alpha = 0.25f) else SubTrackrTheme.colors.surfaceAlt, RoundedCornerShape(10.dp))
+                        .then(if (selected) Modifier.border(1.dp, SubTrackrTheme.colors.accent, RoundedCornerShape(10.dp)) else Modifier)
                         .clickable { icon = e },
                     contentAlignment = Alignment.Center,
                 ) { Text(e, fontSize = 20.sp) }
@@ -218,16 +218,16 @@ fun EditSubscriptionScreen(
 
         error?.let {
             Spacer(Modifier.height(12.dp))
-            Text(it, color = Palette.Negative, fontSize = 13.sp)
+            Text(it, color = SubTrackrTheme.colors.negative, fontSize = 13.sp)
         }
 
         if (!isNew) {
             Spacer(Modifier.height(20.dp))
             Button(
                 onClick = { onDelete(initial!!.id) },
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
+                colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.surfaceAlt),
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("Delete subscription", color = Palette.Negative) }
+            ) { Text("Delete subscription", color = SubTrackrTheme.colors.negative) }
         }
         Spacer(Modifier.height(28.dp))
     }
@@ -243,12 +243,12 @@ private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
             checked = checked,
             onCheckedChange = onChange,
             colors = CheckboxDefaults.colors(
-                checkedColor = Palette.Accent,
-                uncheckedColor = Palette.Border,
-                checkmarkColor = Color.White,
+                checkedColor = SubTrackrTheme.colors.accent,
+                uncheckedColor = SubTrackrTheme.colors.textSecondary,
+                checkmarkColor = SubTrackrTheme.colors.onAccent,
             ),
         )
         Spacer(Modifier.width(6.dp))
-        Text(label, color = Palette.TextPrimary, fontSize = 14.sp)
+        Text(label, color = SubTrackrTheme.colors.textPrimary, fontSize = 14.sp)
     }
 }

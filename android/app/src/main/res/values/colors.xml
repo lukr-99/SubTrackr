@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#FF1A1B1E</color>
+    <!-- Launch window only. ThemeTokensTest keeps this equal to neutral.light.background. -->
+    <color name="bg">#FFF4F5F7</color>
     <color name="ic_launcher_background">#4C8DFF</color>
 </resources>

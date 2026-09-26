@@ -76,9 +76,13 @@ android {
     }
 
     sourceSets {
-        // Kotlin sources live under src/main/kotlin; behaviour golden vectors are the shared
-        // contract files, put on the unit-test classpath so Android runs the same fixtures as WPF.
-        getByName("main") { java.srcDir("src/main/kotlin") }
+        // Kotlin sources live under src/main/kotlin. The shared design tokens ship as a Java
+        // resource so the app reads contracts/design/tokens.json itself, not a copy. Behaviour
+        // golden vectors go on the unit-test classpath so Android runs the same fixtures as WPF.
+        getByName("main") {
+            java.srcDir("src/main/kotlin")
+            resources.srcDir("../../contracts/design")
+        }
         getByName("test") {
             java.srcDir("src/test/kotlin")
             resources.srcDir("../../contracts/vectors")

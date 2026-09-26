@@ -20,6 +20,12 @@ app/src/test/kotlin/       unit and golden-vector tests, mirroring the main pack
 `domain` depends on nothing but `model`. Adapters in `data` implement the ports declared in
 `application`. Only `composition/` picks adapters and builds the object graph.
 
+## Themes
+
+Settings offers System, Light, and Dark. Every color comes from
+[`contracts/design/tokens.json`](../contracts/design/tokens.json), which Gradle puts on the main
+Java resources; `ThemeTokensTest` fails when the app's palettes and the file disagree.
+
 ## Updates
 
 Release builds check `lukr-99/SubTrackr` on launch and from Settings. They take only

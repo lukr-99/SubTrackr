@@ -34,7 +34,7 @@ import com.lukr99.subtrackr.ui.components.Format
 import com.lukr99.subtrackr.ui.components.LabeledTextField
 import com.lukr99.subtrackr.ui.components.PickerField
 import com.lukr99.subtrackr.ui.components.SectionCard
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import java.math.BigDecimal
 
 private val CYCLES = listOf("Weekly", "Monthly", "Quarterly", "Every 6 months", "Annual", "Custom (days)")
@@ -72,25 +72,25 @@ fun WhatIfScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(Palette.Bg)
+            .background(SubTrackrTheme.colors.background)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
         Spacer(Modifier.height(20.dp))
-        Text("What-if", color = Palette.TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Text("See the impact of a new subscription before you commit.", color = Palette.TextSecondary, fontSize = 13.sp)
+        Text("What-if", color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text("See the impact of a new subscription before you commit.", color = SubTrackrTheme.colors.textSecondary, fontSize = 13.sp)
         Spacer(Modifier.height(16.dp))
 
         SectionCard {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
-                    Text("Currently", color = Palette.TextSecondary, fontSize = 11.sp)
-                    Text(Format.money(currentMonthly, baseCurrency), color = Palette.TextPrimary, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                    Text("per month", color = Palette.TextMuted, fontSize = 11.sp)
+                    Text("Currently", color = SubTrackrTheme.colors.textSecondary, fontSize = 11.sp)
+                    Text(Format.money(currentMonthly, baseCurrency), color = SubTrackrTheme.colors.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("per month", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(Format.money(currentMonthly.multiply(BigDecimal(12)), baseCurrency), color = Palette.TextPrimary, fontSize = 16.sp)
-                    Text("per year", color = Palette.TextMuted, fontSize = 11.sp)
+                    Text(Format.money(currentMonthly.multiply(BigDecimal(12)), baseCurrency), color = SubTrackrTheme.colors.textPrimary, fontSize = 16.sp)
+                    Text("per year", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
                 }
             }
         }
@@ -110,35 +110,35 @@ fun WhatIfScreen(
         Spacer(Modifier.height(12.dp))
 
         Column(
-            Modifier.fillMaxWidth().background(Palette.SurfaceAlt, RoundedCornerShape(14.dp)).padding(16.dp),
+            Modifier.fillMaxWidth().background(SubTrackrTheme.colors.surfaceAlt, RoundedCornerShape(14.dp)).padding(16.dp),
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
-                    Text("New total", color = Palette.TextSecondary, fontSize = 11.sp)
+                    Text("New total", color = SubTrackrTheme.colors.textSecondary, fontSize = 11.sp)
                     Text(
                         newMonthly?.let { Format.money(it, baseCurrency) } ?: "—",
-                        color = Palette.TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold,
+                        color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold,
                     )
                     Text(
                         newMonthly?.let { Format.money(it.multiply(BigDecimal(12)), baseCurrency) + " / yr" } ?: "",
-                        color = Palette.TextMuted, fontSize = 12.sp,
+                        color = SubTrackrTheme.colors.textMuted, fontSize = 12.sp,
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         monthlyBase?.let { "+ " + Format.money(it, baseCurrency) } ?: "—",
-                        color = Palette.category(2), fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                        color = SubTrackrTheme.colors.warning, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
                     )
-                    Text("added / mo", color = Palette.TextMuted, fontSize = 11.sp)
+                    Text("added / mo", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
                 }
             }
             Spacer(Modifier.height(12.dp))
-            Box(Modifier.fillMaxWidth().height(1.dp).background(Palette.Border))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(SubTrackrTheme.colors.border))
             Spacer(Modifier.height(12.dp))
             if (monthlyBase != null && usesVal > 0.0) {
                 val cpu = WorthIt.costPerUse(monthlyBase, usesVal)
                 val verdict = WorthIt.evaluate(monthlyBase, usesVal, worthThreshold)
-                Text(Format.money(cpu, baseCurrency) + " per use", color = Palette.TextSecondary, fontSize = 13.sp)
+                Text(Format.money(cpu, baseCurrency) + " per use", color = SubTrackrTheme.colors.textSecondary, fontSize = 13.sp)
                 Text(
                     when (verdict) {
                         WorthVerdict.WORTH -> "Worth it 👍"
@@ -146,11 +146,11 @@ fun WhatIfScreen(
                         WorthVerdict.ESSENTIAL -> "Essential 👍"
                         WorthVerdict.UNKNOWN -> ""
                     },
-                    color = if (verdict == WorthVerdict.WORTH) Palette.Positive else Palette.Negative,
+                    color = if (verdict == WorthVerdict.WORTH) SubTrackrTheme.colors.positive else SubTrackrTheme.colors.negative,
                     fontSize = 17.sp, fontWeight = FontWeight.Bold,
                 )
             } else {
-                Text("Set uses/month to judge worth", color = Palette.TextMuted, fontSize = 13.sp)
+                Text("Set uses/month to judge worth", color = SubTrackrTheme.colors.textMuted, fontSize = 13.sp)
             }
         }
         Spacer(Modifier.height(28.dp))

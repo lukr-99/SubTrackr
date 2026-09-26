@@ -13,12 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lukr99.subtrackr.ui.components.SectionCard
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import com.lukr99.subtrackr.ui.update.UpdateUiState
 
 /** Update status, a manual check, the verified install, and the releases page as a manual path. */
@@ -31,10 +30,10 @@ fun UpdatesCard(
     onOpenReleases: () -> Unit,
 ) {
     SectionCard {
-        Text("Updates", color = Palette.TextSecondary, fontSize = 12.sp)
+        Text("Updates", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
         Text(
             state.statusText,
-            color = Palette.TextPrimary,
+            color = SubTrackrTheme.colors.textPrimary,
             fontSize = 13.sp,
             modifier = Modifier.testTag(SettingsTags.UPDATE_STATUS),
         )
@@ -46,24 +45,24 @@ fun UpdatesCard(
             if (state.offer != null && !state.busy) {
                 Button(
                     onClick = onInstall,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
-                ) { Text("Download and install", color = Color.White) }
+                    colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.accent),
+                ) { Text("Download and install", color = SubTrackrTheme.colors.onAccent) }
             }
             Button(
                 enabled = state.checksEnabled && !state.busy,
                 onClick = onCheck,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
+                colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.surfaceAlt),
                 modifier = Modifier.testTag(SettingsTags.CHECK_UPDATES),
-            ) { Text("Check for updates", color = Palette.TextPrimary) }
+            ) { Text("Check for updates", color = SubTrackrTheme.colors.textPrimary) }
             Button(
                 onClick = onOpenReleases,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
-            ) { Text("Open releases page", color = Palette.TextPrimary) }
+                colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.surfaceAlt),
+            ) { Text("Open releases page", color = SubTrackrTheme.colors.textPrimary) }
             if (state.busy) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(22.dp).align(Alignment.CenterVertically),
                     strokeWidth = 2.dp,
-                    color = Palette.Accent,
+                    color = SubTrackrTheme.colors.accent,
                 )
             }
         }

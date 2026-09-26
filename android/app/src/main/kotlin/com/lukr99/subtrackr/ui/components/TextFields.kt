@@ -21,22 +21,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 
 @Composable
-fun darkFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
-    focusedContainerColor = Palette.SurfaceAlt,
-    unfocusedContainerColor = Palette.SurfaceAlt,
-    disabledContainerColor = Palette.SurfaceAlt,
-    focusedBorderColor = Palette.Accent,
-    unfocusedBorderColor = Palette.Border,
-    disabledBorderColor = Palette.Border,
-    focusedTextColor = Palette.TextPrimary,
-    unfocusedTextColor = Palette.TextPrimary,
-    disabledTextColor = Palette.TextPrimary,
-    cursorColor = Palette.TextPrimary,
-    focusedLabelColor = Palette.TextSecondary,
-    unfocusedLabelColor = Palette.TextSecondary,
+fun fieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = SubTrackrTheme.colors.surfaceAlt,
+    unfocusedContainerColor = SubTrackrTheme.colors.surfaceAlt,
+    disabledContainerColor = SubTrackrTheme.colors.surfaceAlt,
+    focusedBorderColor = SubTrackrTheme.colors.accent,
+    unfocusedBorderColor = SubTrackrTheme.colors.border,
+    disabledBorderColor = SubTrackrTheme.colors.border,
+    focusedTextColor = SubTrackrTheme.colors.textPrimary,
+    unfocusedTextColor = SubTrackrTheme.colors.textPrimary,
+    disabledTextColor = SubTrackrTheme.colors.textPrimary,
+    cursorColor = SubTrackrTheme.colors.textPrimary,
+    focusedLabelColor = SubTrackrTheme.colors.textSecondary,
+    unfocusedLabelColor = SubTrackrTheme.colors.textSecondary,
 )
 
 @Composable
@@ -51,7 +51,7 @@ fun LabeledTextField(
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
-        colors = darkFieldColors(),
+        colors = fieldColors(),
         shape = RoundedCornerShape(10.dp),
         modifier = modifier.fillMaxWidth(),
     )
@@ -73,8 +73,8 @@ fun PickerField(
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
-            trailingIcon = { Icon(Icons.Filled.ArrowDropDown, null, tint = Palette.TextSecondary) },
-            colors = darkFieldColors(),
+            trailingIcon = { Icon(Icons.Filled.ArrowDropDown, null, tint = SubTrackrTheme.colors.textSecondary) },
+            colors = fieldColors(),
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -86,11 +86,11 @@ fun PickerField(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Palette.Surface),
+            modifier = Modifier.background(SubTrackrTheme.colors.surface),
         ) {
             options.forEach { opt ->
                 DropdownMenuItem(
-                    text = { Text(opt, color = Palette.TextPrimary) },
+                    text = { Text(opt, color = SubTrackrTheme.colors.textPrimary) },
                     onClick = { onSelect(opt); expanded = false },
                 )
             }

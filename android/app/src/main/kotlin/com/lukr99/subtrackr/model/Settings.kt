@@ -15,4 +15,6 @@ data class Settings(
     val worthThreshold: Double = 0.0,
     /** Monthly spend budget in the base currency; 0 means no budget. */
     val monthlyBudget: Double = 0.0,
+    /** Light, dark, or follow the system. Stored per device. */
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
 )

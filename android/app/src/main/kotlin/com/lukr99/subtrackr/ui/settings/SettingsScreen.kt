@@ -25,11 +25,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lukr99.subtrackr.model.ThemeMode
 import com.lukr99.subtrackr.ui.components.Format
 import com.lukr99.subtrackr.ui.components.LabeledTextField
 import com.lukr99.subtrackr.ui.components.PickerField
 import com.lukr99.subtrackr.ui.components.SectionCard
-import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import com.lukr99.subtrackr.ui.update.UpdateUiState
 import java.math.BigDecimal
 
@@ -41,7 +42,9 @@ fun SettingsScreen(
     ratesLabel: String,
     syncUrl: String,
     syncKey: String,
+    themeMode: ThemeMode,
     update: UpdateUiState,
+    onSetThemeMode: (ThemeMode) -> Unit,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onSetBudget: (BigDecimal) -> Unit,
@@ -63,65 +66,68 @@ fun SettingsScreen(
         Modifier
             .testTag(SettingsTags.ROOT)
             .fillMaxSize()
-            .background(Palette.Bg)
+            .background(SubTrackrTheme.colors.background)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
         Spacer(Modifier.height(20.dp))
-        Text("Settings", color = Palette.TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text("Settings", color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
 
+        AppearanceCard(themeMode, onSetThemeMode)
+        Spacer(Modifier.height(12.dp))
+
         SectionCard {
-            Text("Base currency", color = Palette.TextSecondary, fontSize = 12.sp)
-            Text("All totals roll up into this currency.", color = Palette.TextMuted, fontSize = 11.sp)
+            Text("Base currency", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
+            Text("All totals roll up into this currency.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
             Spacer(Modifier.height(8.dp))
             PickerField("Base currency", baseCurrency, Format.commonCurrencies, onSetBaseCurrency, Modifier.width(180.dp))
 
             Spacer(Modifier.height(16.dp))
-            Text("Worth-it threshold (cost per use)", color = Palette.TextSecondary, fontSize = 12.sp)
-            Text("Worth it when cost per use is at or below this.", color = Palette.TextMuted, fontSize = 11.sp)
+            Text("Worth-it threshold (cost per use)", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
+            Text("Worth it when cost per use is at or below this.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 LabeledTextField("Threshold", threshold, { threshold = it }, Modifier.width(160.dp))
                 Spacer(Modifier.width(12.dp))
                 Button(
                     onClick = { threshold.toBigDecimalOrNull()?.let(onSetThreshold) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
+                    colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.accent),
                 ) { Text("Apply") }
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Monthly budget (0 = off)", color = Palette.TextSecondary, fontSize = 12.sp)
-            Text("Shows a budget bar on the dashboard, red when over.", color = Palette.TextMuted, fontSize = 11.sp)
+            Text("Monthly budget (0 = off)", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
+            Text("Shows a budget bar on the dashboard, red when over.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 LabeledTextField("Budget", budget, { budget = it }, Modifier.width(160.dp))
                 Spacer(Modifier.width(12.dp))
                 Button(
                     onClick = { onSetBudget(budget.toBigDecimalOrNull() ?: BigDecimal.ZERO) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
+                    colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.accent),
                 ) { Text("Apply") }
             }
         }
         Spacer(Modifier.height(12.dp))
 
         SectionCard {
-            Text("Exchange rates", color = Palette.TextSecondary, fontSize = 12.sp)
+            Text("Exchange rates", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(ratesLabel, color = Palette.TextPrimary, fontSize = 13.sp)
+                Text(ratesLabel, color = SubTrackrTheme.colors.textPrimary, fontSize = 13.sp)
                 Spacer(Modifier.width(12.dp))
                 Button(
                     onClick = onRefreshRates,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
-                ) { Text("Refresh", color = Palette.TextPrimary) }
+                    colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.surfaceAlt),
+                ) { Text("Refresh", color = SubTrackrTheme.colors.textPrimary) }
             }
         }
         Spacer(Modifier.height(12.dp))
 
         SectionCard {
-            Text("Sync (Supabase)", color = Palette.TextSecondary, fontSize = 12.sp)
-            Text("Syncs subscriptions across your devices. See docs/SYNC-SETUP.md.", color = Palette.TextMuted, fontSize = 11.sp)
+            Text("Sync (Supabase)", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
+            Text("Syncs subscriptions across your devices. See docs/SYNC-SETUP.md.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
             Spacer(Modifier.height(8.dp))
             LabeledTextField("Project URL", url, { url = it })
             Spacer(Modifier.height(10.dp))
@@ -130,10 +136,10 @@ fun SettingsScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Button(
                     onClick = { onSync(url, key) { syncStatus = it } },
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent),
+                    colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.accent),
                 ) { Text("Sync now") }
                 Spacer(Modifier.width(12.dp))
-                Text(syncStatus, color = Palette.TextSecondary, fontSize = 12.sp)
+                Text(syncStatus, color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
             }
         }
         Spacer(Modifier.height(12.dp))
@@ -142,10 +148,10 @@ fun SettingsScreen(
         Spacer(Modifier.height(12.dp))
 
         SectionCard {
-            Text("About", color = Palette.TextSecondary, fontSize = 12.sp)
+            Text("About", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(4.dp))
-            Text("SubTrackr for Android · v${update.currentVersion}", color = Palette.TextPrimary, fontSize = 13.sp)
-            Text("Shares its data contract with the desktop app.", color = Palette.TextMuted, fontSize = 11.sp)
+            Text("SubTrackr for Android · v${update.currentVersion}", color = SubTrackrTheme.colors.textPrimary, fontSize = 13.sp)
+            Text("Shares its data contract with the desktop app.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
         }
         Spacer(Modifier.height(28.dp))
     }
