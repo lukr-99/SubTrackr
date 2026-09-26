@@ -1,3 +1,4 @@
+using System.Globalization;
 using SubTrackr.Core.Contracts;
 
 namespace SubTrackr.Core.Storage;
@@ -10,11 +11,12 @@ public static class SeedData
     /// Re-keys legacy first-run seed rows that used random per-device IDs. Old IDs become
     /// tombstones so sync cannot resurrect them; unrelated subscriptions are never touched.
     /// </summary>
-    public static bool MigrateLegacyIds(Database db, string? timestamp = null)
+    public static bool MigrateLegacyIds(Database db, string timestamp)
     {
+        ArgumentNullException.ThrowIfNull(db);
         var changed = false;
-        var now = timestamp ?? DateTime.UtcNow.ToString("o");
-        var templates = CreateInitialDatabase().Subscriptions;
+        var now = timestamp;
+        var templates = CreateInitialDatabase(DateTimeOffset.Parse(timestamp, CultureInfo.InvariantCulture)).Subscriptions;
 
         foreach (var template in templates)
         {
@@ -59,13 +61,14 @@ public static class SeedData
         candidate.BillingCycle == template.BillingCycle &&
         string.Equals(candidate.Website, template.Website, StringComparison.Ordinal);
 
-    public static Database CreateInitialDatabase()
+    /// <summary>The first-run database, with renewal dates relative to <paramref name="moment"/>.</summary>
+    public static Database CreateInitialDatabase(DateTimeOffset moment)
     {
-        var now = DateTime.UtcNow;
+        var now = moment.UtcDateTime;
         var db = new Database
         {
-            SchemaVersion = DataStore.CurrentSchemaVersion,
-            Settings = new Settings { BaseCurrency = "CZK", SchemaVersion = DataStore.CurrentSchemaVersion },
+            SchemaVersion = DatabaseSchema.CurrentVersion,
+            Settings = new Settings { BaseCurrency = "CZK", SchemaVersion = DatabaseSchema.CurrentVersion },
         };
 
         db.Subscriptions.Add(Sub("eb90294c-78d8-40d1-83a3-0596708b1797", "Netflix", 199m, "CZK", BillingCycle.Monthly, "Entertainment", "🎬", now, 8, autoPay: true, day: 4, website: "netflix.com"));
@@ -87,14 +90,14 @@ public static class SeedData
     {
         var minor = (long)decimal.Round(amount * 100m, 0, MidpointRounding.AwayFromZero);
         var renewal = NextRenewalOnDay(now, day, monthsAhead);
-        var ts = now.ToString("o");
+        var ts = UtcTimestamp.Format(now);
         return new Subscription
         {
             Id = id,
             Name = name,
             Cost = new Money { Currency = currency, MinorUnits = minor, Exponent = 2 },
             BillingCycle = cycle,
-            NextRenewal = renewal.ToString("yyyy-MM-dd"),
+            NextRenewal = renewal.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             Category = category,
             IconRef = icon,
             AutoPay = autoPay,

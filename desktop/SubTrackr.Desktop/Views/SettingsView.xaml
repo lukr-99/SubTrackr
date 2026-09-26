@@ -1,0 +1,73 @@
+<UserControl x:Class="SubTrackr.Desktop.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="34" MaxWidth="560" HorizontalAlignment="Left">
+            <StackPanel>
+                <TextBlock Text="Settings" Style="{StaticResource PageTitle}" />
+
+                <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Base currency" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
+                        <TextBlock Text="All totals roll up into this currency." FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                        <ComboBox Width="150" HorizontalAlignment="Left" ItemsSource="{Binding Currencies}" SelectedItem="{Binding BaseCurrency}" />
+
+                        <TextBlock Text="Worth-it threshold (cost per use, base currency)" Style="{StaticResource FieldLabel}" />
+                        <TextBlock Text="A subscription is &quot;worth it&quot; when its cost per use is at or below this." FontSize="11"
+                                   Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                        <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding ThresholdText, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Monthly budget (base currency; 0 = off)" Style="{StaticResource FieldLabel}" />
+                        <TextBlock Text="Shows a budget bar on the dashboard, red when you're over."
+                                   FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                        <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding BudgetText, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Exchange rates" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding RatesText}" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                            <Button Content="Refresh now" Style="{StaticResource GhostButton}" Command="{Binding RefreshRatesCommand}" Margin="12,0,0,0" />
+                        </StackPanel>
+
+                        <TextBlock Text="Data file" Style="{StaticResource FieldLabel}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DataFilePath}" VerticalAlignment="Center" FontSize="11" Foreground="{StaticResource TextMuted}"
+                                       TextTrimming="CharacterEllipsis" MaxWidth="330" />
+                            <Button Content="Open folder" Style="{StaticResource GhostButton}" Command="{Binding OpenDataFolderCommand}" Margin="12,0,0,0" />
+                        </StackPanel>
+
+                        <TextBlock Text="About" Style="{StaticResource FieldLabel}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding VersionText}" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                            <Button Content="Check for updates" Style="{StaticResource GhostButton}" Command="{Binding CheckForUpdatesCommand}" Margin="12,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Sync (Supabase)" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                        <TextBlock Text="Syncs subscriptions across your devices. See docs/SYNC-SETUP.md to create the free project."
+                                   FontSize="11" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                        <TextBlock Text="Project URL" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding SyncUrl, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text="Anon key" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding SyncKey, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                            <Button Content="Sync now" Style="{StaticResource PrimaryButton}" Command="{Binding SyncNowCommand}" />
+                            <TextBlock Text="{Binding SyncStatus}" VerticalAlignment="Center" Margin="12,0,0,0"
+                                       FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Button Content="Save settings" Style="{StaticResource PrimaryButton}" Command="{Binding SaveCommand}"
+                        HorizontalAlignment="Left" Margin="0,18,0,0" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

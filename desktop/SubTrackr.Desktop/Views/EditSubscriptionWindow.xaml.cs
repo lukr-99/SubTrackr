@@ -1,9 +1,11 @@
 using System.Windows;
 using SubTrackr.Core.Contracts;
+using SubTrackr.Desktop.Services;
 using SubTrackr.Desktop.ViewModels;
 
-namespace SubTrackr.Desktop;
+namespace SubTrackr.Desktop.Views;
 
+/// <summary>The add/edit form. <see cref="Result"/> holds the subscription once Save succeeds.</summary>
 public partial class EditSubscriptionWindow : Window
 {
     private readonly EditSubscriptionViewModel _vm;
@@ -14,7 +16,7 @@ public partial class EditSubscriptionWindow : Window
     public EditSubscriptionWindow(EditSubscriptionViewModel vm)
     {
         InitializeComponent();
-        Services.DarkTitleBar.Apply(this);
+        DarkTitleBar.Apply(this);
         _vm = vm;
         DataContext = vm;
     }

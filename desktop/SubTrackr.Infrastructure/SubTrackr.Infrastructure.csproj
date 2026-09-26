@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Adapters behind SubTrackr.Core's interfaces: files, HTTP, logging. Windows only. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>SubTrackr.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SubTrackr.Core\SubTrackr.Core.csproj" />
+  </ItemGroup>
+
+</Project>

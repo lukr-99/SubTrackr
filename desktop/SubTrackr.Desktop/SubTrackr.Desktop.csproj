@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SubTrackr.Core\SubTrackr.Core.csproj" />
+    <ProjectReference Include="..\SubTrackr.Infrastructure\SubTrackr.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

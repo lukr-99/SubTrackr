@@ -3,7 +3,10 @@ using System.Globalization;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SubTrackr.Core;
+using SubTrackr.Core.Analytics;
 using SubTrackr.Core.Contracts;
+using SubTrackr.Core.Currency;
+using SubTrackr.Core.Subscriptions;
 using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
@@ -11,14 +14,18 @@ namespace SubTrackr.Desktop.ViewModels;
 /// <summary>Non-persisted scenario: "if I added this, what happens to my totals — and is it worth it?"</summary>
 public sealed partial class WhatIfViewModel : ObservableObject
 {
-    private readonly AppState _state;
+    private readonly SubscriptionLedger _ledger;
+    private readonly ExchangeRates _rates;
     private readonly decimal _currentMonthly;
 
-    public WhatIfViewModel(AppState state)
+    public WhatIfViewModel(SubscriptionLedger ledger, ExchangeRates rates)
     {
-        _state = state;
+        ArgumentNullException.ThrowIfNull(ledger);
+        ArgumentNullException.ThrowIfNull(rates);
+        _ledger = ledger;
+        _rates = rates;
         _selectedCycle = Cycles[1];
-        _currentMonthly = state.Summarize().MonthlyBase;
+        _currentMonthly = SpendCalculator.Summarize(ledger.LiveSubscriptions, ledger.BaseCurrency, rates.Table, ledger.WorthThreshold).MonthlyBase;
         Recompute();
     }
 
@@ -61,7 +68,7 @@ public sealed partial class WhatIfViewModel : ObservableObject
 
     private void Recompute()
     {
-        var baseCcy = _state.BaseCurrency;
+        var baseCcy = _ledger.BaseCurrency;
         CurrentMonthlyText = Formatting.Money(_currentMonthly, baseCcy);
         CurrentYearlyText = Formatting.Money(_currentMonthly * 12m, baseCcy);
 
@@ -76,10 +83,11 @@ public sealed partial class WhatIfViewModel : ObservableObject
             return;
         }
 
-        var days = int.TryParse(CustomDays, out var d) ? d : 30;
+        var days = int.TryParse(CustomDays, NumberStyles.Integer, CultureInfo.InvariantCulture, out var d) ? d : 30;
         var monthlyOwn = Normalization.MonthlyEquivalent(amt, SelectedCycle.Cycle, days <= 0 ? 30 : days);
-        var monthlyBase = _state.Rates.Knows(Currency)
-            ? _state.Rates.Convert(monthlyOwn, Currency, baseCcy)
+        var table = _rates.Table;
+        var monthlyBase = table.Knows(Currency)
+            ? table.Convert(monthlyOwn, Currency, baseCcy)
             : monthlyOwn;
 
         var newMonthly = _currentMonthly + monthlyBase;
@@ -93,7 +101,7 @@ public sealed partial class WhatIfViewModel : ObservableObject
         {
             var cpu = WorthIt.CostPerUse(monthlyBase, uses);
             CostPerUseText = Formatting.Money(cpu, baseCcy) + " per use";
-            var verdict = WorthIt.Evaluate(monthlyBase, uses, _state.WorthThreshold);
+            var verdict = WorthIt.Evaluate(monthlyBase, uses, _ledger.WorthThreshold);
             (VerdictText, VerdictBrush) = verdict switch
             {
                 WorthVerdict.Worth => ("Worth it 👍", new SolidColorBrush(Color.FromRgb(0x3D, 0xD6, 0x8C))),

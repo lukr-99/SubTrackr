@@ -26,10 +26,10 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
     [ObservableProperty] private bool _autoPay = true;
     [ObservableProperty] private bool _isPaused;
     [ObservableProperty] private string _usesPerMonth = "0";
-    [ObservableProperty] private DateTime _nextRenewal = DateTime.Today.AddMonths(1);
+    [ObservableProperty] private DateTime _nextRenewal;
     [ObservableProperty] private WorthOption _selectedWorth;
     [ObservableProperty] private bool _isTrial;
-    [ObservableProperty] private DateTime _trialEnd = DateTime.Today.AddDays(14);
+    [ObservableProperty] private DateTime _trialEnd;
     [ObservableProperty] private string _website = "";
     [ObservableProperty] private string? _error;
 
@@ -66,15 +66,19 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
 
     partial void OnSelectedCycleChanged(CycleOption value) => OnPropertyChanged(nameof(ShowCustomDays));
 
-    public EditSubscriptionViewModel(Subscription? existing = null)
+    /// <param name="today">The local date new renewal and trial dates count from.</param>
+    /// <param name="existing">The subscription to edit, or null to add one.</param>
+    public EditSubscriptionViewModel(DateOnly today, Subscription? existing = null)
     {
         _selectedCycle = Cycles[1]; // Monthly default
         _selectedWorth = WorthModes[0]; // Auto default
+        _nextRenewal = today.AddMonths(1).ToDateTime(TimeOnly.MinValue);
+        _trialEnd = today.AddDays(14).ToDateTime(TimeOnly.MinValue);
         if (existing is null) return;
 
         SelectedWorth = WorthModes.FirstOrDefault(w => w.Mode == existing.WorthMode) ?? WorthModes[0];
         Website = existing.Website;
-        if (!string.IsNullOrEmpty(existing.TrialEnd) && DateOnly.TryParse(existing.TrialEnd, out var te))
+        if (DateOnly.TryParseExact(existing.TrialEnd, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var te))
         {
             IsTrial = true;
             TrialEnd = te.ToDateTime(TimeOnly.MinValue);
@@ -86,13 +90,13 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
         Amount = existing.Cost.ToDecimal().ToString("0.##", CultureInfo.InvariantCulture);
         Currency = existing.Cost.Currency;
         SelectedCycle = Cycles.FirstOrDefault(c => c.Cycle == existing.BillingCycle) ?? Cycles[1];
-        CustomDays = existing.CustomDays > 0 ? existing.CustomDays.ToString() : "30";
+        CustomDays = existing.CustomDays > 0 ? existing.CustomDays.ToString(CultureInfo.InvariantCulture) : "30";
         Category = existing.Category;
         Icon = string.IsNullOrWhiteSpace(existing.IconRef) ? "💳" : existing.IconRef;
         AutoPay = existing.AutoPay;
         IsPaused = existing.Status == SubStatus.Paused;
         UsesPerMonth = existing.UsesPerMonth.ToString("0.##", CultureInfo.InvariantCulture);
-        if (DateOnly.TryParse(existing.NextRenewal, out var d))
+        if (DateOnly.TryParseExact(existing.NextRenewal, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
             NextRenewal = d.ToDateTime(TimeOnly.MinValue);
     }
 
@@ -106,7 +110,7 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
 
         var days = 0;
         if (SelectedCycle.Cycle == BillingCycle.CustomDays &&
-            (!int.TryParse(CustomDays, out days) || days <= 0))
+            (!int.TryParse(CustomDays, NumberStyles.Integer, CultureInfo.InvariantCulture, out days) || days <= 0))
         { Error = "Custom interval must be a positive number of days."; return null; }
 
         double.TryParse(UsesPerMonth, NumberStyles.Number, CultureInfo.InvariantCulture, out var uses);
@@ -119,7 +123,7 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
             Cost = new Money { Currency = Currency.ToUpperInvariant(), MinorUnits = minor, Exponent = 2 },
             BillingCycle = SelectedCycle.Cycle,
             CustomDays = days,
-            NextRenewal = DateOnly.FromDateTime(NextRenewal).ToString("yyyy-MM-dd"),
+            NextRenewal = DateOnly.FromDateTime(NextRenewal).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             Category = Category.Trim(),
             IconRef = Icon.Trim(),
             AutoPay = AutoPay,
@@ -127,7 +131,7 @@ public sealed partial class EditSubscriptionViewModel : ObservableObject
             UsesPerMonth = uses,
             WorthMode = SelectedWorth.Mode,
             Website = Website.Trim(),
-            TrialEnd = IsTrial ? DateOnly.FromDateTime(TrialEnd).ToString("yyyy-MM-dd") : "",
+            TrialEnd = IsTrial ? DateOnly.FromDateTime(TrialEnd).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : "",
             Notes = "",
             CreatedAt = _createdAt ?? "",
             UpdatedAt = "",

@@ -24,15 +24,17 @@ public static class OfflineFallback
         ["HUF"] = 395m,
     };
 
-    public static ExchangeRateTable For(string anchor)
+    /// <summary>The built-in table re-anchored on <paramref name="anchor"/>, dated <paramref name="date"/>.</summary>
+    public static ExchangeRateTable For(string anchor, DateOnly date)
     {
+        ArgumentNullException.ThrowIfNull(anchor);
         // Re-anchor the EUR table onto the requested anchor.
         anchor = anchor.ToUpperInvariant();
         var anchorPerEur = PerEur.TryGetValue(anchor, out var a) ? a : 1m;
         var reanchored = new Dictionary<string, decimal>();
         foreach (var (ccy, perEur) in PerEur)
             reanchored[ccy] = perEur / anchorPerEur;
-        return new ExchangeRateTable(anchor, reanchored, DateOnly.FromDateTime(DateTime.UtcNow));
+        return new ExchangeRateTable(anchor, reanchored, date);
     }
 
     public static IReadOnlyCollection<string> KnownCurrencies => PerEur.Keys;

@@ -1,46 +1,39 @@
 using System.Net.Http;
-using System.Reflection;
 using DotNetLib.Core.Updating;
 
 namespace SubTrackr.Desktop.Services;
 
 /// <summary>
-/// Thin wrapper over DotNetLib.Core's self-update service, configured for this app's
-/// GitHub repo. Releases must be public and attach the Inno Setup installer (*.exe).
+/// Thin wrapper over DotNetLib.Core's self-update service, configured for this app's GitHub
+/// releases.
 /// </summary>
-public static class Updater
+public sealed class Updater : IUpdater
 {
-    public const string Owner = "lukr-99";
-    // The source repo is private. Public binaries live in a separate releases-only repo so
-    // desktop and Android can check for updates without embedding a GitHub credential.
-    public const string Repo = "SubTrackr-Releases";
+    private const string Owner = "lukr-99";
+    private const string Repo = "SubTrackr-Releases";
 
-    // Inno Setup silent switches — install without prompts, then relaunch is up to the user.
+    // Inno Setup silent switches: install without prompts; relaunch is up to the user.
     private const string SilentArgs = "/SILENT /SUPPRESSMSGBOXES /NORESTART";
 
-    private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
+    private readonly UpdateService service;
+    private ReleaseInfo? found;
 
-    public static string CurrentVersion
+    public Updater(HttpClient http, string currentVersion)
     {
-        get
-        {
-            var v = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0);
-            return $"{v.Major}.{v.Minor}.{v.Build}";
-        }
+        service = new UpdateService(
+            new GitHubReleaseSource(http, Owner, Repo, name => name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)),
+            currentVersion,
+            http);
     }
 
-    private static UpdateService Service() => new(
-        new GitHubReleaseSource(Http, Owner, Repo, name => name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)),
-        CurrentVersion, Http);
-
-    /// <summary>Best-effort: returns a newer release, or null (up to date / offline / repo private).</summary>
-    public static async Task<ReleaseInfo?> CheckAsync(CancellationToken ct = default)
+    public async Task<string?> CheckAsync(CancellationToken cancellationToken)
     {
-        try { return await Service().CheckForUpdateAsync(ct); }
-        catch (Exception ex) { Log.Error("Update check failed", ex); return null; }
+        found = await service.CheckForUpdateAsync(cancellationToken);
+        return found?.Version.ToString();
     }
 
-    /// <summary>Download the installer and launch it silently; caller should exit afterwards.</summary>
-    public static async Task DownloadAndLaunchAsync(ReleaseInfo release, CancellationToken ct = default)
-        => await Service().DownloadAndLaunchAsync(release, SilentArgs, ct);
+    public Task InstallAsync(CancellationToken cancellationToken) =>
+        found is null
+            ? Task.CompletedTask
+            : service.DownloadAndLaunchAsync(found, SilentArgs, cancellationToken);
 }
