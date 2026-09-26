@@ -6,6 +6,13 @@ All notable changes to SubTrackr. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Both apps take their version from one `Version.props`. Local and debug builds are `X.Y.Z-dev`;
+  the Android debug build installs beside the release as "SubTrackr Dev".
+- The installer build writes `installer/dist/SubTrackr-Setup-X.Y.Z.exe` with a `.sha256` file and
+  waits for a running SubTrackr to close.
+
 ## [0.2.2] - 2026-08-29
 
 ### Fixed

@@ -17,6 +17,14 @@ if (gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = tr
     throw GradleException("Release signing requires android/keystore.properties and its referenced keystore.")
 }
 
+// One version for both apps lives in the root Version.props (contracts/SPEC.md section 7).
+val subTrackrVersion: String =
+    Regex("""<SubTrackrVersion>(\d+\.\d+\.\d+)</SubTrackrVersion>""")
+        .find(rootProject.file("../Version.props").readText())?.groupValues?.get(1)
+        ?: throw GradleException("Version.props has no X.Y.Z SubTrackrVersion.")
+val subTrackrVersionCode: Int = subTrackrVersion.split('.').map(String::toInt)
+    .let { (major, minor, patch) -> major * 10000 + minor * 100 + patch }
+
 android {
     namespace = "com.lukr99.subtrackr"
     compileSdk = 35
@@ -27,8 +35,8 @@ android {
         applicationId = "com.lukr99.subtrackr"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "0.2.2"
+        versionCode = subTrackrVersionCode
+        versionName = subTrackrVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -43,6 +51,11 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // Debug builds install beside the release and never touch its data or updates.
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
         release {
             isMinifyEnabled = false
             signingConfig = signingConfigs.findByName("release")

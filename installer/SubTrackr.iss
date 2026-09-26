@@ -2,18 +2,20 @@
 ; Per-user install: no admin/UAC required, installs to %LocalAppData%\Programs\SubTrackr,
 ; adds a Start-menu shortcut, and registers an uninstaller in "Installed apps".
 
-#define MyAppName "SubTrackr"
 #ifndef MyAppVersion
-  #define MyAppVersion "0.2.2"
+  #error MyAppVersion must be supplied by build-installer.ps1
 #endif
-#define MyAppPublisher "lukr-99"
+#ifndef MyVersionInfoVersion
+  #error MyVersionInfoVersion must be supplied by build-installer.ps1
+#endif
+#ifndef PublishDir
+  #error PublishDir must be supplied by build-installer.ps1
+#endif
+
+#define MyAppName "SubTrackr"
+#define MyAppPublisher "Lukáš Krejčí"
 #define MyAppExeName "SubTrackr.exe"
 #define MyAppURL "https://github.com/lukr-99/SubTrackr"
-
-; Path to the self-contained publish output (passed in via ISCC /D, with a fallback).
-#ifndef PublishDir
-  #define PublishDir "..\publish"
-#endif
 
 [Setup]
 AppId={{C4B1F0E2-7A3D-4E56-9B0C-2F8A1D6E33B7}
@@ -28,8 +30,10 @@ DefaultDirName={autopf}\SubTrackr
 DisableProgramGroupPage=yes
 DisableDirPage=auto
 PrivilegesRequired=lowest
+; The installer waits for a running SubTrackr to close (the app's single-instance mutex).
+AppMutex=SubTrackr_SingleInstance_7f3a
 ArchitecturesAllowed=x64compatible
-OutputDir=.
+OutputDir=dist
 OutputBaseFilename=SubTrackr-Setup-{#MyAppVersion}
 SetupIconFile=..\desktop\SubTrackr.Desktop\Assets\SubTrackr.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
@@ -37,7 +41,8 @@ UninstallDisplayName={#MyAppName}
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-VersionInfoVersion={#MyAppVersion}.0
+VersionInfoVersion={#MyVersionInfoVersion}
+VersionInfoProductVersion={#MyAppVersion}
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoProductName={#MyAppName}
 LicenseFile=..\LICENSE.md

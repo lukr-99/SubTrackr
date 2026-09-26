@@ -1,0 +1,10 @@
+<Project>
+  <!--
+    The one version of SubTrackr for both apps. The desktop projects, the installer, the Android
+    Gradle build, and the release workflow all read it from here. Bump it in the release commit
+    together with CHANGELOG.md (docs/releasing.md).
+  -->
+  <PropertyGroup>
+    <SubTrackrVersion>0.3.0</SubTrackrVersion>
+  </PropertyGroup>
+</Project>

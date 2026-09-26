@@ -1,55 +1,74 @@
 <#
-  build-installer.ps1 — publish SubTrackr self-contained and compile the Inno Setup installer.
+  Publish SubTrackr self-contained for win-x64 and compile the per-user Inno Setup installer, with a
+  SHA-256 checksum beside it.
 
-  Produces installer\SubTrackr-Setup-<version>.exe — the asset the in-app updater downloads and
-  the file you attach to a GitHub Release. Requires the .NET 10 SDK and Inno Setup 6 (ISCC).
+  Release (default): -p:SubTrackrReleaseBuild=true, so the version carries no -dev suffix. -Dev
+  builds a -dev installer for trying a build without mistaking it for a release.
 
-  Usage:
-    .\installer\build-installer.ps1
-    .\installer\build-installer.ps1 -Version 0.2.0
+  Output: installer/dist/SubTrackr-Setup-<version>.exe and .sha256. Git ignores both.
 #>
 [CmdletBinding()]
 param(
-  [string]$Version,
-  [string]$Configuration = 'Release',
-  [string]$Runtime = 'win-x64'
+  [switch]$Dev,
+  [string]$IsccPath,
+  [switch]$RequireSigned
 )
+
 $ErrorActionPreference = 'Stop'
-$here = $PSScriptRoot
-$repo = Split-Path $here -Parent
-$proj = Join-Path $repo 'desktop\SubTrackr.Desktop\SubTrackr.Desktop.csproj'
+$installerRoot = [System.IO.Path]::GetFullPath($PSScriptRoot)
+$repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$project = Join-Path $repositoryRoot 'desktop\SubTrackr.Desktop\SubTrackr.Desktop.csproj'
 
-function Step($m) { Write-Host "==> $m" -ForegroundColor Green }
-
-if (-not $Version) {
-  $csproj = Get-Content $proj -Raw
-  if ($csproj -match '<Version>([^<]+)</Version>') { $Version = $Matches[1] }
-  else { throw "Could not read <Version> from $proj; pass -Version." }
-}
-Step "SubTrackr installer v$Version"
-
-$iscc = @(
-  "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-  "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-  "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
-) | Where-Object { Test-Path $_ } | Select-Object -First 1
-if (-not $iscc) { throw "ISCC.exe (Inno Setup 6) not found. Install it from https://jrsoftware.org/isdl.php" }
+[xml]$versionProps = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'Version.props')
+$baseVersion = @($versionProps.Project.PropertyGroup.SubTrackrVersion | Where-Object { $_ })[0]
+if ($baseVersion -notmatch '^\d+\.\d+\.\d+$') { throw "Version.props has no X.Y.Z SubTrackrVersion: $baseVersion" }
+$version = if ($Dev) { "$baseVersion-dev" } else { $baseVersion }
+$versionInfoVersion = "$baseVersion.0"
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-  throw "The .NET SDK ('dotnet') was not found on PATH."
+  throw "The .NET SDK command 'dotnet' was not found."
+}
+if (-not $IsccPath) {
+  $IsccPath = @(
+    "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
+    "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+    "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+  ) | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
+}
+if (-not $IsccPath -or -not (Test-Path -LiteralPath $IsccPath -PathType Leaf)) {
+  throw 'Inno Setup 6 ISCC.exe was not found. Install it or pass -IsccPath.'
 }
 
-$publish = Join-Path $here 'publish'
-if (Test-Path $publish) { Remove-Item $publish -Recurse -Force }
-Step "Publishing ($Configuration, $Runtime, self-contained) ..."
-& dotnet publish $proj -c $Configuration -r $Runtime --self-contained true `
-    -p:PublishSingleFile=false -o $publish | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed." }
+$publish = Join-Path $installerRoot 'publish'
+$dist = Join-Path $installerRoot 'dist'
+if (Test-Path -LiteralPath $publish) { Remove-Item -LiteralPath $publish -Recurse -Force }
+[System.IO.Directory]::CreateDirectory($publish) | Out-Null
+[System.IO.Directory]::CreateDirectory($dist) | Out-Null
 
-Step "Compiling installer with ISCC ..."
-& $iscc "/DMyAppVersion=$Version" "/DPublishDir=publish" (Join-Path $here 'SubTrackr.iss')
-if ($LASTEXITCODE -ne 0) { throw "ISCC failed." }
+$releaseFlag = if ($Dev) { 'false' } else { 'true' }
+Write-Host "Publishing SubTrackr $version..." -ForegroundColor Cyan
+# Self-contained, so nobody has to install the .NET Desktop Runtime first.
+& dotnet publish $project -c Release -r win-x64 --self-contained true `
+  -p:PublishSingleFile=false -p:SubTrackrReleaseBuild=$releaseFlag -p:DebugType=none -o $publish --nologo
+if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed.' }
 
-$setup = Join-Path $here "SubTrackr-Setup-$Version.exe"
-Step "Done -> $setup"
-Write-Host "Attach this to a GitHub Release tagged v$Version so the in-app updater can find it." -ForegroundColor Cyan
+$definition = Join-Path $installerRoot 'SubTrackr.iss'
+& $IsccPath /Q "/DMyAppVersion=$version" "/DMyVersionInfoVersion=$versionInfoVersion" "/DPublishDir=$publish" $definition
+if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
+# The publish folder is only the installer's input; the installer is the artifact.
+Remove-Item -LiteralPath $publish -Recurse -Force
+
+$setup = Join-Path $dist "SubTrackr-Setup-$version.exe"
+if (-not (Test-Path -LiteralPath $setup -PathType Leaf)) { throw "Expected installer was not produced: $setup" }
+
+$signature = Get-AuthenticodeSignature -LiteralPath $setup
+if ($RequireSigned -and $signature.Status -ne 'Valid') { throw "Installer signature is not valid: $($signature.Status)" }
+if ($signature.Status -ne 'Valid') {
+  Write-Warning 'The installer is not Authenticode-signed. Publish its SHA-256 checksum with it.'
+}
+
+$hash = (Get-FileHash -LiteralPath $setup -Algorithm SHA256).Hash.ToLowerInvariant()
+[System.IO.File]::WriteAllText("$setup.sha256", "$hash  $([System.IO.Path]::GetFileName($setup))`n", [System.Text.UTF8Encoding]::new($false))
+
+$size = [math]::Round((Get-Item -LiteralPath $setup).Length / 1MB, 1)
+Write-Host "Built $setup ($size MB) and its SHA-256 checksum." -ForegroundColor Green
