@@ -3,28 +3,6 @@ using SubTrackr.Core.Currency;
 
 namespace SubTrackr.Core.Analytics;
 
-/// <summary>Per-subscription computed figures, all in base currency unless noted.</summary>
-public sealed record SubscriptionSpend(
-    Subscription Subscription,
-    decimal MonthlyOwn,      // in the sub's own currency
-    decimal MonthlyBase,
-    decimal YearlyBase,
-    decimal CostPerUse,
-    WorthVerdict Verdict);
-
-public sealed record CurrencySubtotal(string Currency, decimal Monthly, decimal Yearly);
-
-public sealed record CategorySlice(string Category, decimal MonthlyBase, decimal YearlyBase);
-
-/// <summary>Whole-portfolio rollup. Figures are unrounded; format at the edge.</summary>
-public sealed record SpendSummary(
-    string BaseCurrency,
-    decimal MonthlyBase,
-    decimal YearlyBase,
-    IReadOnlyList<SubscriptionSpend> PerSub,
-    IReadOnlyList<CurrencySubtotal> PerCurrency,
-    IReadOnlyList<CategorySlice> ByCategory);
-
 /// <summary>
 /// Rolls a set of subscriptions into totals. Active-spend totals exclude PAUSED and
 /// soft-deleted records (SPEC.md §4). Uses <see cref="Normalization"/> + the rate table.

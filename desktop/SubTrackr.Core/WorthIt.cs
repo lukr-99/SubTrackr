@@ -2,14 +2,6 @@ using SubTrackr.Core.Contracts;
 
 namespace SubTrackr.Core;
 
-public enum WorthVerdict
-{
-    Unknown,
-    Worth,
-    NotWorth,
-    Essential,
-}
-
 /// <summary>Worth-it / not-worth-it evaluation from SPEC.md §5.</summary>
 public static class WorthIt
 {

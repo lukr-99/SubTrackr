@@ -7,17 +7,6 @@ using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
 
-public sealed record CycleOption(BillingCycle Cycle, string Label)
-{
-    // The ComboBox renders items via ToString(); show the friendly label, not the record dump.
-    public override string ToString() => Label;
-}
-
-public sealed record WorthOption(WorthMode Mode, string Label)
-{
-    public override string ToString() => Label;
-}
-
 /// <summary>Editable working copy for the add/edit dialog.</summary>
 public sealed partial class EditSubscriptionViewModel : ObservableObject
 {

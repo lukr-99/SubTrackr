@@ -12,12 +12,6 @@ using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
 
-public sealed record CurrencyLine(string Code, string MonthlyOwnText, string ConvertedText);
-public sealed record RenewalLine(string Icon, string Name, string WhenText, string AmountText, bool Soon);
-public sealed record AlertLine(string Icon, string Title, string Detail, bool Urgent);
-
-public enum AppPage { Dashboard, WhatIf, Settings }
-
 public sealed partial class MainViewModel : ObservableObject
 {
     private readonly AppState _state;

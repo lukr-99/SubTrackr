@@ -2,13 +2,6 @@ using System.Windows.Media;
 
 namespace SubTrackr.Desktop.Controls;
 
-public enum ChartType
-{
-    Donut,
-    Bars,
-    Trend,
-}
-
 /// <summary>One datum for <see cref="SpendChart"/> — a labelled value with a colour.</summary>
 public sealed class ChartSlice
 {
