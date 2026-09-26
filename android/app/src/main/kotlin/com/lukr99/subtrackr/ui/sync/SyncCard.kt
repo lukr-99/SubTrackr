@@ -108,8 +108,8 @@ private fun SignedIn(state: SyncUiState, onSyncNow: () -> Unit, onSignOut: () ->
     Text("Signed in as ${state.signedInEmail}", color = colors.textPrimary, fontSize = 13.sp)
     Spacer(Modifier.height(8.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        // Always available while signed in (SPEC.md 8.4); a press during a pass queues one more.
         Button(
-            enabled = state.status !is SyncStatus.Syncing,
             onClick = onSyncNow,
             colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
             modifier = Modifier.testTag(SyncTags.SYNC_NOW),
