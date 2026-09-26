@@ -1,0 +1,26 @@
+# Smallest useful journey: the debug build launches, draws the dashboard, and reaches every tab.
+# Ids are Compose test tags exposed as resource ids (testTagsAsResourceId on the app root).
+# Run on an emulator only: .\tools\ui-check.ps1 -Flow .maestro
+appId: com.lukr99.subtrackr.dev
+name: Launch smoke
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: dashboard
+    timeout: 20000
+- assertVisible:
+    id: dashboard_monthly_total
+- takeScreenshot: dashboard
+- tapOn:
+    id: nav_whatif
+- assertVisible:
+    id: whatif
+- tapOn:
+    id: nav_settings
+- assertVisible:
+    id: settings
+- tapOn:
+    id: nav_dashboard
+- assertVisible:
+    id: dashboard

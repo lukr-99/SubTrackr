@@ -59,4 +59,20 @@ runs them as rendering checks; `recordRoborazziDebug` rewrites the reference ima
 `app/src/test/screenshots/`, and `verifyRoborazziDebug` compares against them. The references were
 recorded on Windows, so verify on Windows. Robolectric's SDK 35 runtime needs JDK 21.
 
+## Checking on an emulator
+
+`tools/` holds the CodePrint Android scripts (from `android/`, Windows PowerShell 5.1 or 7). They
+only ever act on the debug build, `com.lukr99.subtrackr.dev`, and prefer an emulator when a phone
+is also attached. Output goes to the ignored `artifacts/` folder.
+
+```powershell
+.\tools\agent-doctor.ps1                       # read-only toolchain check
+.\tools\emulator.ps1 start -DisableAnimations  # headless, prints the emulator serial
+.\tools\ui-check.ps1 -Flow .maestro            # build, install, launch, screenshot, Maestro flows
+.\tools\emulator.ps1 stop
+```
+
+`.maestro/launch-smoke.yaml` launches the app, waits for the dashboard, and visits every tab by
+the Compose test tags, which the app root exposes as resource ids.
+
 Build and test steps are in [docs/development.md](../docs/development.md).

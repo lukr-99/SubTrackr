@@ -3,21 +3,6 @@ package com.lukr99.subtrackr.ui
 import android.app.Application
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
-import com.lukr99.subtrackr.application.AppRepository
-import com.lukr99.subtrackr.application.InMemoryDatabaseStore
-import com.lukr99.subtrackr.application.backup.BackupService
-import com.lukr99.subtrackr.application.backup.FakeDocuments
-import com.lukr99.subtrackr.application.sync.FakeAuthApi
-import com.lukr99.subtrackr.application.sync.FakeSyncRemote
-import com.lukr99.subtrackr.application.sync.InMemorySessionStore
-import com.lukr99.subtrackr.application.sync.SyncCoordinator
-import com.lukr99.subtrackr.application.update.FakeArtifactDownloader
-import com.lukr99.subtrackr.application.update.ReleaseSource
-import com.lukr99.subtrackr.application.update.UpdateService
-import com.lukr99.subtrackr.composition.AppViewModelFactory
-import com.lukr99.subtrackr.domain.update.UpdatePlatform
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -25,7 +10,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
-import java.time.ZoneOffset
 
 /** The whole shell (navigation bar, add button) built through the real view-model factory. */
 @RunWith(RobolectricTestRunner::class)
@@ -38,37 +22,8 @@ class AppShellScreenshotTest {
     @get:Rule
     val temp = TemporaryFolder()
 
-    private fun factory(): AppViewModelFactory {
-        val repository = AppRepository(
-            store = InMemoryDatabaseStore(SampleData.database),
-            rateSource = { SampleData.rates },
-            clock = SampleData.clock,
-            newId = { "00000000-0000-4000-8000-000000000099" },
-        )
-        return AppViewModelFactory(
-            repository = repository,
-            updates = UpdateService(
-                currentVersion = "0.3.0-dev",
-                platform = UpdatePlatform.ANDROID,
-                releases = ReleaseSource { error("dev builds never check") },
-                downloader = FakeArtifactDownloader(emptyMap()),
-                installer = {},
-                directory = temp.root,
-            ),
-            backups = BackupService(repository, FakeDocuments(), SampleData.clock, "0.3.0-dev"),
-            sync = SyncCoordinator(
-                repository = repository,
-                auth = FakeAuthApi(),
-                remote = FakeSyncRemote(),
-                sessions = InMemorySessionStore(),
-                clock = SampleData.clock,
-                scope = CoroutineScope(Dispatchers.Unconfined),
-            ),
-            zone = ZoneOffset.UTC,
-        )
-    }
-
-    private fun capture(dark: Boolean) = compose.captureScreen("app_shell", dark) { SubTrackrApp(factory()) }
+    private fun capture(dark: Boolean) =
+        compose.captureScreen("app_shell", dark) { SubTrackrApp(testViewModelFactory(temp.root)) }
 
     @Test
     fun light() = capture(dark = false)

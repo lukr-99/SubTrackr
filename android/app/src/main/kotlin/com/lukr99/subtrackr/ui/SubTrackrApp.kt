@@ -3,6 +3,7 @@ package com.lukr99.subtrackr.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -21,7 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,7 +39,11 @@ import com.lukr99.subtrackr.ui.update.UpdatePrompt
 import com.lukr99.subtrackr.ui.update.UpdateViewModel
 import com.lukr99.subtrackr.ui.whatif.WhatIfScreen
 
-/** App shell: bottom navigation, the editor overlay, and the update prompt. */
+/**
+ * App shell: bottom navigation, the editor overlay, and the update prompt. The root exposes test
+ * tags as resource ids so uiautomator, Android CLI, and Maestro can select elements by tag.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
     val vm: SubTrackrViewModel = viewModel(factory = viewModelFactory)
@@ -48,63 +57,71 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
     BackHandler(enabled = editorOpen) { editorOpen = false }
     BackHandler(enabled = !editorOpen && tab != AppTab.DASHBOARD) { tab = AppTab.DASHBOARD }
 
-    if (editorOpen) {
-        EditSubscriptionScreen(
-            initial = editorSub,
-            onSave = {
-                vm.upsert(it)
-                editorOpen = false
-            },
-            onCancel = { editorOpen = false },
-            onDelete = {
-                vm.delete(it)
-                editorOpen = false
-            },
-        )
-        return
-    }
-
-    Scaffold(
-        containerColor = SubTrackrTheme.colors.background,
-        bottomBar = {
-            NavigationBar(containerColor = SubTrackrTheme.colors.surface) {
-                NavItem(tab == AppTab.DASHBOARD, "Home", { tab = AppTab.DASHBOARD }) { Icon(Icons.Filled.Dashboard, null) }
-                NavItem(tab == AppTab.WHATIF, "What-if", { tab = AppTab.WHATIF }) { Icon(Icons.Filled.Calculate, null) }
-                NavItem(tab == AppTab.SETTINGS, "Settings", { tab = AppTab.SETTINGS }) { Icon(Icons.Filled.Settings, null) }
-            }
-        },
-        floatingActionButton = {
-            if (tab == AppTab.DASHBOARD) {
-                FloatingActionButton(
-                    onClick = {
-                        editorSub = null
-                        editorOpen = true
-                    },
-                    containerColor = SubTrackrTheme.colors.accent,
-                ) { Icon(Icons.Filled.Add, "Add", tint = SubTrackrTheme.colors.onAccent) }
-            }
-        },
-    ) { padding ->
-        Box(Modifier.padding(padding)) {
-            when (tab) {
-                AppTab.DASHBOARD -> DashboardScreen(
-                    summary = vm.summary,
-                    baseCurrency = vm.baseCurrency,
-                    rates = vm.rates,
-                    budget = vm.monthlyBudget,
-                    onEdit = {
-                        editorSub = it
-                        editorOpen = true
-                    },
-                    today = vm.today,
-                )
-                AppTab.WHATIF -> WhatIfScreen(
-                    baseCurrency = vm.baseCurrency,
-                    currentMonthly = vm.summary.monthlyBase,
-                    rates = vm.rates,
-                    worthThreshold = vm.worthThreshold,
-                )
-                AppTab.SETTINGS -> SettingsRoute(app = vm, viewModelFactory = viewModelFactory)
+    Box(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }) {
+        if (editorOpen) {
+            EditSubscriptionScreen(
+                initial = editorSub,
+                onSave = {
+                    vm.upsert(it)
+                    editorOpen = false
+                },
+                onCancel = { editorOpen = false },
+                onDelete = {
+                    vm.delete(it)
+                    editorOpen = false
+                },
+            )
+        } else {
+            Scaffold(
+                containerColor = SubTrackrTheme.colors.background,
+                bottomBar = {
+                    NavigationBar(containerColor = SubTrackrTheme.colors.surface) {
+                        NavItem(tab == AppTab.DASHBOARD, "Home", AppTags.NAV_DASHBOARD, { tab = AppTab.DASHBOARD }) {
+                            Icon(Icons.Filled.Dashboard, null)
+                        }
+                        NavItem(tab == AppTab.WHATIF, "What-if", AppTags.NAV_WHATIF, { tab = AppTab.WHATIF }) {
+                            Icon(Icons.Filled.Calculate, null)
+                        }
+                        NavItem(tab == AppTab.SETTINGS, "Settings", AppTags.NAV_SETTINGS, { tab = AppTab.SETTINGS }) {
+                            Icon(Icons.Filled.Settings, null)
+                        }
+                    }
+                },
+                floatingActionButton = {
+                    if (tab == AppTab.DASHBOARD) {
+                        FloatingActionButton(
+                            onClick = {
+                                editorSub = null
+                                editorOpen = true
+                            },
+                            containerColor = SubTrackrTheme.colors.accent,
+                            modifier = Modifier.testTag(AppTags.ADD),
+                        ) { Icon(Icons.Filled.Add, "Add", tint = SubTrackrTheme.colors.onAccent) }
+                    }
+                },
+            ) { padding ->
+                Box(Modifier.padding(padding)) {
+                    when (tab) {
+                        AppTab.DASHBOARD -> DashboardScreen(
+                            summary = vm.summary,
+                            baseCurrency = vm.baseCurrency,
+                            rates = vm.rates,
+                            budget = vm.monthlyBudget,
+                            onEdit = {
+                                editorSub = it
+                                editorOpen = true
+                            },
+                            today = vm.today,
+                        )
+                        AppTab.WHATIF -> WhatIfScreen(
+                            baseCurrency = vm.baseCurrency,
+                            currentMonthly = vm.summary.monthlyBase,
+                            rates = vm.rates,
+                            worthThreshold = vm.worthThreshold,
+                        )
+                        AppTab.SETTINGS -> SettingsRoute(app = vm, viewModelFactory = viewModelFactory)
+                    }
+                }
             }
         }
     }
@@ -116,6 +133,7 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
 private fun RowScope.NavItem(
     selected: Boolean,
     label: String,
+    tag: String,
     onClick: () -> Unit,
     icon: @Composable () -> Unit,
 ) {
@@ -124,6 +142,7 @@ private fun RowScope.NavItem(
         onClick = onClick,
         icon = icon,
         label = { Text(label) },
+        modifier = Modifier.testTag(tag),
         colors = NavigationBarItemDefaults.colors(
             selectedIconColor = SubTrackrTheme.colors.accent,
             unselectedIconColor = SubTrackrTheme.colors.textSecondary,

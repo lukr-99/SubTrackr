@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -146,6 +147,7 @@ fun EditSubscriptionScreen(
 
     Column(
         Modifier
+            .testTag(EditorTags.ROOT)
             .fillMaxSize()
             .background(SubTrackrTheme.colors.background)
             .statusBarsPadding()
@@ -154,12 +156,13 @@ fun EditSubscriptionScreen(
     ) {
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onCancel) { Text("Cancel", color = SubTrackrTheme.colors.textSecondary, fontSize = 15.sp) }
+            TextButton(onClick = onCancel, modifier = Modifier.testTag(EditorTags.CANCEL)) { Text("Cancel", color = SubTrackrTheme.colors.textSecondary, fontSize = 15.sp) }
             Spacer(Modifier.weight(1f))
             Text(if (isNew) "Add subscription" else "Edit", color = SubTrackrTheme.colors.textPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = { build()?.let(onSave) },
+                modifier = Modifier.testTag(EditorTags.SAVE),
                 colors = ButtonDefaults.buttonColors(containerColor = SubTrackrTheme.colors.accent),
             ) { Text("Save", color = SubTrackrTheme.colors.onAccent, fontWeight = FontWeight.Bold) }
         }
@@ -182,10 +185,10 @@ fun EditSubscriptionScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        LabeledTextField("Name", name, { name = it })
+        LabeledTextField("Name", name, { name = it }, Modifier.testTag(EditorTags.NAME))
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            LabeledTextField("Amount", amount, { amount = it }, Modifier.weight(1f))
+            LabeledTextField("Amount", amount, { amount = it }, Modifier.weight(1f).testTag(EditorTags.AMOUNT))
             PickerField("Currency", currency, Format.commonCurrencies, { currency = it }, Modifier.width(130.dp))
         }
         Spacer(Modifier.height(12.dp))

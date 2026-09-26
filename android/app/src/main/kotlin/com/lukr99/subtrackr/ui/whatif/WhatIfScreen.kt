@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +72,7 @@ fun WhatIfScreen(
 
     Column(
         Modifier
+            .testTag(WhatIfTags.ROOT)
             .fillMaxSize()
             .background(SubTrackrTheme.colors.background)
             .padding(horizontal = 16.dp)
@@ -118,6 +120,7 @@ fun WhatIfScreen(
                     Text(
                         newMonthly?.let { Format.money(it, baseCurrency) } ?: "—",
                         color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.testTag(WhatIfTags.NEW_TOTAL),
                     )
                     Text(
                         newMonthly?.let { Format.money(it.multiply(BigDecimal(12)), baseCurrency) + " / yr" } ?: "",

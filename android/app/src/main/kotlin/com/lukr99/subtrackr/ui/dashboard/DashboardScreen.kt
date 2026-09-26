@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -103,7 +104,7 @@ fun DashboardScreen(
         }
 
     LazyColumn(
-        Modifier.fillMaxSize().background(SubTrackrTheme.colors.background).padding(horizontal = 16.dp),
+        Modifier.testTag(DashboardTags.ROOT).fillMaxSize().background(SubTrackrTheme.colors.background).padding(horizontal = 16.dp),
     ) {
         item { Spacer(Modifier.height(20.dp)) }
         item {
@@ -167,7 +168,13 @@ private fun OverviewCard(summary: SpendSummary, base: String, chart: ChartType, 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 Text("Per month", color = SubTrackrTheme.colors.textSecondary, fontSize = 11.sp)
-                Text(Format.money(summary.monthlyBase, base), color = SubTrackrTheme.colors.textPrimary, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    Format.money(summary.monthlyBase, base),
+                    color = SubTrackrTheme.colors.textPrimary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.testTag(DashboardTags.MONTHLY_TOTAL),
+                )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text("Per year", color = SubTrackrTheme.colors.textSecondary, fontSize = 11.sp)
