@@ -1,15 +1,16 @@
 using System.Reflection;
+using SubTrackr.Core.Updates;
 
 namespace SubTrackr.Desktop.Composition;
 
 /// <summary>
-/// What this build is: its version as Directory.Build.props stamps it (<c>0.3.0</c> for a release,
-/// <c>0.3.0-dev</c> for every other build).
+/// What this build is: its version as Directory.Build.props stamps it, <c>0.3.0</c> for a release
+/// and <c>0.3.0-dev</c> for every other build (SPEC.md section 7).
 /// </summary>
 public sealed record BuildInfo(string Version)
 {
-    /// <summary>The X.Y.Z part, without any pre-release suffix.</summary>
-    public string CoreVersion => Version.Split('-', '+')[0];
+    /// <summary>A development build: anything that is not a plain X.Y.Z release version.</summary>
+    public bool IsDevBuild => ReleaseVersion.TryParse(Version) is not { IsPreRelease: false };
 
     public static BuildInfo FromAssembly(Assembly assembly)
     {

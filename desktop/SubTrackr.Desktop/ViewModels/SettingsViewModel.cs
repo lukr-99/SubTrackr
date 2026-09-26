@@ -5,7 +5,6 @@ using SubTrackr.Core.Currency;
 using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Subscriptions;
 using SubTrackr.Core.Sync;
-using SubTrackr.Desktop.Composition;
 using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
@@ -20,33 +19,31 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly SubscriptionLedger ledger;
     private readonly ExchangeRates rates;
     private readonly SyncRunner sync;
-    private readonly UpdatePrompt updates;
     private readonly IDesktopServices desktop;
     private readonly IAppLog log;
     private readonly TimeProvider time;
     private readonly string dataFolder;
 
     public SettingsViewModel(
-        BuildInfo build,
         SubscriptionLedger ledger,
         ExchangeRates rates,
         SyncRunner sync,
-        UpdatePrompt updates,
+        UpdatesViewModel updates,
         IDesktopServices desktop,
         IAppLog log,
         TimeProvider time,
         string dataFolder)
     {
-        ArgumentNullException.ThrowIfNull(build);
+        ArgumentNullException.ThrowIfNull(ledger);
+        ArgumentNullException.ThrowIfNull(rates);
         this.ledger = ledger;
         this.rates = rates;
         this.sync = sync;
-        this.updates = updates;
+        Updates = updates;
         this.desktop = desktop;
         this.log = log;
         this.time = time;
         this.dataFolder = dataFolder;
-        VersionText = $"SubTrackr v{build.Version}";
         rates.Changed += (_, _) => RatesText = DescribeRates();
         Load();
     }
@@ -56,7 +53,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<string> Currencies => Formatting.CommonCurrencies;
 
-    public string VersionText { get; }
+    /// <summary>The version and update card.</summary>
+    public UpdatesViewModel Updates { get; }
 
     public string DataFilePath => ledger.StoreLocation;
 
@@ -134,9 +132,6 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenDataFolder() => desktop.OpenFolder(dataFolder);
-
-    [RelayCommand]
-    private Task CheckForUpdatesAsync() => updates.CheckAndOfferAsync(announceUpToDate: true);
 
     [RelayCommand]
     private async Task SyncNowAsync()

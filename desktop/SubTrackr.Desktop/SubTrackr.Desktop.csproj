@@ -17,8 +17,6 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <!-- Shared self-update service (local feed; see ..\..\nuget.config). -->
-    <PackageReference Include="DotNetLib.Core" Version="0.1.0" />
   </ItemGroup>
 
 </Project>

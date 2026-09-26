@@ -1,24 +1,29 @@
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Storage;
 using SubTrackr.Core.Sync;
-using SubTrackr.Desktop.Services;
+using SubTrackr.Core.Updates;
 using SubTrackr.Infrastructure.Currency;
 using SubTrackr.Infrastructure.Diagnostics;
 using SubTrackr.Infrastructure.Storage;
 using SubTrackr.Infrastructure.Sync;
+using SubTrackr.Infrastructure.Updates;
 
 namespace SubTrackr.Desktop.Composition;
 
 /// <summary>
-/// Everything that touches the disk, the network, or the clock, in one place, so the composition
-/// root runs on the real ones (<see cref="ForUser"/>) or on fakes in tests. Owns and disposes the
-/// HTTP clients it creates.
+/// Everything that touches the disk, the network, the clock, or other processes, in one place, so
+/// the composition root runs on the real ones (<see cref="ForUser"/>) or on fakes in tests. Owns
+/// and disposes the HTTP clients it creates.
 /// </summary>
 public sealed class AppAdapters : IDisposable
 {
+    public const string ReleaseOwner = "lukr-99";
+    public const string ReleaseRepository = "SubTrackr";
+
     private readonly IDisposable[] owned;
 
     public AppAdapters(
@@ -26,7 +31,9 @@ public sealed class AppAdapters : IDisposable
         IDatabaseStore store,
         IRateProvider rates,
         ISyncProviderFactory syncProviders,
-        IUpdater updater,
+        IReleaseSource releases,
+        IUpdateDownloader downloads,
+        IInstallerLauncher installer,
         IAppLog log,
         string dataFolder,
         params IDisposable[] owned)
@@ -35,7 +42,9 @@ public sealed class AppAdapters : IDisposable
         Store = store;
         Rates = rates;
         SyncProviders = syncProviders;
-        Updater = updater;
+        Releases = releases;
+        Downloads = downloads;
+        Installer = installer;
         Log = log;
         DataFolder = dataFolder;
         this.owned = owned;
@@ -49,7 +58,11 @@ public sealed class AppAdapters : IDisposable
 
     public ISyncProviderFactory SyncProviders { get; }
 
-    public IUpdater Updater { get; }
+    public IReleaseSource Releases { get; }
+
+    public IUpdateDownloader Downloads { get; }
+
+    public IInstallerLauncher Installer { get; }
 
     public IAppLog Log { get; }
 
@@ -61,21 +74,31 @@ public sealed class AppAdapters : IDisposable
         ArgumentNullException.ThrowIfNull(build);
         var paths = AppDataPaths.ForUser();
         var time = TimeProvider.System;
+        var userAgent = $"SubTrackr/{build.Version}";
+
+        // API calls: 15 seconds each (SPEC.md section 8.4).
         var web = new HttpClient(new SocketsHttpHandler { AutomaticDecompression = DecompressionMethods.All })
         {
             Timeout = TimeSpan.FromSeconds(15),
         };
-        web.DefaultRequestHeaders.UserAgent.ParseAdd($"SubTrackr/{build.CoreVersion}");
+        web.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+
+        // Installer downloads take longer; cancellation and the size cap bound them instead.
+        var downloads = new HttpClient(new SocketsHttpHandler()) { Timeout = TimeSpan.FromMinutes(10) };
+        downloads.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
 
         return new AppAdapters(
             time,
             new JsonDatabaseStore(paths.DataFile),
             new FrankfurterRateProvider(web),
             new SupabaseSyncProviderFactory(web),
-            new Updater(web, build.CoreVersion),
+            new GitHubReleaseSource(web, ReleaseOwner, ReleaseRepository),
+            new VerifiedDownloader(downloads, Path.Combine(Path.GetTempPath(), "SubTrackr", "updates")),
+            new InnoSetupLauncher(),
             new FileLog(paths.LogsFolder, time),
             paths.Root,
-            web);
+            web,
+            downloads);
     }
 
     public void Dispose()

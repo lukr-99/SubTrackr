@@ -2,6 +2,7 @@ using System.Windows.Threading;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Subscriptions;
 using SubTrackr.Core.Sync;
+using SubTrackr.Core.Updates;
 using SubTrackr.Desktop.Services;
 using SubTrackr.Desktop.ViewModels;
 
@@ -9,7 +10,7 @@ namespace SubTrackr.Desktop.Composition;
 
 /// <summary>
 /// The one composition root: builds the domain services from the adapters and hands them to the
-/// view models through constructors. <see cref="Start"/> begins the launch work (rates, sync, the
+/// view models through constructors. <see cref="Start"/> begins the launch work (sync, rates, the
 /// update check) and the periodic sync. Lives as long as the process.
 /// </summary>
 public sealed class AppGraph : IDisposable
@@ -17,7 +18,6 @@ public sealed class AppGraph : IDisposable
     private static readonly TimeSpan SyncInterval = TimeSpan.FromMinutes(5);
 
     private readonly AppAdapters adapters;
-    private readonly UpdatePrompt updates;
     private DispatcherTimer? syncTimer;
 
     public AppGraph(BuildInfo build, AppAdapters adapters, IDialogService dialogs, IDesktopServices desktop)
@@ -32,10 +32,11 @@ public sealed class AppGraph : IDisposable
         Ledger = SubscriptionLedger.Open(adapters.Store, adapters.Time);
         Rates = new ExchangeRates(adapters.Rates, adapters.Time, adapters.Log, Ledger.BaseCurrency);
         Sync = new SyncRunner(Ledger, adapters.SyncProviders, adapters.Log);
-        updates = new UpdatePrompt(adapters.Updater, build.Version, dialogs, desktop, adapters.Log);
+        UpdateService = new UpdateService(adapters.Releases, adapters.Downloads, adapters.Installer, adapters.Log, build.Version);
 
         Dashboard = new DashboardViewModel(Ledger, Rates, dialogs, adapters.Time);
-        Settings = new SettingsViewModel(build, Ledger, Rates, Sync, updates, desktop, adapters.Log, adapters.Time, adapters.DataFolder);
+        Updates = new UpdatesViewModel(UpdateService, dialogs, desktop);
+        Settings = new SettingsViewModel(Ledger, Rates, Sync, Updates, desktop, adapters.Log, adapters.Time, adapters.DataFolder);
         Main = new MainViewModel("SubTrackr", Dashboard, Settings, () => new WhatIfViewModel(Ledger, Rates));
     }
 
@@ -47,7 +48,11 @@ public sealed class AppGraph : IDisposable
 
     public SyncRunner Sync { get; }
 
+    public UpdateService UpdateService { get; }
+
     public DashboardViewModel Dashboard { get; }
+
+    public UpdatesViewModel Updates { get; }
 
     public SettingsViewModel Settings { get; }
 
@@ -61,7 +66,7 @@ public sealed class AppGraph : IDisposable
     {
         Sync.RequestSync();
         _ = Rates.RefreshAsync(Ledger.BaseCurrency, CancellationToken.None);
-        _ = updates.CheckAndOfferAsync(announceUpToDate: false);
+        _ = Updates.CheckOnLaunchAsync();
 
         syncTimer = new DispatcherTimer { Interval = SyncInterval };
         syncTimer.Tick += (_, _) => Sync.RequestSync();

@@ -7,9 +7,13 @@ public sealed class RecordingDesktop : IDesktopServices
 {
     public List<string> OpenedFolders { get; } = [];
 
+    public List<Uri> OpenedUrls { get; } = [];
+
     public int Shutdowns { get; private set; }
 
     public void OpenFolder(string path) => OpenedFolders.Add(path);
+
+    public void OpenUrl(Uri url) => OpenedUrls.Add(url);
 
     public void Shutdown() => Shutdowns++;
 }

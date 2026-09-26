@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Time.Testing;
 using SubTrackr.Core.Contracts;
 using SubTrackr.Core.Storage;
+using SubTrackr.Core.Updates;
 using SubTrackr.Desktop.Composition;
 using SubTrackr.Desktop.Tests.Fakes;
 
@@ -8,20 +9,23 @@ namespace SubTrackr.Desktop.Tests.Hosting;
 
 /// <summary>
 /// The whole app graph on fakes: an in-memory store with the first-run sample data (no websites, so
-/// no logo is fetched), fixed rates, a fake cloud, and dialogs that answer on their own.
+/// no logo is fetched), fixed rates, a fake cloud and release channel, and dialogs that answer on
+/// their own.
 /// </summary>
 public sealed class TestApp : IDisposable
 {
+    public const string DataFolder = @"C:\Users\you\AppData\Roaming\SubTrackr";
+
     public static readonly DateTimeOffset Now = new(2026, 9, 26, 10, 0, 0, TimeSpan.Zero);
 
-    private TestApp(AppGraph graph, FakeTimeProvider time, InMemoryDatabaseStore store, RecordingDialogs dialogs, RecordingDesktop desktop, FakeUpdater updater, FakeSyncProvider cloud)
+    private TestApp(AppGraph graph, FakeTimeProvider time, InMemoryDatabaseStore store, RecordingDialogs dialogs, RecordingDesktop desktop, FakeUpdateChannel releases, FakeSyncProvider cloud)
     {
         Graph = graph;
         Time = time;
         Store = store;
         Dialogs = dialogs;
         Desktop = desktop;
-        Updater = updater;
+        Releases = releases;
         Cloud = cloud;
     }
 
@@ -35,21 +39,21 @@ public sealed class TestApp : IDisposable
 
     public RecordingDesktop Desktop { get; }
 
-    public FakeUpdater Updater { get; }
+    public FakeUpdateChannel Releases { get; }
 
     public FakeSyncProvider Cloud { get; }
 
-    public static TestApp Create(Database? database = null, string version = "0.3.0")
+    public static TestApp Create(Database? database = null, string version = "0.3.0", PublishedRelease? latest = null)
     {
         var time = new FakeTimeProvider(Now);
         var store = new InMemoryDatabaseStore(database ?? SampleDatabase());
         var dialogs = new RecordingDialogs();
         var desktop = new RecordingDesktop();
-        var updater = new FakeUpdater();
+        var releases = new FakeUpdateChannel { Latest = latest };
         var cloud = new FakeSyncProvider();
-        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, updater, new RecordingLog(), @"C:\Users\you\AppData\Roaming\SubTrackr");
+        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, releases, releases, releases, new RecordingLog(), DataFolder);
         var graph = new AppGraph(new BuildInfo(version), adapters, dialogs, desktop);
-        return new TestApp(graph, time, store, dialogs, desktop, updater, cloud);
+        return new TestApp(graph, time, store, dialogs, desktop, releases, cloud);
     }
 
     /// <summary>The first-run data without websites, plus a budget, a trial ending soon, and a paused plan.</summary>

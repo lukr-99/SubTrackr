@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace SubTrackr.Desktop.Services;
 
-/// <summary>File Explorer and the WPF application lifetime.</summary>
+/// <summary>File Explorer, the default browser, and the WPF application lifetime.</summary>
 public sealed class WpfDesktopServices : IDesktopServices
 {
     public void OpenFolder(string path)
@@ -12,6 +12,15 @@ public sealed class WpfDesktopServices : IDesktopServices
         if (Directory.Exists(path))
         {
             Process.Start(new ProcessStartInfo("explorer.exe", $"\"{path}\"") { UseShellExecute = true });
+        }
+    }
+
+    public void OpenUrl(Uri url)
+    {
+        ArgumentNullException.ThrowIfNull(url);
+        if (url.Scheme == Uri.UriSchemeHttps)
+        {
+            Process.Start(new ProcessStartInfo(url.AbsoluteUri) { UseShellExecute = true });
         }
     }
 

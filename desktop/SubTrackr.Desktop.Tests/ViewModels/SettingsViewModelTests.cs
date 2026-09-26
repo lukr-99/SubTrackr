@@ -14,7 +14,6 @@ public class SettingsViewModelTests
         Assert.Equal("CZK", settings.BaseCurrency);
         Assert.Equal("35", settings.ThresholdText);
         Assert.Equal("2000", settings.BudgetText);
-        Assert.Equal("SubTrackr v0.3.0", settings.VersionText);
     }
 
     [Fact]
@@ -80,6 +79,6 @@ public class SettingsViewModelTests
 
         app.Graph.Settings.OpenDataFolderCommand.Execute(null);
 
-        Assert.Equal([@"C:\Users\you\AppData\Roaming\SubTrackr"], app.Desktop.OpenedFolders);
+        Assert.Equal([TestApp.DataFolder], app.Desktop.OpenedFolders);
     }
 }
