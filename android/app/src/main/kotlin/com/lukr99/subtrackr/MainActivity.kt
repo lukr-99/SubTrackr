@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         val container = (application as SubTrackrApplication).container
         setContent {
             SubTrackrTheme {
-                SubTrackrApp(viewModelFactory = container.viewModelFactory, updater = container.updater)
+                SubTrackrApp(viewModelFactory = container.viewModelFactory)
             }
         }
     }

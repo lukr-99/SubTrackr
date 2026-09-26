@@ -71,6 +71,8 @@ android {
     }
     buildFeatures {
         compose = true
+        // BuildConfig.VERSION_NAME carries the -dev suffix that keeps debug builds off the updater.
+        buildConfig = true
     }
 
     sourceSets {
@@ -107,4 +109,6 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.serialization.json)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.okhttp.mockwebserver)
 }

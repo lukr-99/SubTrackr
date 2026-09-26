@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +30,7 @@ import com.lukr99.subtrackr.ui.components.LabeledTextField
 import com.lukr99.subtrackr.ui.components.PickerField
 import com.lukr99.subtrackr.ui.components.SectionCard
 import com.lukr99.subtrackr.ui.theme.Palette
+import com.lukr99.subtrackr.ui.update.UpdateUiState
 import java.math.BigDecimal
 
 @Composable
@@ -40,15 +41,15 @@ fun SettingsScreen(
     ratesLabel: String,
     syncUrl: String,
     syncKey: String,
-    appVersion: String,
-    updateStatus: String,
-    updateBusy: Boolean,
+    update: UpdateUiState,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onSetBudget: (BigDecimal) -> Unit,
     onRefreshRates: () -> Unit,
     onSync: (String, String, (String) -> Unit) -> Unit,
     onCheckUpdate: () -> Unit,
+    onInstallUpdate: () -> Unit,
+    onOpenReleases: () -> Unit,
 ) {
     var threshold by remember { mutableStateOf(worthThreshold.stripTrailingZeros().toPlainString()) }
     var budget by remember {
@@ -60,6 +61,7 @@ fun SettingsScreen(
 
     Column(
         Modifier
+            .testTag(SettingsTags.ROOT)
             .fillMaxSize()
             .background(Palette.Bg)
             .padding(horizontal = 16.dp)
@@ -136,36 +138,13 @@ fun SettingsScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionCard {
-            Text("Updates", color = Palette.TextSecondary, fontSize = 12.sp)
-            Text(
-                updateStatus.ifBlank { "Installed version: v$appVersion" },
-                color = Palette.TextMuted,
-                fontSize = 11.sp,
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Button(
-                    enabled = !updateBusy,
-                    onClick = onCheckUpdate,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceAlt),
-                ) { Text("Check latest", color = Palette.TextPrimary) }
-                if (updateBusy) {
-                    Spacer(Modifier.width(12.dp))
-                    CircularProgressIndicator(
-                        modifier = Modifier.width(22.dp).height(22.dp),
-                        strokeWidth = 2.dp,
-                        color = Palette.Accent,
-                    )
-                }
-            }
-        }
+        UpdatesCard(update, onCheckUpdate, onInstallUpdate, onOpenReleases)
         Spacer(Modifier.height(12.dp))
 
         SectionCard {
             Text("About", color = Palette.TextSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(4.dp))
-            Text("SubTrackr for Android · v$appVersion", color = Palette.TextPrimary, fontSize = 13.sp)
+            Text("SubTrackr for Android · v${update.currentVersion}", color = Palette.TextPrimary, fontSize = 13.sp)
             Text("Shares its data contract with the desktop app.", color = Palette.TextMuted, fontSize = 11.sp)
         }
         Spacer(Modifier.height(28.dp))
