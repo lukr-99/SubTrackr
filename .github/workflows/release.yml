@@ -118,11 +118,14 @@ jobs:
           apk="dist/SubTrackr-$version.apk"
           mkdir -p dist
           cp app/build/outputs/apk/release/app-release.apk "$apk"
-          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
-          actual=$("$apksigner" verify --print-certs "$apk" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')
+          # The build-tools version AGP installs for buildToolsVersion in app/build.gradle.kts.
+          apksigner="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          output=$("$apksigner" verify --print-certs "$apk" 2>&1) || { echo "$output"; exit 1; }
+          actual=$(echo "$output" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')
           expected=$(tr -d '[:space:]' < release-signing-cert.sha256)
           if [ "$actual" != "$expected" ]; then
-            echo "The APK is signed by $actual, expected $expected (android/release-signing-cert.sha256)."
+            echo "$output"
+            echo "The APK is signed by '$actual', expected $expected (android/release-signing-cert.sha256)."
             exit 1
           fi
           (cd dist && sha256sum "SubTrackr-$version.apk" > "SubTrackr-$version.apk.sha256")
