@@ -6,6 +6,24 @@ All notable changes to SubTrackr. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The SubTrackr logo animates at launch: its bars grow in one after another on the Android 12+
+  splash screen and in the desktop side bar. The motion is off when the system turns animations
+  off.
+- The Android icon supports Android 13 themed icons.
+
+### Changed
+
+- The desktop side bar shows the SubTrackr logo instead of a plain "S" badge.
+- The desktop app icon is drawn from the shared logo, with sharp images from 16 to 256 px for the
+  taskbar and title bar.
+
+### Fixed
+
+- The Android launcher icon is centered and uses the same blue-to-purple gradient as the desktop
+  icon.
+
 ## [0.3.0] - 2026-09-26
 
 ### Added
