@@ -3,16 +3,24 @@ package com.lukr99.subtrackr.ui.settings
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.lukr99.subtrackr.domain.update.AppVersion
+import com.lukr99.subtrackr.domain.update.ReleaseAsset
+import com.lukr99.subtrackr.domain.update.UpdateOffer
 import com.lukr99.subtrackr.model.ThemeMode
 import com.lukr99.subtrackr.ui.SCREENSHOT_DIR
 import com.lukr99.subtrackr.ui.SampleData
+import com.lukr99.subtrackr.ui.backup.BackupCard
+import com.lukr99.subtrackr.ui.backup.BackupTags
+import com.lukr99.subtrackr.ui.backup.BackupUiState
 import com.lukr99.subtrackr.ui.captureScreen
 import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
+import com.lukr99.subtrackr.ui.update.UpdateStatus
 import com.lukr99.subtrackr.ui.update.UpdateUiState
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +37,13 @@ class SettingsScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
+    private val offer = UpdateOffer(
+        version = AppVersion(0, 3, 1),
+        asset = ReleaseAsset("SubTrackr-0.3.1.apk", "https://example.invalid/SubTrackr-0.3.1.apk"),
+        checksumAsset = ReleaseAsset("SubTrackr-0.3.1.apk.sha256", "https://example.invalid/SubTrackr-0.3.1.apk.sha256"),
+        notes = "",
+    )
+
     @Composable
     private fun Screen() {
         SettingsScreen(
@@ -39,25 +54,53 @@ class SettingsScreenshotTest {
             syncUrl = "",
             syncKey = "",
             themeMode = ThemeMode.SYSTEM,
-            update = UpdateUiState(currentVersion = "0.3.0", checksEnabled = true),
+            appVersion = "0.3.0",
             onSetThemeMode = {},
             onSetBaseCurrency = {},
             onSetThreshold = {},
             onSetBudget = {},
             onRefreshRates = {},
             onSync = { _, _, _ -> },
-            onCheckUpdate = {},
-            onInstallUpdate = {},
-            onOpenReleases = {},
+            backupCard = {
+                BackupCard(
+                    state = BackupUiState(message = "Restored: 1 added, 1 updated, 1 unchanged, 3 in total."),
+                    onExport = {},
+                    onRestore = {},
+                    onSelectMode = {},
+                    onConfirmRestore = {},
+                    onCancelRestore = {},
+                )
+            },
+            updatesCard = {
+                UpdatesCard(
+                    state = UpdateUiState(
+                        currentVersion = "0.3.0",
+                        checksEnabled = true,
+                        status = UpdateStatus.Available("0.3.1"),
+                        offer = offer,
+                    ),
+                    onCheck = {},
+                    onInstall = {},
+                    onOpenReleases = {},
+                )
+            },
         )
     }
 
     private fun top(dark: Boolean) = compose.captureScreen("settings_top", dark) { Screen() }
 
-    private fun bottom(dark: Boolean) {
+    private fun scrolledTo(name: String, dark: Boolean, scroll: () -> Unit) {
         compose.setContent { SubTrackrTheme(darkTheme = dark) { Screen() } }
+        scroll()
+        compose.onRoot().captureRoboImage("$SCREENSHOT_DIR/${name}_${if (dark) "dark" else "light"}.png")
+    }
+
+    private fun middle(dark: Boolean) = scrolledTo("settings_middle", dark) {
+        compose.onNodeWithTag(BackupTags.MESSAGE).performScrollTo()
+    }
+
+    private fun bottom(dark: Boolean) = scrolledTo("settings_bottom", dark) {
         compose.onNodeWithText("Shares its data contract with the desktop app.").performScrollTo()
-        compose.onRoot().captureRoboImage("$SCREENSHOT_DIR/settings_bottom_${if (dark) "dark" else "light"}.png")
     }
 
     @Test
@@ -65,6 +108,12 @@ class SettingsScreenshotTest {
 
     @Test
     fun topDark() = top(dark = true)
+
+    @Test
+    fun middleLight() = middle(dark = false)
+
+    @Test
+    fun middleDark() = middle(dark = true)
 
     @Test
     fun bottomLight() = bottom(dark = false)

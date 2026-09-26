@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.lukr99.subtrackr.BuildConfig
 import com.lukr99.subtrackr.application.AppRepository
+import com.lukr99.subtrackr.application.backup.BackupService
 import com.lukr99.subtrackr.application.update.UpdateService
 import com.lukr99.subtrackr.data.SubscriptionStore
+import com.lukr99.subtrackr.data.backup.ContentResolverDocuments
 import com.lukr99.subtrackr.data.rates.FrankfurterRateSource
 import com.lukr99.subtrackr.data.sync.SupabaseSyncProvider
 import com.lukr99.subtrackr.data.update.FileProviderPackageInstaller
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit
  */
 class AppContainer(context: Context) {
     private val appContext = context.applicationContext
+    private val clock: Clock = Clock.systemDefaultZone()
 
     private val ratesHttp: OkHttpClient = OkHttpClient.Builder()
         .callTimeout(8, TimeUnit.SECONDS)
@@ -45,7 +48,7 @@ class AppContainer(context: Context) {
         store = SubscriptionStore(File(appContext.filesDir, "data.json")),
         rateSource = FrankfurterRateSource(ratesHttp),
         syncProviders = { url, key -> SupabaseSyncProvider(url, key, syncHttp) },
-        clock = Clock.systemDefaultZone(),
+        clock = clock,
         newId = { UUID.randomUUID().toString() },
     )
 
@@ -59,5 +62,12 @@ class AppContainer(context: Context) {
         directory = File(appContext.cacheDir, "updates"),
     )
 
-    val viewModelFactory: ViewModelProvider.Factory = AppViewModelFactory(repository, updates)
+    val backups: BackupService = BackupService(
+        repository = repository,
+        documents = ContentResolverDocuments(appContext.contentResolver),
+        clock = clock,
+        appVersion = BuildConfig.VERSION_NAME,
+    )
+
+    val viewModelFactory: ViewModelProvider.Factory = AppViewModelFactory(repository, updates, backups)
 }

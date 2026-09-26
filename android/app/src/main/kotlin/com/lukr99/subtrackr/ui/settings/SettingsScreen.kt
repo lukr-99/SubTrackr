@@ -31,9 +31,9 @@ import com.lukr99.subtrackr.ui.components.LabeledTextField
 import com.lukr99.subtrackr.ui.components.PickerField
 import com.lukr99.subtrackr.ui.components.SectionCard
 import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
-import com.lukr99.subtrackr.ui.update.UpdateUiState
 import java.math.BigDecimal
 
+/** Device settings; capability cards (backup, updates) arrive as slots from the app shell. */
 @Composable
 fun SettingsScreen(
     baseCurrency: String,
@@ -43,16 +43,15 @@ fun SettingsScreen(
     syncUrl: String,
     syncKey: String,
     themeMode: ThemeMode,
-    update: UpdateUiState,
+    appVersion: String,
     onSetThemeMode: (ThemeMode) -> Unit,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onSetBudget: (BigDecimal) -> Unit,
     onRefreshRates: () -> Unit,
     onSync: (String, String, (String) -> Unit) -> Unit,
-    onCheckUpdate: () -> Unit,
-    onInstallUpdate: () -> Unit,
-    onOpenReleases: () -> Unit,
+    backupCard: @Composable () -> Unit,
+    updatesCard: @Composable () -> Unit,
 ) {
     var threshold by remember { mutableStateOf(worthThreshold.stripTrailingZeros().toPlainString()) }
     var budget by remember {
@@ -144,13 +143,16 @@ fun SettingsScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        UpdatesCard(update, onCheckUpdate, onInstallUpdate, onOpenReleases)
+        backupCard()
+        Spacer(Modifier.height(12.dp))
+
+        updatesCard()
         Spacer(Modifier.height(12.dp))
 
         SectionCard {
             Text("About", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(4.dp))
-            Text("SubTrackr for Android · v${update.currentVersion}", color = SubTrackrTheme.colors.textPrimary, fontSize = 13.sp)
+            Text("SubTrackr for Android · v$appVersion", color = SubTrackrTheme.colors.textPrimary, fontSize = 13.sp)
             Text("Shares its data contract with the desktop app.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
         }
         Spacer(Modifier.height(28.dp))

@@ -2,6 +2,7 @@ package com.lukr99.subtrackr.domain.spend
 
 import com.lukr99.subtrackr.domain.currency.ExchangeRateTable
 import com.lukr99.subtrackr.domain.worth.WorthIt
+import com.lukr99.subtrackr.model.BillingCycle
 import com.lukr99.subtrackr.model.SubStatus
 import com.lukr99.subtrackr.model.Subscription
 import java.math.BigDecimal
@@ -18,7 +19,7 @@ object SpendCalculator {
         val perSub = subscriptions
             .filter { it.deletedAt.isEmpty() }
             .map { s ->
-                val monthlyOwn = Normalization.monthlyEquivalent(s.cost.toBigDecimal(), s.billingCycle, s.customDays)
+                val monthlyOwn = monthlyOwn(s)
                 val monthlyBase = if (rates.knows(s.cost.currency)) {
                     rates.convert(monthlyOwn, s.cost.currency, base)
                 } else {
@@ -54,5 +55,18 @@ object SpendCalculator {
             .sortedByDescending { it.monthlyBase }
 
         return SpendSummary(base, monthlyTotal, monthlyTotal.multiply(BigDecimal(12)), perSub, perCurrency, byCategory)
+    }
+
+    /**
+     * Records from a backup, a sync row, or another app can carry an unspecified cycle or a custom
+     * cycle of zero days. They count as monthly so one odd record cannot break every total.
+     */
+    private fun monthlyOwn(s: Subscription): BigDecimal {
+        val cycle = when {
+            s.billingCycle == BillingCycle.BILLING_CYCLE_UNSPECIFIED -> BillingCycle.MONTHLY
+            s.billingCycle == BillingCycle.CUSTOM_DAYS && s.customDays <= 0 -> BillingCycle.MONTHLY
+            else -> s.billingCycle
+        }
+        return Normalization.monthlyEquivalent(s.cost.toBigDecimal(), cycle, s.customDays)
     }
 }

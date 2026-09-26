@@ -20,6 +20,14 @@ app/src/test/kotlin/       unit and golden-vector tests, mirroring the main pack
 `domain` depends on nothing but `model`. Adapters in `data` implement the ports declared in
 `application`. Only `composition/` picks adapters and builds the object graph.
 
+## Data and backups
+
+`data.json` in the app's private files holds the whole `Database`; every change replaces it with an
+atomic rename. Settings > Backup exports a cross-platform JSON file (SPEC.md section 9) through the
+system file picker and restores one with Merge (the default) or Replace after a confirmation. A
+restore validates the file and builds the result in memory before the single atomic save, so a bad
+file or a failed save changes nothing. Backups never contain the sync URL, key, or sign-in session.
+
 ## Themes
 
 Settings offers System, Light, and Dark. Every color comes from

@@ -4,10 +4,15 @@ import com.lukr99.subtrackr.application.store.DatabaseStore
 import com.lukr99.subtrackr.model.Database
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /**
  * Loads and saves the whole [Database] as one JSON file (mirrors the desktop DataStore). JSON field
- * names match the proto so the format stays sync-compatible. Writes go to a temp file first.
+ * names match the proto so the format stays sync-compatible. A save writes and syncs a temp file,
+ * then renames it over data.json, so a crash leaves either the old or the new file, never half.
  */
 class SubscriptionStore(private val file: File) : DatabaseStore {
 
@@ -31,10 +36,17 @@ class SubscriptionStore(private val file: File) : DatabaseStore {
     }
 
     override fun save(db: Database) {
-        file.parentFile?.mkdirs()
-        val tmp = File(file.parentFile, file.name + ".tmp")
-        tmp.writeText(json.encodeToString(Database.serializer(), db))
-        if (file.exists()) file.delete()
-        tmp.renameTo(file)
+        val directory = file.absoluteFile.parentFile
+        directory?.mkdirs()
+        val tmp = File(directory, file.name + ".tmp")
+        FileOutputStream(tmp).use { out ->
+            out.write(json.encodeToString(Database.serializer(), db).toByteArray(Charsets.UTF_8))
+            out.fd.sync()
+        }
+        try {
+            Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
+        } catch (_: AtomicMoveNotSupportedException) {
+            Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
     }
 }

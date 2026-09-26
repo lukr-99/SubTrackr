@@ -22,15 +22,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lukr99.subtrackr.domain.update.UpdateChannel
 import com.lukr99.subtrackr.model.Subscription
 import com.lukr99.subtrackr.ui.dashboard.DashboardScreen
 import com.lukr99.subtrackr.ui.editor.EditSubscriptionScreen
-import com.lukr99.subtrackr.ui.settings.SettingsScreen
+import com.lukr99.subtrackr.ui.settings.SettingsRoute
 import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import com.lukr99.subtrackr.ui.update.UpdatePrompt
 import com.lukr99.subtrackr.ui.update.UpdateViewModel
@@ -42,7 +40,6 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
     val vm: SubTrackrViewModel = viewModel(factory = viewModelFactory)
     val updates: UpdateViewModel = viewModel(factory = viewModelFactory)
     val update by updates.uiState.collectAsStateWithLifecycle()
-    val uriHandler = LocalUriHandler.current
     var tab by remember { mutableStateOf(AppTab.DASHBOARD) }
     var editorOpen by remember { mutableStateOf(false) }
     var editorSub by remember { mutableStateOf<Subscription?>(null) }
@@ -107,28 +104,7 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
                     rates = vm.rates,
                     worthThreshold = vm.worthThreshold,
                 )
-                AppTab.SETTINGS -> SettingsScreen(
-                    baseCurrency = vm.baseCurrency,
-                    worthThreshold = vm.worthThreshold,
-                    monthlyBudget = vm.monthlyBudget,
-                    ratesLabel = vm.ratesLabel,
-                    syncUrl = vm.syncUrl,
-                    syncKey = vm.syncKey,
-                    themeMode = vm.themeMode,
-                    update = update,
-                    onSetThemeMode = vm::changeThemeMode,
-                    onSetBaseCurrency = vm::changeBaseCurrency,
-                    onSetThreshold = vm::setWorthThreshold,
-                    onSetBudget = vm::setMonthlyBudget,
-                    onRefreshRates = { vm.refreshRates() },
-                    onSync = { u, k, cb ->
-                        vm.saveSyncConfig(u, k)
-                        vm.syncNow(cb)
-                    },
-                    onCheckUpdate = updates::check,
-                    onInstallUpdate = updates::downloadAndInstall,
-                    onOpenReleases = { uriHandler.openUri(UpdateChannel.RELEASES_PAGE) },
-                )
+                AppTab.SETTINGS -> SettingsRoute(app = vm, viewModelFactory = viewModelFactory)
             }
         }
     }

@@ -26,6 +26,8 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
         private set
 
     init {
+        // Restores and sync passes change the repository too; the screens follow every change.
+        viewModelScope.launch { repo.database.collect { refresh() } }
         // Subscription sync is independent of exchange rates and must still run if that endpoint
         // is slow or offline.
         autoSync()

@@ -5,6 +5,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.lukr99.subtrackr.application.AppRepository
 import com.lukr99.subtrackr.application.InMemoryDatabaseStore
+import com.lukr99.subtrackr.application.backup.BackupService
+import com.lukr99.subtrackr.application.backup.FakeDocuments
 import com.lukr99.subtrackr.application.update.FakeArtifactDownloader
 import com.lukr99.subtrackr.application.update.ReleaseSource
 import com.lukr99.subtrackr.application.update.UpdateService
@@ -29,23 +31,27 @@ class AppShellScreenshotTest {
     @get:Rule
     val temp = TemporaryFolder()
 
-    private fun factory() = AppViewModelFactory(
-        repository = AppRepository(
+    private fun factory(): AppViewModelFactory {
+        val repository = AppRepository(
             store = InMemoryDatabaseStore(SampleData.database),
             rateSource = { SampleData.rates },
             syncProviders = { _, _ -> error("sync is off in screenshots") },
             clock = SampleData.clock,
             newId = { "00000000-0000-4000-8000-000000000099" },
-        ),
-        updates = UpdateService(
-            currentVersion = "0.3.0-dev",
-            platform = UpdatePlatform.ANDROID,
-            releases = ReleaseSource { error("dev builds never check") },
-            downloader = FakeArtifactDownloader(emptyMap()),
-            installer = {},
-            directory = temp.root,
-        ),
-    )
+        )
+        return AppViewModelFactory(
+            repository = repository,
+            updates = UpdateService(
+                currentVersion = "0.3.0-dev",
+                platform = UpdatePlatform.ANDROID,
+                releases = ReleaseSource { error("dev builds never check") },
+                downloader = FakeArtifactDownloader(emptyMap()),
+                installer = {},
+                directory = temp.root,
+            ),
+            backups = BackupService(repository, FakeDocuments(), SampleData.clock, "0.3.0-dev"),
+        )
+    }
 
     private fun capture(dark: Boolean) = compose.captureScreen("app_shell", dark) { SubTrackrApp(factory()) }
 
