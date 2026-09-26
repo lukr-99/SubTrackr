@@ -42,3 +42,7 @@ supabase/.branches/
 # OS
 Thumbs.db
 .DS_Store
+
+# Tooling
+node_modules/
+.claude/worktrees/

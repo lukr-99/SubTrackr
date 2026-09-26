@@ -1,0 +1,7 @@
+{
+  "description": "SHA-256 of each applied migration (LF line endings). Written by tools/supabase_migrations.py lock.",
+  "migrations": {
+    "0001_init.sql": "2c73b19a0740fd5d77c2a1f1e94183d452b8bd9934d5179ad9871f069bb17c8e",
+    "0002_per_user_rows.sql": "8d2e622afb996abfef24d9a26145f21c98ae32e6315ae0b2522b5ccd0f561731"
+  }
+}

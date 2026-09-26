@@ -1,0 +1,12 @@
+{
+  "name": "subtrackr-tooling",
+  "private": true,
+  "description": "Pinned Supabase CLI for the local sync stack and the migration checks. The apps themselves are C# and Kotlin.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "scripts": {
+    "supabase": "supabase"
+  },
+  "devDependencies": {
+    "supabase": "2.117.0"
+  }
+}

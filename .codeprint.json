@@ -8,7 +8,9 @@
     "LICENSE.md",
     "CHANGELOG.md"
   ],
-  "migration_directories": [],
+  "migration_directories": [
+    "supabase/migrations"
+  ],
   "type_scan_roots": [],
   "type_policy_excludes": [
     "**/generated/**",
