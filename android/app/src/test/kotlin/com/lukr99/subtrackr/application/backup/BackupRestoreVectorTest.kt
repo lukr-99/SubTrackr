@@ -31,7 +31,6 @@ class BackupRestoreVectorTest {
         val repository = AppRepository(
             store = store,
             rateSource = { OfflineFallback.forAnchor(it) },
-            syncProviders = { _, _ -> error("no sync") },
             clock = clock,
             newId = { error("no new records") },
         )

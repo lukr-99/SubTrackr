@@ -32,7 +32,7 @@ class BackupViewModelTest {
     private val clock = Clock.fixed(Instant.parse("2026-09-26T10:00:00Z"), ZoneOffset.UTC)
     private val vm = BackupViewModel(
         BackupService(
-            AppRepository(store, { OfflineFallback.forAnchor(it) }, { _, _ -> error("no sync") }, clock, { "id" }),
+            AppRepository(store, { OfflineFallback.forAnchor(it) }, clock, { "id" }),
             documents,
             clock,
             "0.3.0",

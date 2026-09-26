@@ -12,6 +12,8 @@ import com.lukr99.subtrackr.domain.update.UpdateChannel
 import com.lukr99.subtrackr.ui.SubTrackrViewModel
 import com.lukr99.subtrackr.ui.backup.BackupCard
 import com.lukr99.subtrackr.ui.backup.BackupViewModel
+import com.lukr99.subtrackr.ui.sync.SyncCard
+import com.lukr99.subtrackr.ui.sync.SyncViewModel
 import com.lukr99.subtrackr.ui.update.UpdateViewModel
 
 private val BACKUP_TYPES = arrayOf("application/json", "text/plain", "application/octet-stream")
@@ -21,6 +23,8 @@ private val BACKUP_TYPES = arrayOf("application/json", "text/plain", "applicatio
 fun SettingsRoute(app: SubTrackrViewModel, viewModelFactory: ViewModelProvider.Factory) {
     val updates: UpdateViewModel = viewModel(factory = viewModelFactory)
     val backups: BackupViewModel = viewModel(factory = viewModelFactory)
+    val syncs: SyncViewModel = viewModel(factory = viewModelFactory)
+    val sync by syncs.uiState.collectAsStateWithLifecycle()
     val update by updates.uiState.collectAsStateWithLifecycle()
     val backup by backups.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
@@ -37,8 +41,6 @@ fun SettingsRoute(app: SubTrackrViewModel, viewModelFactory: ViewModelProvider.F
         worthThreshold = app.worthThreshold,
         monthlyBudget = app.monthlyBudget,
         ratesLabel = app.ratesLabel,
-        syncUrl = app.syncUrl,
-        syncKey = app.syncKey,
         themeMode = app.themeMode,
         appVersion = update.currentVersion,
         onSetThemeMode = app::changeThemeMode,
@@ -46,9 +48,20 @@ fun SettingsRoute(app: SubTrackrViewModel, viewModelFactory: ViewModelProvider.F
         onSetThreshold = app::setWorthThreshold,
         onSetBudget = app::setMonthlyBudget,
         onRefreshRates = { app.refreshRates() },
-        onSync = { url, key, onResult ->
-            app.saveSyncConfig(url, key)
-            app.syncNow(onResult)
+        syncCard = {
+            SyncCard(
+                state = sync,
+                onUrlChange = syncs::onUrlChange,
+                onKeyChange = syncs::onKeyChange,
+                onSaveConfig = syncs::saveConfig,
+                onEmailChange = syncs::onEmailChange,
+                onSendCode = syncs::sendCode,
+                onCodeChange = syncs::onCodeChange,
+                onVerify = syncs::verify,
+                onUseAnotherEmail = syncs::useAnotherEmail,
+                onSyncNow = syncs::syncNow,
+                onSignOut = syncs::signOut,
+            )
         },
         backupCard = {
             BackupCard(

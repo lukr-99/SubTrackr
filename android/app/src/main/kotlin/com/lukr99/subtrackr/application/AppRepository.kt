@@ -2,18 +2,21 @@ package com.lukr99.subtrackr.application
 
 import com.lukr99.subtrackr.application.rates.ExchangeRateSource
 import com.lukr99.subtrackr.application.store.DatabaseStore
-import com.lukr99.subtrackr.application.sync.SyncProviderFactory
-import com.lukr99.subtrackr.application.sync.SyncService
 import com.lukr99.subtrackr.domain.currency.ExchangeRateTable
 import com.lukr99.subtrackr.domain.currency.OfflineFallback
 import com.lukr99.subtrackr.domain.spend.SpendCalculator
 import com.lukr99.subtrackr.domain.spend.SpendSummary
+import com.lukr99.subtrackr.domain.sync.MergeEngine
 import com.lukr99.subtrackr.domain.worth.WorthIt
 import com.lukr99.subtrackr.model.Database
 import com.lukr99.subtrackr.model.Subscription
 import com.lukr99.subtrackr.model.ThemeMode
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.math.BigDecimal
 import java.time.Clock
@@ -27,16 +30,20 @@ import java.time.LocalDate
 class AppRepository(
     private val store: DatabaseStore,
     private val rateSource: ExchangeRateSource,
-    private val syncProviders: SyncProviderFactory,
     private val clock: Clock,
     private val newId: () -> String,
 ) {
     private val lock = Any()
     private val state = MutableStateFlow(store.load())
 
+    private val subscriptionEdits = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
     /** The current database; it changes only after the store saved the new version. */
     val database: StateFlow<Database> = state.asStateFlow()
     val db: Database get() = state.value
+
+    /** Emits after subscriptions changed on this device (edits, restores), not after a sync merge. */
+    val localChanges: SharedFlow<Unit> = subscriptionEdits.asSharedFlow()
 
     @Volatile
     var rates: ExchangeRateTable = OfflineFallback.forAnchor(db.settings.baseCurrency)
@@ -61,11 +68,15 @@ class AppRepository(
      * Applies [transform] to the current database and saves the result as one atomic step. If the
      * save fails, nothing changes and the exception propagates.
      */
-    fun <T> update(transform: (Database) -> Pair<Database, T>): T = synchronized(lock) {
-        val (next, result) = transform(state.value)
-        if (next != state.value) {
+    fun <T> update(transform: (Database) -> Pair<Database, T>): T = update(local = true, transform)
+
+    private fun <T> update(local: Boolean, transform: (Database) -> Pair<Database, T>): T = synchronized(lock) {
+        val previous = state.value
+        val (next, result) = transform(previous)
+        if (next != previous) {
             store.save(next)
             state.value = next
+            if (local && next.subscriptions != previous.subscriptions) subscriptionEdits.tryEmit(Unit)
         }
         if (next.settings.baseCurrency != rates.anchor && next.settings.baseCurrency.isNotBlank()) {
             rates = OfflineFallback.forAnchor(baseCurrency)
@@ -111,18 +122,20 @@ class AppRepository(
         rates = rateSource.latest(baseCurrency)
     }
 
-    // ----- sync (device-local config; only subscriptions sync) -----
+    // ----- sync configuration (device-local; only subscriptions sync) -----
 
     val syncUrl: String get() = db.settings.syncUrl
     val syncKey: String get() = db.settings.syncKey
-    val syncConfigured: Boolean get() = syncUrl.isNotBlank() && syncKey.isNotBlank()
 
     fun setSyncConfig(url: String, key: String) =
         change { it.copy(settings = it.settings.copy(syncUrl = url.trim(), syncKey = key.trim())) }
 
-    suspend fun syncNow(): Int {
-        val merged = SyncService.sync(db.subscriptions, syncProviders.create(syncUrl, syncKey))
-        change { it.copy(subscriptions = merged) }
-        return merged.size
+    /**
+     * Merges pulled rows into the current subscriptions (SPEC.md section 8.1) and saves the result,
+     * which is also the set to push. Edits made while the pull ran are part of the merge.
+     */
+    fun mergeRemote(remote: List<Subscription>): List<Subscription> = update(local = false) { current ->
+        val merged = MergeEngine.merge(current.subscriptions, remote)
+        current.copy(subscriptions = merged) to merged
     }
 }

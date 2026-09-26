@@ -28,6 +28,17 @@ system file picker and restores one with Merge (the default) or Replace after a 
 restore validates the file and builds the result in memory before the single atomic save, so a bad
 file or a failed save changes nothing. Backups never contain the sync URL, key, or sign-in session.
 
+## Sync
+
+Settings > Sync takes a Supabase project URL and publishable key, then signs in with an emailed
+code (SPEC.md section 8). The session lives only in `noBackupFilesDir/sync-session.bin`, sealed with
+AES-GCM under an Android Keystore key; it never enters data.json, backups, or logs. Sync runs on
+launch and after every change while signed in, and on "Sync now". Each request times out after 15
+seconds; network errors, timeouts, 429, and 5xx get up to three attempts per pass. Changing the URL
+or key signs out. Release builds accept only `https://` projects; debug builds may also use
+`http://10.0.2.2` or `http://127.0.0.1` for a local Supabase stack (debug-only network security
+config).
+
 ## Themes
 
 Settings offers System, Light, and Dark. Every color comes from

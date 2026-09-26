@@ -12,6 +12,7 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import com.lukr99.subtrackr.domain.update.AppVersion
 import com.lukr99.subtrackr.domain.update.ReleaseAsset
 import com.lukr99.subtrackr.domain.update.UpdateOffer
+import com.lukr99.subtrackr.application.sync.SyncStatus
 import com.lukr99.subtrackr.model.ThemeMode
 import com.lukr99.subtrackr.ui.SCREENSHOT_DIR
 import com.lukr99.subtrackr.ui.SampleData
@@ -19,6 +20,8 @@ import com.lukr99.subtrackr.ui.backup.BackupCard
 import com.lukr99.subtrackr.ui.backup.BackupTags
 import com.lukr99.subtrackr.ui.backup.BackupUiState
 import com.lukr99.subtrackr.ui.captureScreen
+import com.lukr99.subtrackr.ui.sync.SyncCard
+import com.lukr99.subtrackr.ui.sync.SyncUiState
 import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 import com.lukr99.subtrackr.ui.update.UpdateStatus
 import com.lukr99.subtrackr.ui.update.UpdateUiState
@@ -29,6 +32,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.math.BigDecimal
+import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -51,8 +55,6 @@ class SettingsScreenshotTest {
             worthThreshold = SampleData.threshold,
             monthlyBudget = BigDecimal("1500"),
             ratesLabel = "CZK · 2026-09-25",
-            syncUrl = "",
-            syncKey = "",
             themeMode = ThemeMode.SYSTEM,
             appVersion = "0.3.0",
             onSetThemeMode = {},
@@ -60,7 +62,29 @@ class SettingsScreenshotTest {
             onSetThreshold = {},
             onSetBudget = {},
             onRefreshRates = {},
-            onSync = { _, _, _ -> },
+            syncCard = {
+                SyncCard(
+                    state = SyncUiState(
+                        status = SyncStatus.Synced(Instant.parse("2026-09-26T12:05:00Z")),
+                        statusText = "Synced at 14:05",
+                        signedInEmail = "user@example.com",
+                        savedUrl = "https://project.example",
+                        savedKey = "publishable-key",
+                        url = "https://project.example",
+                        key = "publishable-key",
+                    ),
+                    onUrlChange = {},
+                    onKeyChange = {},
+                    onSaveConfig = {},
+                    onEmailChange = {},
+                    onSendCode = {},
+                    onCodeChange = {},
+                    onVerify = {},
+                    onUseAnotherEmail = {},
+                    onSyncNow = {},
+                    onSignOut = {},
+                )
+            },
             backupCard = {
                 BackupCard(
                     state = BackupUiState(message = "Restored: 1 added, 1 updated, 1 unchanged, 3 in total."),

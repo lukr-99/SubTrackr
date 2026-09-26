@@ -42,7 +42,7 @@ class BackupServiceTest {
     private val documents = FakeDocuments()
 
     private fun service() = BackupService(
-        repository = AppRepository(store, { OfflineFallback.forAnchor(it) }, { _, _ -> error("no sync") }, clock, { "id" }),
+        repository = AppRepository(store, { OfflineFallback.forAnchor(it) }, clock, { "id" }),
         documents = documents,
         clock = clock,
         appVersion = "0.3.0",

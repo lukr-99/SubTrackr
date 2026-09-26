@@ -28,24 +28,9 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
     init {
         // Restores and sync passes change the repository too; the screens follow every change.
         viewModelScope.launch { repo.database.collect { refresh() } }
-        // Subscription sync is independent of exchange rates and must still run if that endpoint
-        // is slow or offline.
-        autoSync()
         viewModelScope.launch {
             repo.refreshRates()
             refresh()
-        }
-    }
-
-    /** Best-effort silent sync when configured (launch + after every change). */
-    private fun autoSync() {
-        if (!repo.syncConfigured) return
-        viewModelScope.launch {
-            try {
-                repo.syncNow()
-                refresh()
-            } catch (_: Exception) {
-            }
         }
     }
 
@@ -70,13 +55,11 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
     fun upsert(sub: Subscription) {
         repo.upsert(sub)
         refresh()
-        autoSync()
     }
 
     fun delete(id: String) {
         repo.delete(id)
         refresh()
-        autoSync()
     }
 
     fun changeBaseCurrency(currency: String) {
@@ -103,26 +86,5 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
     fun refreshRates() = viewModelScope.launch {
         repo.refreshRates()
         refresh()
-    }
-
-    val syncUrl: String get() = repo.syncUrl
-    val syncKey: String get() = repo.syncKey
-
-    fun saveSyncConfig(url: String, key: String) = repo.setSyncConfig(url, key)
-
-    fun syncNow(onResult: (String) -> Unit) {
-        if (!repo.syncConfigured) {
-            onResult("Enter the URL and key first.")
-            return
-        }
-        viewModelScope.launch {
-            try {
-                val n = repo.syncNow()
-                refresh()
-                onResult("Synced · $n items")
-            } catch (e: Exception) {
-                onResult("Sync failed — check URL/key and connection.")
-            }
-        }
     }
 }

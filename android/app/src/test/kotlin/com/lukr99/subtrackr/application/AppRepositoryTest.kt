@@ -19,7 +19,6 @@ class AppRepositoryTest {
     private fun repository() = AppRepository(
         store = store,
         rateSource = { anchor -> OfflineFallback.forAnchor(anchor) },
-        syncProviders = { _, _ -> error("sync is not configured in this test") },
         clock = clock,
         newId = { "11111111-1111-4111-8111-111111111111" },
     )
