@@ -6,6 +6,8 @@ All notable changes to SubTrackr. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-26
+
 ### Added
 
 - Light, dark, and system themes on both apps, from one shared color file. The desktop title bar
@@ -91,7 +93,8 @@ All notable changes to SubTrackr. The format follows
 - Desktop app: dashboard with totals, donut, bar, and trend charts, multi-currency with live rates,
   what-if calculator, worth-it verdict, and an Inno Setup installer.
 
-[Unreleased]: https://github.com/lukr-99/SubTrackr/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/lukr-99/SubTrackr/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/lukr-99/SubTrackr/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/lukr-99/SubTrackr/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/lukr-99/SubTrackr/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/lukr-99/SubTrackr/compare/v0.1.0...v0.2.0
