@@ -6,20 +6,40 @@ All notable changes to SubTrackr. The format follows
 
 ## [Unreleased]
 
-### Changed
-
-- Both apps take their version from one `Version.props`. Local and debug builds are `X.Y.Z-dev`;
-  the Android debug build installs beside the release as "SubTrackr Dev".
-- The installer build writes `installer/dist/SubTrackr-Setup-X.Y.Z.exe` with a `.sha256` file and
-  waits for a running SubTrackr to close.
-- The Android APK is signed with a dedicated release key instead of a development key. Moving a
-  phone from 0.2.x to this version needs one uninstall and reinstall; back up or sync first.
-
 ### Added
 
-- GitHub Actions CI for the repository baseline, the Supabase migrations and row security, the
-  desktop app, and the Android app, plus a tag-driven release that drafts both installers with
-  SHA-256 files.
+- Light, dark, and system themes on both apps, from one shared color file. The desktop title bar
+  follows the theme.
+- Backup and restore on both apps: a JSON file either app can read, restored by merging (the
+  default) or replacing after a confirmation, with a count of what changed.
+- Email-code sign-in for sync. Sync shows its state (off, signed out, syncing, synced at a time,
+  or failed) next to Sync now and Sign out.
+- Settings links to the releases page, and the desktop app checks for updates on request.
+- CI for the repository baseline, Supabase migrations and row security, and both apps, plus a
+  tag-driven release that drafts both installers with SHA-256 files.
+
+### Changed
+
+- Sync is per user: each signed-in user reads and writes only their own rows, and the anonymous
+  key alone can no longer read or change anything. A Supabase project needs migration
+  `0002_per_user_rows.sql` and the sign-in email template (docs/SYNC-SETUP.md); versions up to
+  0.2.2 stop syncing once it runs.
+- Both apps update from this repository's releases, pick exact file names, and check the SHA-256
+  before installing. The desktop app no longer depends on the private DotNetLib.Core package.
+- The Android APK is signed with a dedicated release key instead of a development key. Moving a
+  phone from 0.2.x needs one uninstall and reinstall; back up or sync first.
+- Both apps take their version from one `Version.props`. Local and debug builds are `X.Y.Z-dev`,
+  keep their own data (`%APPDATA%\SubTrackr Dev`, "SubTrackr Dev" on Android), and never check for
+  updates.
+- Muted text and dark-theme buttons reach AA contrast.
+- The first-run sample subscriptions are generic examples.
+
+### Fixed
+
+- A `data.json` that cannot be read is kept as `data.json.unreadable-<time>` instead of being
+  overwritten (Android) or stopping the app from starting (Windows).
+- A data file written by a newer version still opens.
+- Unspecified or zero-day billing cycles no longer break totals on Android.
 
 ## [0.2.2] - 2026-08-29
 

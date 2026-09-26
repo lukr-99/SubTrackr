@@ -47,6 +47,20 @@ cd android
 .\gradlew.bat installDebug        # to the one connected device or emulator
 ```
 
+This loop covers most Android work without a phone:
+
+- `android/tools/agent-doctor.ps1` checks the SDK, emulator, and Maestro setup.
+- `android/tools/emulator.ps1` starts a headless emulator; `build-and-install.ps1` and
+  `ui-check.ps1` install the debug build and capture the screen and UI tree.
+- `maestro test android/.maestro/launch-smoke.yaml` runs the launch smoke flow.
+- `.\gradlew.bat recordRoborazziDebug` rewrites the JVM screenshots in
+  `app/src/test/screenshots/`; `verifyRoborazziDebug` compares against them. The references were
+  recorded on Windows, so verify there. Plain `testDebugUnitTest` renders without comparing.
+- Robolectric for SDK 35 runs on JDK 17 or 21. If a machine-wide Gradle property pins another JDK,
+  pass `"-Dorg.gradle.java.home=<jdk>"`.
+- Debug builds may talk to a local Supabase stack at `http://10.0.2.2:54621`
+  ([docs/SYNC-SETUP.md](SYNC-SETUP.md#running-supabase-locally)).
+
 ## Gotchas already paid for
 
 - `.slnx` is the .NET 10 XML solution format. There is no `.sln`.

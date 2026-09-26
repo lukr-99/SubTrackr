@@ -8,7 +8,9 @@ contracts, not code.
 1. [ARCHITECTURE.md](ARCHITECTURE.md) before changing module seams or dependency direction.
 2. [contracts/SPEC.md](contracts/SPEC.md) before changing behavior either app implements.
 3. [CONTRIBUTING.md](CONTRIBUTING.md) for the verification commands and commit rules.
-4. [docs/development.md](docs/development.md) for toolchain setup and known gotchas.
+4. [docs/development.md](docs/development.md) for toolchain setup, the emulator loop, and known
+   gotchas.
+5. [android/README.md](android/README.md) before Android work.
 
 ## Rules that bite here
 
@@ -24,6 +26,9 @@ contracts, not code.
   paths, signing material, or real subscription data. Sample data stays generic.
 - Debug builds are `X.Y.Z-dev`, keep their data apart from the installed app, and never check for
   updates.
+- Verify Android on the JVM screenshots and the headless emulator (`android/tools/`,
+  `android/.maestro/`), never on a physical phone unless the owner asks.
+- Never open a visible desktop window to check UI; use the off-screen render tests.
 - Conventional Commits, one coherent change per commit, no AI co-author trailers.
 
 ## Verify before finishing
