@@ -29,6 +29,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ExchangeRates rates,
         SyncRunner sync,
         UpdatesViewModel updates,
+        BackupViewModel backup,
         IDesktopServices desktop,
         IAppLog log,
         TimeProvider time,
@@ -40,11 +41,19 @@ public sealed partial class SettingsViewModel : ObservableObject
         this.rates = rates;
         this.sync = sync;
         Updates = updates;
+        Backup = backup;
         this.desktop = desktop;
         this.log = log;
         this.time = time;
         this.dataFolder = dataFolder;
         rates.Changed += (_, _) => RatesText = DescribeRates();
+        ledger.Changed += (_, change) =>
+        {
+            if (change == LedgerChange.Restored)
+            {
+                Load();
+            }
+        };
         Load();
     }
 
@@ -55,6 +64,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     /// <summary>The version and update card.</summary>
     public UpdatesViewModel Updates { get; }
+
+    /// <summary>The backup and restore card.</summary>
+    public BackupViewModel Backup { get; }
 
     public string DataFilePath => ledger.StoreLocation;
 

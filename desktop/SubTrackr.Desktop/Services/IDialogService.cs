@@ -18,4 +18,10 @@ public interface IDialogService
 
     /// <summary>Shows the add/edit form; the finished subscription, or null when cancelled.</summary>
     Subscription? EditSubscription(EditSubscriptionViewModel editor);
+
+    /// <summary>Asks where to save a JSON file; the chosen path, or null when cancelled.</summary>
+    string? PickSaveFile(string suggestedName);
+
+    /// <summary>Asks for a JSON file to open; the chosen path, or null when cancelled.</summary>
+    string? PickOpenFile();
 }

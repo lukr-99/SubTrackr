@@ -1,11 +1,13 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using SubTrackr.Core.Backup;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Storage;
 using SubTrackr.Core.Sync;
 using SubTrackr.Core.Updates;
+using SubTrackr.Infrastructure.Backup;
 using SubTrackr.Infrastructure.Currency;
 using SubTrackr.Infrastructure.Diagnostics;
 using SubTrackr.Infrastructure.Storage;
@@ -34,6 +36,7 @@ public sealed class AppAdapters : IDisposable
         IReleaseSource releases,
         IUpdateDownloader downloads,
         IInstallerLauncher installer,
+        IBackupFiles backupFiles,
         IAppLog log,
         string dataFolder,
         params IDisposable[] owned)
@@ -45,6 +48,7 @@ public sealed class AppAdapters : IDisposable
         Releases = releases;
         Downloads = downloads;
         Installer = installer;
+        BackupFiles = backupFiles;
         Log = log;
         DataFolder = dataFolder;
         this.owned = owned;
@@ -63,6 +67,8 @@ public sealed class AppAdapters : IDisposable
     public IUpdateDownloader Downloads { get; }
 
     public IInstallerLauncher Installer { get; }
+
+    public IBackupFiles BackupFiles { get; }
 
     public IAppLog Log { get; }
 
@@ -95,6 +101,7 @@ public sealed class AppAdapters : IDisposable
             new GitHubReleaseSource(web, ReleaseOwner, ReleaseRepository),
             new VerifiedDownloader(downloads, Path.Combine(Path.GetTempPath(), "SubTrackr", "updates")),
             new InnoSetupLauncher(),
+            new BackupFiles(),
             new FileLog(paths.LogsFolder, time),
             paths.Root,
             web,

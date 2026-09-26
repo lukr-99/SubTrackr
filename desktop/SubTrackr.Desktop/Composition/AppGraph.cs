@@ -1,4 +1,5 @@
 using System.Windows.Threading;
+using SubTrackr.Core.Backup;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Subscriptions;
 using SubTrackr.Core.Sync;
@@ -33,10 +34,21 @@ public sealed class AppGraph : IDisposable
         Rates = new ExchangeRates(adapters.Rates, adapters.Time, adapters.Log, Ledger.BaseCurrency);
         Sync = new SyncRunner(Ledger, adapters.SyncProviders, adapters.Log);
         UpdateService = new UpdateService(adapters.Releases, adapters.Downloads, adapters.Installer, adapters.Log, build.Version);
+        Backups = new BackupService(Ledger, adapters.BackupFiles, adapters.Time, adapters.Log, build.Version);
+
+        // A restore may bring another base currency; convert with a table anchored on it.
+        Ledger.Changed += (_, change) =>
+        {
+            if (change == LedgerChange.Restored && !string.Equals(Rates.Table.Anchor, Ledger.BaseCurrency, StringComparison.OrdinalIgnoreCase))
+            {
+                Rates.UseOffline(Ledger.BaseCurrency);
+                _ = Rates.RefreshAsync(Ledger.BaseCurrency, CancellationToken.None);
+            }
+        };
 
         Dashboard = new DashboardViewModel(Ledger, Rates, dialogs, adapters.Time);
         Updates = new UpdatesViewModel(UpdateService, dialogs, desktop);
-        Settings = new SettingsViewModel(Ledger, Rates, Sync, Updates, desktop, adapters.Log, adapters.Time, adapters.DataFolder);
+        Settings = new SettingsViewModel(Ledger, Rates, Sync, Updates, new BackupViewModel(Backups, dialogs), desktop, adapters.Log, adapters.Time, adapters.DataFolder);
         Main = new MainViewModel(build.ProductName, Dashboard, Settings, () => new WhatIfViewModel(Ledger, Rates));
     }
 
@@ -49,6 +61,8 @@ public sealed class AppGraph : IDisposable
     public SyncRunner Sync { get; }
 
     public UpdateService UpdateService { get; }
+
+    public BackupService Backups { get; }
 
     public DashboardViewModel Dashboard { get; }
 

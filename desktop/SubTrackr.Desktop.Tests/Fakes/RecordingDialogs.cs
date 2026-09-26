@@ -12,9 +12,17 @@ public sealed class RecordingDialogs : IDialogService
     /// <summary>What the edit form returns; by default it saves whatever the editor builds.</summary>
     public Func<EditSubscriptionViewModel, Subscription?> EditAnswer { get; set; } = editor => editor.TryBuild();
 
+    /// <summary>The path the save dialog returns; null means cancelled.</summary>
+    public string? SavePath { get; set; }
+
+    /// <summary>The path the open dialog returns; null means cancelled.</summary>
+    public string? OpenPath { get; set; }
+
     public List<string> Questions { get; } = [];
 
     public List<string> Messages { get; } = [];
+
+    public List<string> SuggestedNames { get; } = [];
 
     public bool Confirm(string message, string title)
     {
@@ -27,4 +35,12 @@ public sealed class RecordingDialogs : IDialogService
     public void Warn(string message, string title) => Messages.Add(message);
 
     public Subscription? EditSubscription(EditSubscriptionViewModel editor) => EditAnswer(editor);
+
+    public string? PickSaveFile(string suggestedName)
+    {
+        SuggestedNames.Add(suggestedName);
+        return SavePath;
+    }
+
+    public string? PickOpenFile() => OpenPath;
 }
