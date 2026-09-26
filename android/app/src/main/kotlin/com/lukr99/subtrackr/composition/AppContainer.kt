@@ -45,7 +45,7 @@ class AppContainer(context: Context) {
         store = SubscriptionStore(File(appContext.filesDir, "data.json")),
         rateSource = FrankfurterRateSource(ratesHttp),
         syncProviders = { url, key -> SupabaseSyncProvider(url, key, syncHttp) },
-        clock = Clock.systemUTC(),
+        clock = Clock.systemDefaultZone(),
         newId = { UUID.randomUUID().toString() },
     )
 

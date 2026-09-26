@@ -52,6 +52,11 @@ class AppRepositoryTest {
     }
 
     @Test
+    fun today_comesFromTheInjectedClock() {
+        assertEquals(java.time.LocalDate.of(2026, 9, 26), repository().today())
+    }
+
+    @Test
     fun upsert_whenSaveFails_keepsPreviousState() {
         val repo = repository()
         store.failSaves = true

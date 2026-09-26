@@ -11,6 +11,7 @@ import com.lukr99.subtrackr.model.Subscription
 import com.lukr99.subtrackr.model.ThemeMode
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.time.LocalDate
 
 /** Dashboard, editor, what-if, and settings state over the injected [AppRepository]. */
 class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
@@ -47,6 +48,7 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
     }
 
     val worthThreshold: BigDecimal get() = repo.worthThreshold
+    val today: LocalDate get() = repo.today()
     val rates: ExchangeRateTable get() = repo.rates
 
     private fun refresh() {

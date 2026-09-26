@@ -99,6 +99,7 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
                         editorSub = it
                         editorOpen = true
                     },
+                    today = vm.today,
                 )
                 AppTab.WHATIF -> WhatIfScreen(
                     baseCurrency = vm.baseCurrency,

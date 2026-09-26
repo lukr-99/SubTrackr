@@ -33,4 +33,11 @@ Release builds check `lukr-99/SubTrackr` on launch and from Settings. They take 
 and then hand it to the system installer. Debug builds are `X.Y.Z-dev` and never check. Settings
 also links to the releases page for a manual install.
 
+## Screenshots
+
+Robolectric and Roborazzi render the main screens in light and dark on the JVM. `testDebugUnitTest`
+runs them as rendering checks; `recordRoborazziDebug` rewrites the reference images in
+`app/src/test/screenshots/`, and `verifyRoborazziDebug` compares against them. The references were
+recorded on Windows, so verify on Windows. Robolectric's SDK 35 runtime needs JDK 21.
+
 Build and test steps are in [docs/development.md](../docs/development.md).

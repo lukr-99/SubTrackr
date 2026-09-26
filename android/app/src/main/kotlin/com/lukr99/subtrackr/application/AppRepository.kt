@@ -14,6 +14,7 @@ import com.lukr99.subtrackr.model.Subscription
 import com.lukr99.subtrackr.model.ThemeMode
 import java.math.BigDecimal
 import java.time.Clock
+import java.time.LocalDate
 
 /**
  * In-memory app state backed by a [DatabaseStore] (mirrors the desktop AppState). Every change is
@@ -39,6 +40,9 @@ class AppRepository(
         }
 
     val baseCurrency: String get() = db.settings.baseCurrency.ifBlank { "EUR" }
+
+    /** Today in the clock's time zone, for renewal and trial reminders. */
+    fun today(): LocalDate = LocalDate.now(clock)
 
     fun summarize(): SpendSummary =
         SpendCalculator.summarize(db.subscriptions, baseCurrency, rates, worthThreshold)

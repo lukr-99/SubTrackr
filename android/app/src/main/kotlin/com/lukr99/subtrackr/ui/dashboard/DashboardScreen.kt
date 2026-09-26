@@ -60,6 +60,7 @@ fun DashboardScreen(
     rates: ExchangeRateTable,
     budget: BigDecimal,
     onEdit: (Subscription) -> Unit,
+    today: LocalDate,
 ) {
     val active = summary.perSub.count { it.subscription.status == SubStatus.ACTIVE }
     var chart by remember { mutableStateOf(ChartType.DONUT) }
@@ -86,7 +87,6 @@ fun DashboardScreen(
             }
         }
 
-    val today = LocalDate.now()
     val alerts = summary.perSub
         .filter { it.subscription.status == SubStatus.ACTIVE }
         .mapNotNull { p ->
@@ -123,7 +123,7 @@ fun DashboardScreen(
         item { Spacer(Modifier.height(12.dp)) }
         item { CurrencyCard(summary, baseCurrency, rates) }
         item { Spacer(Modifier.height(12.dp)) }
-        item { RenewalsCard(summary) }
+        item { RenewalsCard(summary, today) }
         item { Spacer(Modifier.height(16.dp)) }
         item {
             Text("SUBSCRIPTIONS", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
@@ -221,8 +221,7 @@ private fun CurrencyCard(summary: SpendSummary, base: String, rates: ExchangeRat
 }
 
 @Composable
-private fun RenewalsCard(summary: SpendSummary) {
-    val today = LocalDate.now()
+private fun RenewalsCard(summary: SpendSummary, today: LocalDate) {
     val upcoming = summary.perSub
         .filter { it.subscription.status == SubStatus.ACTIVE }
         .mapNotNull { p -> runCatching { LocalDate.parse(p.subscription.nextRenewal) }.getOrNull()?.let { p to it } }
