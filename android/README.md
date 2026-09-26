@@ -57,7 +57,8 @@ also links to the releases page for a manual install.
 Robolectric and Roborazzi render the main screens in light and dark on the JVM. `testDebugUnitTest`
 runs them as rendering checks; `recordRoborazziDebug` rewrites the reference images in
 `app/src/test/screenshots/`, and `verifyRoborazziDebug` compares against them. The references were
-recorded on Windows, so verify on Windows. Robolectric's SDK 35 runtime needs JDK 21.
+recorded on Windows, so verify on Windows. The whole suite, screenshots included, runs on JDK 17
+and on JDK 21.
 
 ## Checking on an emulator
 
