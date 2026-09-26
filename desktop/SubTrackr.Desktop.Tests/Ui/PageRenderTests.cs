@@ -29,7 +29,7 @@ public sealed class PageRenderTests
         using var app = TestApp.Create(resources: Application.Current.Resources);
         await app.Graph.Rates.RefreshAsync(app.Graph.Ledger.BaseCurrency, CancellationToken.None);
 
-        var window = OffScreen(new MainWindow(app.Graph.Main), 1280, 820);
+        var window = OffScreen(new MainWindow(app.Graph.Main, app.Motion), 1280, 820);
         window.Show();
         try
         {
@@ -92,7 +92,7 @@ public sealed class PageRenderTests
     public Task ThemeSwitch_RepaintsAnOpenWindow() => WpfHost.RunAsync(async () =>
     {
         using var app = TestApp.Create(resources: Application.Current.Resources);
-        var window = OffScreen(new MainWindow(app.Graph.Main), 1280, 820);
+        var window = OffScreen(new MainWindow(app.Graph.Main, app.Motion), 1280, 820);
         window.Show();
         try
         {
