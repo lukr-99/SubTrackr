@@ -23,7 +23,7 @@ public sealed partial class BackupViewModel : ObservableObject
     private string resultText = "";
 
     [ObservableProperty]
-    private bool hasError;
+    private bool isError;
 
     public BackupViewModel(BackupService backups, IDialogService dialogs)
     {
@@ -77,7 +77,7 @@ public sealed partial class BackupViewModel : ObservableObject
     private void Show(string text, bool error)
     {
         ResultText = text;
-        HasError = error;
+        IsError = error;
     }
 
     private static string Describe(RestoreReport report) =>

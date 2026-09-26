@@ -45,8 +45,26 @@ public sealed class PageRenderTests
                     Capture(window, page.ToString().ToLowerInvariant() + suffix);
                 }
 
-                var settings = Find<SettingsView>(window);
-                CaptureWhole((FrameworkElement)((ScrollViewer)settings.Content).Content, window.Background, "settings-full" + suffix);
+                // The settings page in full, through the sign-in steps of the Sync card.
+                var settings = (FrameworkElement)((ScrollViewer)Find<SettingsView>(window).Content).Content;
+                var sync = app.Graph.Settings.Sync;
+                CaptureWhole(settings, window.Background, "settings-full" + suffix);
+                sync.ProjectUrl = "https://project.example";
+                sync.PublishableKey = "publishable-key";
+                sync.SaveProjectCommand.Execute(null);
+                sync.Email = "user@example.com";
+                await sync.SendCodeCommand.ExecuteAsync(null);
+                await Settle();
+                CaptureWhole(settings, window.Background, "settings-sync-code" + suffix);
+                sync.Code = "123456";
+                await sync.VerifyCommand.ExecuteAsync(null);
+                await app.Graph.Sync.SyncNowAsync(CancellationToken.None);
+                await Settle();
+                CaptureWhole(settings, window.Background, "settings-sync-signed-in" + suffix);
+                await sync.SignOutCommand.ExecuteAsync(null);
+                sync.ProjectUrl = "";
+                sync.PublishableKey = "";
+                sync.SaveProjectCommand.Execute(null);
 
                 var editor = new EditSubscriptionViewModel(new DateOnly(2026, 9, 26), app.Graph.Ledger.Subscriptions[2]);
                 var edit = OffScreen(new EditSubscriptionWindow(editor), 460, double.NaN);

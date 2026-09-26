@@ -25,6 +25,9 @@ public sealed partial class UpdatesViewModel : ObservableObject
     [ObservableProperty]
     private string statusText = "";
 
+    [ObservableProperty]
+    private bool isError;
+
     public UpdatesViewModel(UpdateService updates, IDialogService dialogs, IDesktopServices desktop)
     {
         ArgumentNullException.ThrowIfNull(updates);
@@ -67,6 +70,7 @@ public sealed partial class UpdatesViewModel : ObservableObject
         IsBusy = true;
         try
         {
+            IsError = false;
             StatusText = "Checking for updates…";
             var result = await updates.CheckAsync(CancellationToken.None);
             StatusText = result.Status switch
@@ -76,6 +80,7 @@ public sealed partial class UpdatesViewModel : ObservableObject
                 UpdateStatus.Failed => $"Couldn't check for updates: {result.Error}.",
                 _ => "",
             };
+            IsError = result.Status == UpdateStatus.Failed;
             if (result is { Status: UpdateStatus.Available, Offer: { } offer })
             {
                 await OfferAsync(offer);
@@ -112,6 +117,7 @@ public sealed partial class UpdatesViewModel : ObservableObject
         }
 
         StatusText = $"Update failed: {installed.Error}";
+        IsError = true;
         dialogs.Warn(
             $"The update couldn't be installed. {installed.Error}\n\nYou can download it from the releases page instead.",
             "Update failed");

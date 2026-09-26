@@ -86,30 +86,6 @@ public class SettingsViewModelTests
     }
 
     [Fact]
-    public async Task SyncNowCommand_NoProject_AsksForOne()
-    {
-        using var app = TestApp.Create();
-
-        await app.Graph.Settings.SyncNowCommand.ExecuteAsync(null);
-
-        Assert.Equal("Enter the project URL and key first.", app.Graph.Settings.SyncStatus);
-    }
-
-    [Fact]
-    public async Task SyncNowCommand_WithProject_ReportsCount()
-    {
-        using var app = TestApp.Create();
-        var settings = app.Graph.Settings;
-        settings.SyncUrl = "https://project.example";
-        settings.SyncKey = "publishable-key";
-
-        await settings.SyncNowCommand.ExecuteAsync(null);
-
-        Assert.Equal("Synced · 8 items · 10:00", settings.SyncStatus);
-        Assert.Equal(8, app.Cloud.Remote.Count);
-    }
-
-    [Fact]
     public void OpenDataFolderCommand_OpensTheDataFolder()
     {
         using var app = TestApp.Create();

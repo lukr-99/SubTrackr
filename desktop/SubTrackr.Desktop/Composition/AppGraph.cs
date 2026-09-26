@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Threading;
+using SubTrackr.Core.Auth;
 using SubTrackr.Core.Backup;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Subscriptions;
@@ -46,7 +47,9 @@ public sealed class AppGraph : IDisposable
         };
 
         Rates = new ExchangeRates(adapters.Rates, adapters.Time, adapters.Log, Ledger.BaseCurrency);
-        Sync = new SyncRunner(Ledger, adapters.SyncProviders, adapters.Log);
+        Account = new SyncAccount(Ledger, adapters.Auth, adapters.Sessions, adapters.Time, adapters.Log);
+        Account.Restore();
+        Sync = new SyncCoordinator(Ledger, Account, adapters.Remote, adapters.Delay, adapters.Time, adapters.Log);
         UpdateService = new UpdateService(adapters.Releases, adapters.Downloads, adapters.Installer, adapters.Log, build.Version);
         Backups = new BackupService(Ledger, adapters.BackupFiles, adapters.Time, adapters.Log, build.Version);
 
@@ -62,7 +65,14 @@ public sealed class AppGraph : IDisposable
 
         Dashboard = new DashboardViewModel(Ledger, Rates, dialogs, adapters.Time);
         Updates = new UpdatesViewModel(UpdateService, dialogs, desktop);
-        Settings = new SettingsViewModel(Ledger, Rates, Sync, Updates, new BackupViewModel(Backups, dialogs), desktop, adapters.Log, adapters.Time, adapters.DataFolder);
+        Settings = new SettingsViewModel(
+            Ledger,
+            Rates,
+            Updates,
+            new BackupViewModel(Backups, dialogs),
+            new SyncViewModel(Account, Sync, adapters.Time),
+            desktop,
+            adapters.DataFolder);
         Main = new MainViewModel(build.ProductName, Dashboard, Settings, () => new WhatIfViewModel(Ledger, Rates));
     }
 
@@ -74,7 +84,9 @@ public sealed class AppGraph : IDisposable
 
     public ExchangeRates Rates { get; }
 
-    public SyncRunner Sync { get; }
+    public SyncAccount Account { get; }
+
+    public SyncCoordinator Sync { get; }
 
     public UpdateService UpdateService { get; }
 
@@ -106,6 +118,7 @@ public sealed class AppGraph : IDisposable
     public void Dispose()
     {
         syncTimer?.Stop();
+        Sync.Dispose();
         adapters.Dispose();
     }
 }

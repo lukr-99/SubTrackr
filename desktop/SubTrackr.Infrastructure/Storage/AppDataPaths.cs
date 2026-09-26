@@ -23,6 +23,9 @@ public sealed class AppDataPaths
 
     public string LogsFolder => Path.Combine(Root, "logs");
 
+    /// <summary>The DPAPI-protected sign-in session; never part of data.json or a backup.</summary>
+    public string SessionFile => Path.Combine(Root, "session.bin");
+
     public static AppDataPaths ForUser(bool isDevBuild) => new(Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         isDevBuild ? DevFolderName : ReleaseFolderName));

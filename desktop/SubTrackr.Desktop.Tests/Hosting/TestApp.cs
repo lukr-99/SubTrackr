@@ -10,7 +10,7 @@ namespace SubTrackr.Desktop.Tests.Hosting;
 
 /// <summary>
 /// The whole app graph on fakes: an in-memory store with the first-run sample data (no websites, so
-/// no logo is fetched), fixed rates, a fake cloud and release channel, a Windows theme the test
+/// no logo is fetched), fixed rates, a fake Supabase and release channel, a Windows theme the test
 /// sets, and dialogs that answer on their own. View model tests theme a private resource
 /// dictionary; render tests pass the WPF host's application resources.
 /// </summary>
@@ -36,7 +36,9 @@ public sealed class TestApp : IDisposable
 
     public required FakeUpdateChannel Releases { get; init; }
 
-    public required FakeSyncProvider Cloud { get; init; }
+    public required FakeSupabase Cloud { get; init; }
+
+    public required InMemorySessionStore Sessions { get; init; }
 
     public required InMemoryBackupFiles Files { get; init; }
 
@@ -55,11 +57,12 @@ public sealed class TestApp : IDisposable
         var dialogs = new RecordingDialogs();
         var desktop = new RecordingDesktop();
         var releases = new FakeUpdateChannel { Latest = latest };
-        var cloud = new FakeSyncProvider();
+        var cloud = new FakeSupabase();
+        var sessions = new InMemorySessionStore();
         var files = new InMemoryBackupFiles();
         var systemTheme = new FakeSystemTheme();
         resources ??= new ResourceDictionary();
-        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, releases, releases, releases, files, systemTheme, new RecordingLog(), DataFolder);
+        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, cloud, sessions, new RecordingDelay(), releases, releases, releases, files, systemTheme, new RecordingLog(), DataFolder);
         return new TestApp
         {
             Graph = new AppGraph(new BuildInfo(version), adapters, resources, dialogs, desktop),
@@ -69,6 +72,7 @@ public sealed class TestApp : IDisposable
             Desktop = desktop,
             Releases = releases,
             Cloud = cloud,
+            Sessions = sessions,
             Files = files,
             SystemTheme = systemTheme,
             Resources = resources,

@@ -7,33 +7,114 @@
             <StackPanel>
                 <TextBlock Text="Settings" Style="{StaticResource PageTitle}" />
 
+                <!-- ==================== General ==================== -->
                 <Border Style="{StaticResource Card}" Margin="0,18,0,0">
                     <StackPanel>
                         <TextBlock Text="Base currency" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
-                        <TextBlock Text="All totals roll up into this currency." FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" />
+                        <TextBlock Text="All totals roll up into this currency." Style="{StaticResource Hint}" Margin="0,0,0,6" />
                         <ComboBox Width="150" HorizontalAlignment="Left" ItemsSource="{Binding Currencies}" SelectedItem="{Binding BaseCurrency}" />
 
                         <TextBlock Text="Worth-it threshold (cost per use, base currency)" Style="{StaticResource FieldLabel}" />
-                        <TextBlock Text="A subscription is &quot;worth it&quot; when its cost per use is at or below this." FontSize="11"
-                                   Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" />
+                        <TextBlock Text="A subscription is &quot;worth it&quot; when its cost per use is at or below this."
+                                   Style="{StaticResource Hint}" Margin="0,0,0,6" />
                         <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding ThresholdText, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Text="Monthly budget (base currency; 0 = off)" Style="{StaticResource FieldLabel}" />
-                        <TextBlock Text="Shows a budget bar on the dashboard, red when you're over."
-                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" />
+                        <TextBlock Text="Shows a budget bar on the dashboard, red when you're over." Style="{StaticResource Hint}" Margin="0,0,0,6" />
                         <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding BudgetText, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <Button Content="Save" Style="{StaticResource PrimaryButton}" Command="{Binding SaveCommand}"
+                                HorizontalAlignment="Left" Margin="0,16,0,0" />
                     </StackPanel>
                 </Border>
 
+                <!-- ==================== Theme ==================== -->
                 <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                     <StackPanel>
                         <TextBlock Text="Theme" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
                         <TextBlock Text="Applies at once. &quot;Same as Windows&quot; follows the Windows app mode as it changes."
-                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                   Style="{StaticResource Hint}" Margin="0,0,0,6" />
                         <ComboBox Width="200" HorizontalAlignment="Left" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" />
                     </StackPanel>
                 </Border>
 
+                <!-- ==================== Sync ==================== -->
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Sync}">
+                    <StackPanel>
+                        <TextBlock Text="Sync (Supabase)" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                        <TextBlock Style="{StaticResource Hint}" Margin="0,0,0,2"
+                                   Text="Syncs subscriptions between your devices through a Supabase project you own. Each person signs in with an emailed code and sees only their own rows. Settings stay on each device." />
+
+                        <TextBlock Text="Project URL" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding ProjectUrl, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text="Publishable key" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding PublishableKey, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button Content="Save project" Style="{StaticResource GhostButton}" Command="{Binding SaveProjectCommand}" />
+                            <TextBlock Text="Changing the project signs you out." Style="{StaticResource Hint}"
+                                       VerticalAlignment="Center" Margin="12,0,0,0" />
+                        </StackPanel>
+
+                        <Border Height="1" Background="{DynamicResource Border}" Margin="0,16,0,4"
+                                Visibility="{Binding HasProject, Converter={StaticResource BoolVis}}" />
+
+                        <StackPanel Visibility="{Binding ShowEmailStep, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="Email" Style="{StaticResource FieldLabel}" Margin="0,10,0,5" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Grid.Column="1" Content="Send code" Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding SendCodeCommand}" Margin="10,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding ShowCodeStep, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="Code from the email" Style="{StaticResource FieldLabel}" Margin="0,10,0,5" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Width="160" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Content="Verify" Style="{StaticResource PrimaryButton}" Command="{Binding VerifyCommand}" Margin="10,0,0,0" />
+                                <Button Content="Use another email" Style="{StaticResource GhostButton}" Command="{Binding UseAnotherEmailCommand}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsSignedIn, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="{Binding SignedInText}" FontSize="13" Margin="0,10,0,0" />
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Button Content="Sync now" Style="{StaticResource PrimaryButton}" Command="{Binding SyncNowCommand}" />
+                                <Button Content="Sign out" Style="{StaticResource GhostButton}" Command="{Binding SignOutCommand}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding StateText}" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,12,0,0" />
+                        <TextBlock Text="{Binding Message}" Style="{StaticResource StatusLine}" Margin="0,6,0,0"
+                                   Visibility="{Binding HasMessage, Converter={StaticResource BoolVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ==================== Backup ==================== -->
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Backup}">
+                    <StackPanel>
+                        <TextBlock Text="Backup" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                        <TextBlock Text="A backup file holds every subscription and your settings. It never holds the sync project or your sign-in."
+                                   Style="{StaticResource Hint}" Margin="0,0,0,10" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Back up…" Style="{StaticResource GhostButton}" Command="{Binding BackUpCommand}" />
+                            <Button Content="Restore…" Style="{StaticResource GhostButton}" Command="{Binding RestoreCommand}" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="When restoring" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,12,0,6" />
+                        <RadioButton GroupName="RestoreMode" IsChecked="{Binding IsMergeMode}"
+                                     Content="Merge: keep what's here, add and update from the backup" />
+                        <RadioButton GroupName="RestoreMode" IsChecked="{Binding IsReplaceMode}" Margin="0,6,0,0"
+                                     Content="Replace: the backup replaces everything here (asks first)" />
+                        <TextBlock Text="{Binding ResultText}" Style="{StaticResource StatusLine}" Margin="0,10,0,0"
+                                   Visibility="{Binding ResultText, Converter={StaticResource StrVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ==================== Rates and data ==================== -->
                 <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                     <StackPanel>
                         <TextBlock Text="Exchange rates" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
@@ -48,40 +129,10 @@
                                        TextTrimming="CharacterEllipsis" MaxWidth="330" />
                             <Button Content="Open folder" Style="{StaticResource GhostButton}" Command="{Binding OpenDataFolderCommand}" Margin="12,0,0,0" />
                         </StackPanel>
-
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Backup}">
-                    <StackPanel>
-                        <TextBlock Text="Backup" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
-                        <TextBlock Text="A backup file holds every subscription and your settings. It never holds the sync project or your sign-in."
-                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,10" />
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Back up…" Style="{StaticResource GhostButton}" Command="{Binding BackUpCommand}" />
-                            <Button Content="Restore…" Style="{StaticResource GhostButton}" Command="{Binding RestoreCommand}" Margin="8,0,0,0" />
-                        </StackPanel>
-                        <TextBlock Text="When restoring" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,12,0,6" />
-                        <RadioButton GroupName="RestoreMode" IsChecked="{Binding IsMergeMode}"
-                                     Content="Merge: keep what's here, add and update from the backup" />
-                        <RadioButton GroupName="RestoreMode" IsChecked="{Binding IsReplaceMode}" Margin="0,6,0,0"
-                                     Content="Replace: the backup replaces everything here (asks first)" />
-                        <TextBlock Text="{Binding ResultText}" FontSize="12" TextWrapping="Wrap" Margin="0,10,0,0"
-                                   Visibility="{Binding ResultText, Converter={StaticResource StrVis}}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasError}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource Negative}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
-
+                <!-- ==================== Updates ==================== -->
                 <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Updates}">
                     <StackPanel>
                         <TextBlock Text="Updates" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
@@ -90,30 +141,10 @@
                             <Button Content="Check for updates" Style="{StaticResource GhostButton}" Command="{Binding CheckForUpdatesCommand}" />
                             <Button Content="Open releases page" Style="{StaticResource GhostButton}" Command="{Binding OpenReleasesPageCommand}" Margin="8,0,0,0" />
                         </StackPanel>
-                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap"
-                                   Margin="0,8,0,0" Visibility="{Binding StatusText, Converter={StaticResource StrVis}}" />
+                        <TextBlock Text="{Binding StatusText}" Style="{StaticResource StatusLine}" Margin="0,8,0,0"
+                                   Visibility="{Binding StatusText, Converter={StaticResource StrVis}}" />
                     </StackPanel>
                 </Border>
-
-                <Border Style="{StaticResource Card}" Margin="0,16,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Sync (Supabase)" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
-                        <TextBlock Text="Syncs subscriptions across your devices. See docs/SYNC-SETUP.md to create the free project."
-                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,8" />
-                        <TextBlock Text="Project URL" Style="{StaticResource FieldLabel}" />
-                        <TextBox Text="{Binding SyncUrl, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock Text="Anon key" Style="{StaticResource FieldLabel}" />
-                        <TextBox Text="{Binding SyncKey, UpdateSourceTrigger=PropertyChanged}" />
-                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                            <Button Content="Sync now" Style="{StaticResource PrimaryButton}" Command="{Binding SyncNowCommand}" />
-                            <TextBlock Text="{Binding SyncStatus}" VerticalAlignment="Center" Margin="12,0,0,0"
-                                       FontSize="12" Foreground="{DynamicResource TextSecondary}" />
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <Button Content="Save settings" Style="{StaticResource PrimaryButton}" Command="{Binding SaveCommand}"
-                        HorizontalAlignment="Left" Margin="0,18,0,0" />
             </StackPanel>
         </Grid>
     </ScrollViewer>

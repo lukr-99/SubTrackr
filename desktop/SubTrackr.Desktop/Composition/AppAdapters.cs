@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using SubTrackr.Core.Auth;
 using SubTrackr.Core.Backup;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Diagnostics;
@@ -33,7 +34,10 @@ public sealed class AppAdapters : IDisposable
         TimeProvider time,
         IDatabaseStore store,
         IRateProvider rates,
-        ISyncProviderFactory syncProviders,
+        ISupabaseAuth auth,
+        ISubscriptionRemote remote,
+        ISessionStore sessions,
+        IDelay delay,
         IReleaseSource releases,
         IUpdateDownloader downloads,
         IInstallerLauncher installer,
@@ -46,7 +50,10 @@ public sealed class AppAdapters : IDisposable
         Time = time;
         Store = store;
         Rates = rates;
-        SyncProviders = syncProviders;
+        Auth = auth;
+        Remote = remote;
+        Sessions = sessions;
+        Delay = delay;
         Releases = releases;
         Downloads = downloads;
         Installer = installer;
@@ -63,7 +70,13 @@ public sealed class AppAdapters : IDisposable
 
     public IRateProvider Rates { get; }
 
-    public ISyncProviderFactory SyncProviders { get; }
+    public ISupabaseAuth Auth { get; }
+
+    public ISubscriptionRemote Remote { get; }
+
+    public ISessionStore Sessions { get; }
+
+    public IDelay Delay { get; }
 
     public IReleaseSource Releases { get; }
 
@@ -104,7 +117,10 @@ public sealed class AppAdapters : IDisposable
             time,
             new JsonDatabaseStore(paths.DataFile),
             new FrankfurterRateProvider(web),
-            new SupabaseSyncProviderFactory(web),
+            new SupabaseAuthClient(web),
+            new SupabaseSubscriptionRemote(web),
+            new DpapiSessionStore(paths.SessionFile),
+            new ClockDelay(time),
             new GitHubReleaseSource(web, ReleaseOwner, ReleaseRepository),
             new VerifiedDownloader(downloads, Path.Combine(Path.GetTempPath(), "SubTrackr", "updates")),
             new InnoSetupLauncher(),

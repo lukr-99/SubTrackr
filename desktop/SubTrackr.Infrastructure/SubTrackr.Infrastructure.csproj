@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Adapters behind SubTrackr.Core's interfaces: files, HTTP, logging. Windows only. -->
+  <!-- Adapters behind SubTrackr.Core's interfaces: files, HTTP, DPAPI, processes, logging. Windows only. -->
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <RootNamespace>SubTrackr.Infrastructure</RootNamespace>
@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SubTrackr.Core\SubTrackr.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- DPAPI for the sign-in session file. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
   </ItemGroup>
 
 </Project>

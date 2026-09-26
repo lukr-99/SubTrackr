@@ -17,6 +17,8 @@ public sealed class StubHttpHandler(Func<HttpRequestMessage, HttpResponseMessage
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        // Like the real handler, a request whose caller already cancelled never goes out.
+        cancellationToken.ThrowIfCancellationRequested();
         Requests.Add(request);
         Bodies.Add(request.Content is null ? "" : await request.Content.ReadAsStringAsync(cancellationToken));
         return respond(request);

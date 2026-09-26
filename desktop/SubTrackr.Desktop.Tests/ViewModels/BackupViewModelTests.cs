@@ -17,7 +17,7 @@ public class BackupViewModelTests
         Assert.Equal(["SubTrackr-backup-20260926-100000.json"], app.Dialogs.SuggestedNames);
         Assert.Contains("\"format\": \"subtrackr-backup\"", app.Files.Files[BackupPath], StringComparison.Ordinal);
         Assert.Equal("Saved SubTrackr-backup.json.", app.Graph.Settings.Backup.ResultText);
-        Assert.False(app.Graph.Settings.Backup.HasError);
+        Assert.False(app.Graph.Settings.Backup.IsError);
     }
 
     [Fact]
@@ -90,6 +90,6 @@ public class BackupViewModelTests
         app.Graph.Settings.Backup.RestoreCommand.Execute(null);
 
         Assert.Equal("Nothing changed: this file isn't a SubTrackr backup.", app.Graph.Settings.Backup.ResultText);
-        Assert.True(app.Graph.Settings.Backup.HasError);
+        Assert.True(app.Graph.Settings.Backup.IsError);
     }
 }

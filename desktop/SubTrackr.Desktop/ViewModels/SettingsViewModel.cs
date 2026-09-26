@@ -3,50 +3,60 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SubTrackr.Core.Contracts;
 using SubTrackr.Core.Currency;
-using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Subscriptions;
-using SubTrackr.Core.Sync;
 using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
 
 /// <summary>
 /// The settings page: base currency, worth threshold and budget (saved together), the theme (applied
-/// at once), rates, the data folder, backups, updates, and the sync project. <see cref="Load"/>
+/// at once), rates, the data folder, and the backup, update, and sync cards. <see cref="Load"/>
 /// resets the form to what is stored each time the page opens.
 /// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly SubscriptionLedger ledger;
     private readonly ExchangeRates rates;
-    private readonly SyncRunner sync;
     private readonly IDesktopServices desktop;
-    private readonly IAppLog log;
-    private readonly TimeProvider time;
     private readonly string dataFolder;
+
+    [ObservableProperty]
+    private string baseCurrency = "";
+
+    [ObservableProperty]
+    private string thresholdText = "";
+
+    [ObservableProperty]
+    private string budgetText = "";
+
+    [ObservableProperty]
+    private string ratesText = "";
+
+    [ObservableProperty]
+    private ThemeOption? selectedTheme;
 
     public SettingsViewModel(
         SubscriptionLedger ledger,
         ExchangeRates rates,
-        SyncRunner sync,
         UpdatesViewModel updates,
         BackupViewModel backup,
+        SyncViewModel sync,
         IDesktopServices desktop,
-        IAppLog log,
-        TimeProvider time,
         string dataFolder)
     {
         ArgumentNullException.ThrowIfNull(ledger);
         ArgumentNullException.ThrowIfNull(rates);
+        ArgumentNullException.ThrowIfNull(updates);
+        ArgumentNullException.ThrowIfNull(backup);
+        ArgumentNullException.ThrowIfNull(sync);
+        ArgumentNullException.ThrowIfNull(desktop);
         this.ledger = ledger;
         this.rates = rates;
-        this.sync = sync;
+        this.desktop = desktop;
+        this.dataFolder = dataFolder;
         Updates = updates;
         Backup = backup;
-        this.desktop = desktop;
-        this.log = log;
-        this.time = time;
-        this.dataFolder = dataFolder;
+        Sync = sync;
         rates.Changed += (_, _) => RatesText = DescribeRates();
         ledger.Changed += (_, change) =>
         {
@@ -76,31 +86,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     /// <summary>The backup and restore card.</summary>
     public BackupViewModel Backup { get; }
 
+    /// <summary>The sync project and sign-in card.</summary>
+    public SyncViewModel Sync { get; }
+
     public string DataFilePath => ledger.StoreLocation;
-
-    [ObservableProperty]
-    private string baseCurrency = "";
-
-    [ObservableProperty]
-    private string thresholdText = "";
-
-    [ObservableProperty]
-    private string budgetText = "";
-
-    [ObservableProperty]
-    private string ratesText = "";
-
-    [ObservableProperty]
-    private string syncUrl = "";
-
-    [ObservableProperty]
-    private string syncKey = "";
-
-    [ObservableProperty]
-    private string syncStatus = "";
-
-    [ObservableProperty]
-    private ThemeOption? selectedTheme;
 
     /// <summary>Resets every field to the stored settings.</summary>
     public void Load()
@@ -109,10 +98,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         ThresholdText = ledger.WorthThreshold.ToString("0.##", CultureInfo.InvariantCulture);
         BudgetText = ledger.MonthlyBudget.ToString("0.##", CultureInfo.InvariantCulture);
         RatesText = DescribeRates();
-        SyncUrl = ledger.Settings.SyncUrl;
-        SyncKey = ledger.Settings.SyncKey;
-        SyncStatus = "";
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Mode == ledger.Settings.ThemeMode) ?? ThemeOptions[0];
+        Sync.Load();
     }
 
     // The theme applies and saves on the spot; it is not part of Save.
@@ -144,9 +131,6 @@ public sealed partial class SettingsViewModel : ObservableObject
             {
                 settings.MonthlyBudget = (double)budget;
             }
-
-            settings.SyncUrl = SyncUrl;
-            settings.SyncKey = SyncKey;
         });
         Saved?.Invoke(this, EventArgs.Empty);
         if (baseChanged)
@@ -165,34 +149,6 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenDataFolder() => desktop.OpenFolder(dataFolder);
-
-    [RelayCommand]
-    private async Task SyncNowAsync()
-    {
-        ledger.UpdateSettings(settings =>
-        {
-            settings.SyncUrl = SyncUrl;
-            settings.SyncKey = SyncKey;
-        });
-
-        if (!sync.IsConfigured)
-        {
-            SyncStatus = "Enter the project URL and key first.";
-            return;
-        }
-
-        SyncStatus = "Syncing…";
-        try
-        {
-            var count = await sync.SyncNowAsync(CancellationToken.None);
-            SyncStatus = $"Synced · {count} items · {time.GetLocalNow().ToString("HH:mm", CultureInfo.InvariantCulture)}";
-        }
-        catch (Exception exception)
-        {
-            log.Error("Sync failed", exception);
-            SyncStatus = "Sync failed. Check the URL, the key, and the connection.";
-        }
-    }
 
     private string DescribeRates() =>
         $"{rates.Table.Anchor} · {rates.Table.Date.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)}";
