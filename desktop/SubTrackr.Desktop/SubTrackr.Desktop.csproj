@@ -26,4 +26,11 @@
                       Link="Theming\tokens.json" />
   </ItemGroup>
 
+  <!-- The shared logo geometry and launch animation, built in (SPEC.md section 10). -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\design\logo.json"
+                      LogicalName="SubTrackr.Contracts.logo.json"
+                      Link="Branding\logo.json" />
+  </ItemGroup>
+
 </Project>

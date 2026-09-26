@@ -161,7 +161,7 @@ public sealed class PageRenderTests
         element.UpdateLayout();
         var bitmap = new RenderTargetBitmap((int)element.ActualWidth, (int)element.ActualHeight, 96, 96, PixelFormats.Pbgra32);
         bitmap.Render(element);
-        Save(bitmap, name);
+        Screenshots.Save(bitmap, name);
     }
 
     // An element taller than the window (a page's scrolled content), on the window background.
@@ -178,22 +178,6 @@ public sealed class PageRenderTests
 
         var bitmap = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, PixelFormats.Pbgra32);
         bitmap.Render(visual);
-        Save(bitmap, name);
-    }
-
-    private static void Save(BitmapSource bitmap, string name)
-    {
-        Assert.True(bitmap.PixelWidth > 0 && bitmap.PixelHeight > 0);
-        var folder = Environment.GetEnvironmentVariable("SUBTRACKR_SCREENSHOTS");
-        if (string.IsNullOrEmpty(folder))
-        {
-            return;
-        }
-
-        Directory.CreateDirectory(folder);
-        var encoder = new PngBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(bitmap));
-        using var output = File.Create(Path.Combine(folder, name + ".png"));
-        encoder.Save(output);
+        Screenshots.Save(bitmap, name);
     }
 }

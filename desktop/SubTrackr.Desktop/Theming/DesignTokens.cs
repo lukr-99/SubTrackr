@@ -6,11 +6,11 @@ using System.Windows.Media;
 namespace SubTrackr.Desktop.Theming;
 
 /// <summary>
-/// The light and dark palettes from contracts/design/tokens.json, the single source of SubTrackr's
-/// colors (SPEC.md section 10). The file is built into this assembly, so the app cannot run
-/// without it or with a stale copy.
+/// The light and dark palettes and the logo's brand colors from contracts/design/tokens.json, the
+/// single source of SubTrackr's colors (SPEC.md section 10). The file is built into this assembly,
+/// so the app cannot run without it or with a stale copy.
 /// </summary>
-public sealed record DesignTokens(ThemePalette Light, ThemePalette Dark)
+public sealed record DesignTokens(ThemePalette Light, ThemePalette Dark, BrandPalette Brand)
 {
     public const string ResourceName = "SubTrackr.Contracts.tokens.json";
 
@@ -32,7 +32,11 @@ public sealed record DesignTokens(ThemePalette Light, ThemePalette Dark)
             throw new InvalidDataException("Not version 1 of the SubTrackr design tokens.");
         }
 
-        return new DesignTokens(Palette(root, "light"), Palette(root, "dark"));
+        var brand = root.GetProperty("brand");
+        return new DesignTokens(
+            Palette(root, "light"),
+            Palette(root, "dark"),
+            new BrandPalette(Hex(brand, "gradientStart"), Hex(brand, "gradientEnd"), Hex(brand, "mark")));
     }
 
     private static ThemePalette Palette(JsonElement root, string mode)
