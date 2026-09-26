@@ -3,17 +3,19 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using SubTrackr.Core.Contracts;
 using SubTrackr.Desktop.Shell;
 using SubTrackr.Desktop.Tests.Hosting;
 using SubTrackr.Desktop.ViewModels;
 using SubTrackr.Desktop.Views;
+using ThemeMode = SubTrackr.Core.Contracts.ThemeMode;
 
 namespace SubTrackr.Desktop.Tests.Ui;
 
 /// <summary>
-/// Opens the real main window far off screen with sample data, shows every page and the edit form,
-/// and fails on any binding error. With SUBTRACKR_SCREENSHOTS set to a folder it also saves each
-/// page as a PNG there, plus the whole scrolled settings page.
+/// Opens the real main window far off screen with sample data, shows every page and the edit form
+/// in the light and the dark theme, and fails on any binding error. With SUBTRACKR_SCREENSHOTS set
+/// to a folder it also saves each page as a PNG there, plus the whole scrolled settings page.
 /// </summary>
 [Collection(WpfCollection.Name)]
 public sealed class PageRenderTests
@@ -21,37 +23,43 @@ public sealed class PageRenderTests
     private static readonly AppPage[] Pages = [AppPage.Dashboard, AppPage.WhatIf, AppPage.Settings];
 
     [Fact]
-    public Task EveryPage_RendersWithoutBindingErrors() => WpfHost.RunAsync(async () =>
+    public Task EveryPage_BothThemes_RendersWithoutBindingErrors() => WpfHost.RunAsync(async () =>
     {
         using var errors = new BindingErrorRecorder();
-        using var app = TestApp.Create();
+        using var app = TestApp.Create(resources: Application.Current.Resources);
         await app.Graph.Rates.RefreshAsync(app.Graph.Ledger.BaseCurrency, CancellationToken.None);
 
         var window = OffScreen(new MainWindow(app.Graph.Main), 1280, 820);
         window.Show();
         try
         {
-            foreach (var page in Pages)
+            foreach (var mode in new[] { ThemeMode.Light, ThemeMode.Dark })
             {
-                app.Graph.Main.Open(page);
-                await Settle();
-                Capture(window, page.ToString().ToLowerInvariant());
-            }
+                // Through the settings picker, the way a person switches.
+                app.Graph.Settings.SelectedTheme = app.Graph.Settings.ThemeOptions.Single(o => o.Mode == mode);
+                var suffix = "-" + mode.ToString().ToLowerInvariant();
+                foreach (var page in Pages)
+                {
+                    app.Graph.Main.Open(page);
+                    await Settle();
+                    Capture(window, page.ToString().ToLowerInvariant() + suffix);
+                }
 
-            var settings = Find<SettingsView>(window);
-            CaptureWhole((FrameworkElement)((ScrollViewer)settings.Content).Content, window.Background, "settings-full");
+                var settings = Find<SettingsView>(window);
+                CaptureWhole((FrameworkElement)((ScrollViewer)settings.Content).Content, window.Background, "settings-full" + suffix);
 
-            var editor = new EditSubscriptionViewModel(new DateOnly(2026, 9, 26), app.Graph.Ledger.Subscriptions[0]);
-            var edit = OffScreen(new EditSubscriptionWindow(editor), 460, double.NaN);
-            edit.Show();
-            try
-            {
-                await Settle();
-                Capture(edit, "edit");
-            }
-            finally
-            {
-                edit.Close();
+                var editor = new EditSubscriptionViewModel(new DateOnly(2026, 9, 26), app.Graph.Ledger.Subscriptions[2]);
+                var edit = OffScreen(new EditSubscriptionWindow(editor), 460, double.NaN);
+                edit.Show();
+                try
+                {
+                    await Settle();
+                    Capture(edit, "edit" + suffix);
+                }
+                finally
+                {
+                    edit.Close();
+                }
             }
         }
         finally
@@ -60,6 +68,28 @@ public sealed class PageRenderTests
         }
 
         Assert.True(errors.Errors.Count == 0, string.Join(Environment.NewLine, errors.Errors));
+    });
+
+    [Fact]
+    public Task ThemeSwitch_RepaintsAnOpenWindow() => WpfHost.RunAsync(async () =>
+    {
+        using var app = TestApp.Create(resources: Application.Current.Resources);
+        var window = OffScreen(new MainWindow(app.Graph.Main), 1280, 820);
+        window.Show();
+        try
+        {
+            app.Graph.Theme.Apply(ThemeMode.Light);
+            await Settle();
+            Assert.Equal(app.Graph.Theme.Tokens.Light.Neutral.Background, ((SolidColorBrush)window.Background).Color);
+
+            app.Graph.Theme.Apply(ThemeMode.Dark);
+            await Settle();
+            Assert.Equal(app.Graph.Theme.Tokens.Dark.Neutral.Background, ((SolidColorBrush)window.Background).Color);
+        }
+        finally
+        {
+            window.Close();
+        }
     });
 
     private static T OffScreen<T>(T window, double width, double height)

@@ -1,5 +1,5 @@
 using System.Windows;
-using SubTrackr.Desktop.Services;
+using SubTrackr.Desktop.Theming;
 using SubTrackr.Desktop.ViewModels;
 
 namespace SubTrackr.Desktop.Shell;
@@ -10,7 +10,7 @@ public partial class MainWindow : Window
     public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
-        DarkTitleBar.Apply(this);
+        TitleBarTheme.Attach(this);
         DataContext = viewModel;
     }
 }

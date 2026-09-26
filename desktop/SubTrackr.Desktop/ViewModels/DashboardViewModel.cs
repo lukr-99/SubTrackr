@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SubTrackr.Core;
@@ -134,10 +133,6 @@ public sealed partial class DashboardViewModel : ObservableObject
         }
     }
 
-    public Brush BudgetBrush => OverBudget
-        ? new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B))
-        : new SolidColorBrush(Color.FromRgb(0x3D, 0xD6, 0x8C));
-
     [RelayCommand]
     private void SetChart(ChartType type) => ChartType = type;
 
@@ -221,7 +216,6 @@ public sealed partial class DashboardViewModel : ObservableObject
         OnPropertyChanged(nameof(BudgetFraction));
         OnPropertyChanged(nameof(BudgetText));
         OnPropertyChanged(nameof(BudgetRemainingText));
-        OnPropertyChanged(nameof(BudgetBrush));
         RatesStatusText = $"Rates · {rates.Table.Anchor} · {rates.Table.Date.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)}";
     }
 
@@ -296,7 +290,7 @@ public sealed partial class DashboardViewModel : ObservableObject
             {
                 cumulative += monthly;
                 var label = month.AddMonths(i).ToString("MMM", CultureInfo.InvariantCulture);
-                ChartSlices.Add(new ChartSlice { Label = label, Value = cumulative, Color = Palette.At(0) });
+                ChartSlices.Add(new ChartSlice { Label = label, Value = cumulative, ColorIndex = 0 });
             }
 
             return;
@@ -311,7 +305,7 @@ public sealed partial class DashboardViewModel : ObservableObject
             {
                 Label = categories[i].Category,
                 Value = (double)categories[i].MonthlyBase,
-                Color = Palette.At(i),
+                ColorIndex = i,
                 ValueLabel = Formatting.Money(categories[i].MonthlyBase, ledger.BaseCurrency),
             });
         }
@@ -323,7 +317,7 @@ public sealed partial class DashboardViewModel : ObservableObject
             {
                 Label = "Other",
                 Value = (double)rest,
-                Color = Palette.At(MaxSlices),
+                ColorIndex = MaxSlices,
                 ValueLabel = Formatting.Money(rest, ledger.BaseCurrency),
             });
         }

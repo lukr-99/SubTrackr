@@ -19,4 +19,11 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>
 
+  <!-- The shared color tokens, built in: the app's only source of theme colors (SPEC.md section 10). -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\design\tokens.json"
+                      LogicalName="SubTrackr.Contracts.tokens.json"
+                      Link="Theming\tokens.json" />
+  </ItemGroup>
+
 </Project>

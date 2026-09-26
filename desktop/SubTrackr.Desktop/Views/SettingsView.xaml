@@ -10,18 +10,27 @@
                 <Border Style="{StaticResource Card}" Margin="0,18,0,0">
                     <StackPanel>
                         <TextBlock Text="Base currency" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
-                        <TextBlock Text="All totals roll up into this currency." FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                        <TextBlock Text="All totals roll up into this currency." FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" />
                         <ComboBox Width="150" HorizontalAlignment="Left" ItemsSource="{Binding Currencies}" SelectedItem="{Binding BaseCurrency}" />
 
                         <TextBlock Text="Worth-it threshold (cost per use, base currency)" Style="{StaticResource FieldLabel}" />
                         <TextBlock Text="A subscription is &quot;worth it&quot; when its cost per use is at or below this." FontSize="11"
-                                   Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                                   Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" />
                         <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding ThresholdText, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Text="Monthly budget (base currency; 0 = off)" Style="{StaticResource FieldLabel}" />
                         <TextBlock Text="Shows a budget bar on the dashboard, red when you're over."
-                                   FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,0,0,6" />
+                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" />
                         <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding BudgetText, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Theme" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
+                        <TextBlock Text="Applies at once. &quot;Same as Windows&quot; follows the Windows app mode as it changes."
+                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                        <ComboBox Width="200" HorizontalAlignment="Left" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" />
                     </StackPanel>
                 </Border>
 
@@ -29,13 +38,13 @@
                     <StackPanel>
                         <TextBlock Text="Exchange rates" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding RatesText}" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                            <TextBlock Text="{Binding RatesText}" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
                             <Button Content="Refresh now" Style="{StaticResource GhostButton}" Command="{Binding RefreshRatesCommand}" Margin="12,0,0,0" />
                         </StackPanel>
 
                         <TextBlock Text="Data file" Style="{StaticResource FieldLabel}" />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding DataFilePath}" VerticalAlignment="Center" FontSize="11" Foreground="{StaticResource TextMuted}"
+                            <TextBlock Text="{Binding DataFilePath}" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondary}"
                                        TextTrimming="CharacterEllipsis" MaxWidth="330" />
                             <Button Content="Open folder" Style="{StaticResource GhostButton}" Command="{Binding OpenDataFolderCommand}" Margin="12,0,0,0" />
                         </StackPanel>
@@ -47,12 +56,12 @@
                     <StackPanel>
                         <TextBlock Text="Backup" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
                         <TextBlock Text="A backup file holds every subscription and your settings. It never holds the sync project or your sign-in."
-                                   FontSize="11" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,10" />
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Back up…" Style="{StaticResource GhostButton}" Command="{Binding BackUpCommand}" />
                             <Button Content="Restore…" Style="{StaticResource GhostButton}" Command="{Binding RestoreCommand}" Margin="8,0,0,0" />
                         </StackPanel>
-                        <TextBlock Text="When restoring" FontSize="12" Foreground="{StaticResource TextSecondary}" Margin="0,12,0,6" />
+                        <TextBlock Text="When restoring" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,12,0,6" />
                         <RadioButton GroupName="RestoreMode" IsChecked="{Binding IsMergeMode}"
                                      Content="Merge: keep what's here, add and update from the backup" />
                         <RadioButton GroupName="RestoreMode" IsChecked="{Binding IsReplaceMode}" Margin="0,6,0,0"
@@ -61,10 +70,10 @@
                                    Visibility="{Binding ResultText, Converter={StaticResource StrVis}}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding HasError}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource Negative}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Negative}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -76,12 +85,12 @@
                 <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Updates}">
                     <StackPanel>
                         <TextBlock Text="Updates" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding VersionText}" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                        <TextBlock Text="{Binding VersionText}" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                             <Button Content="Check for updates" Style="{StaticResource GhostButton}" Command="{Binding CheckForUpdatesCommand}" />
                             <Button Content="Open releases page" Style="{StaticResource GhostButton}" Command="{Binding OpenReleasesPageCommand}" Margin="8,0,0,0" />
                         </StackPanel>
-                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap"
+                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap"
                                    Margin="0,8,0,0" Visibility="{Binding StatusText, Converter={StaticResource StrVis}}" />
                     </StackPanel>
                 </Border>
@@ -90,7 +99,7 @@
                     <StackPanel>
                         <TextBlock Text="Sync (Supabase)" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
                         <TextBlock Text="Syncs subscriptions across your devices. See docs/SYNC-SETUP.md to create the free project."
-                                   FontSize="11" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                                   FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,8" />
                         <TextBlock Text="Project URL" Style="{StaticResource FieldLabel}" />
                         <TextBox Text="{Binding SyncUrl, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Text="Anon key" Style="{StaticResource FieldLabel}" />
@@ -98,7 +107,7 @@
                         <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
                             <Button Content="Sync now" Style="{StaticResource PrimaryButton}" Command="{Binding SyncNowCommand}" />
                             <TextBlock Text="{Binding SyncStatus}" VerticalAlignment="Center" Margin="12,0,0,0"
-                                       FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                                       FontSize="12" Foreground="{DynamicResource TextSecondary}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

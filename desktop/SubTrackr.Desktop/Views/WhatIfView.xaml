@@ -7,18 +7,18 @@
             <StackPanel>
                 <TextBlock Text="What-if calculator" Style="{StaticResource PageTitle}" />
                 <TextBlock Text="See the impact of a new subscription before you commit."
-                           Foreground="{StaticResource TextSecondary}" FontSize="13" Margin="0,4,0,0" />
+                           Foreground="{DynamicResource TextSecondary}" FontSize="13" Margin="0,4,0,0" />
 
                 <Border Style="{StaticResource Card}" Margin="0,20,0,0" Padding="18">
                     <Grid>
                         <StackPanel>
-                            <TextBlock Text="Currently" FontSize="11" Foreground="{StaticResource TextSecondary}" />
+                            <TextBlock Text="Currently" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                             <TextBlock Text="{Binding CurrentMonthlyText}" FontSize="22" FontWeight="Bold" Margin="0,2,0,0" />
-                            <TextBlock Text="per month" FontSize="11" Foreground="{StaticResource TextMuted}" />
+                            <TextBlock Text="per month" FontSize="11" Foreground="{DynamicResource TextMuted}" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
                             <TextBlock Text="{Binding CurrentYearlyText}" FontSize="16" HorizontalAlignment="Right" />
-                            <TextBlock Text="per year" FontSize="11" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Right" />
+                            <TextBlock Text="per year" FontSize="11" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" />
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -65,23 +65,23 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18" Background="{StaticResource SurfaceAlt}">
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18" Background="{DynamicResource SurfaceAlt}">
                     <StackPanel>
                         <Grid>
                             <StackPanel>
-                                <TextBlock Text="New total" FontSize="11" Foreground="{StaticResource TextSecondary}" />
+                                <TextBlock Text="New total" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                                 <TextBlock Text="{Binding NewMonthlyText}" FontSize="24" FontWeight="Bold" Margin="0,2,0,0" />
-                                <TextBlock Text="{Binding NewYearlyText}" FontSize="12" Foreground="{StaticResource TextMuted}" />
+                                <TextBlock Text="{Binding NewYearlyText}" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding AddedMonthlyText}" FontSize="18" FontWeight="SemiBold"
-                                           Foreground="{StaticResource Warning}" HorizontalAlignment="Right" />
-                                <TextBlock Text="added / mo" FontSize="11" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Right" />
+                                           Foreground="{DynamicResource Warning}" HorizontalAlignment="Right" />
+                                <TextBlock Text="added / mo" FontSize="11" Foreground="{DynamicResource TextSecondary}" HorizontalAlignment="Right" />
                             </StackPanel>
                         </Grid>
-                        <Border Height="1" Background="{StaticResource Border}" Margin="0,14" />
-                        <TextBlock Text="{Binding CostPerUseText}" FontSize="13" Foreground="{StaticResource TextSecondary}" />
-                        <TextBlock Text="{Binding VerdictText}" FontSize="17" FontWeight="Bold" Foreground="{Binding VerdictBrush}"
+                        <Border Height="1" Background="{DynamicResource Border}" Margin="0,14" />
+                        <TextBlock Text="{Binding CostPerUseText}" FontSize="13" Foreground="{DynamicResource TextSecondary}" />
+                        <TextBlock Text="{Binding VerdictText}" FontSize="17" FontWeight="Bold" Style="{StaticResource VerdictText}"
                                    Margin="0,4,0,0" Visibility="{Binding VerdictText, Converter={StaticResource StrVis}}" />
                     </StackPanel>
                 </Border>

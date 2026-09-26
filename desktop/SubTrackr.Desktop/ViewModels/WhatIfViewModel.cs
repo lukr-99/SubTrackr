@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Globalization;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SubTrackr.Core;
 using SubTrackr.Core.Analytics;
@@ -58,7 +57,7 @@ public sealed partial class WhatIfViewModel : ObservableObject
     [ObservableProperty] private string _deltaText = "";
     [ObservableProperty] private string _costPerUseText = "";
     [ObservableProperty] private string _verdictText = "";
-    [ObservableProperty] private Brush _verdictBrush = Brushes.Gray;
+    [ObservableProperty] private WorthVerdict _verdict = WorthVerdict.Unknown;
 
     partial void OnAmountChanged(string value) => Recompute();
     partial void OnCurrencyChanged(string value) => Recompute();
@@ -80,6 +79,7 @@ public sealed partial class WhatIfViewModel : ObservableObject
             DeltaText = "Enter a valid amount";
             CostPerUseText = "—";
             VerdictText = "";
+            Verdict = WorthVerdict.Unknown;
             return;
         }
 
@@ -102,17 +102,19 @@ public sealed partial class WhatIfViewModel : ObservableObject
             var cpu = WorthIt.CostPerUse(monthlyBase, uses);
             CostPerUseText = Formatting.Money(cpu, baseCcy) + " per use";
             var verdict = WorthIt.Evaluate(monthlyBase, uses, _ledger.WorthThreshold);
-            (VerdictText, VerdictBrush) = verdict switch
+            Verdict = verdict;
+            VerdictText = verdict switch
             {
-                WorthVerdict.Worth => ("Worth it 👍", new SolidColorBrush(Color.FromRgb(0x3D, 0xD6, 0x8C))),
-                WorthVerdict.NotWorth => ("Not worth it 👎", new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B))),
-                _ => ("", (Brush)Brushes.Gray),
+                WorthVerdict.Worth => "Worth it 👍",
+                WorthVerdict.NotWorth => "Not worth it 👎",
+                _ => "",
             };
         }
         else
         {
             CostPerUseText = "Set uses/month to judge worth";
             VerdictText = "";
+            Verdict = WorthVerdict.Unknown;
         }
     }
 }

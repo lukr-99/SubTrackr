@@ -7,6 +7,7 @@ using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Storage;
 using SubTrackr.Core.Sync;
 using SubTrackr.Core.Updates;
+using SubTrackr.Desktop.Theming;
 using SubTrackr.Infrastructure.Backup;
 using SubTrackr.Infrastructure.Currency;
 using SubTrackr.Infrastructure.Diagnostics;
@@ -37,6 +38,7 @@ public sealed class AppAdapters : IDisposable
         IUpdateDownloader downloads,
         IInstallerLauncher installer,
         IBackupFiles backupFiles,
+        ISystemTheme systemTheme,
         IAppLog log,
         string dataFolder,
         params IDisposable[] owned)
@@ -49,6 +51,7 @@ public sealed class AppAdapters : IDisposable
         Downloads = downloads;
         Installer = installer;
         BackupFiles = backupFiles;
+        SystemTheme = systemTheme;
         Log = log;
         DataFolder = dataFolder;
         this.owned = owned;
@@ -69,6 +72,8 @@ public sealed class AppAdapters : IDisposable
     public IInstallerLauncher Installer { get; }
 
     public IBackupFiles BackupFiles { get; }
+
+    public ISystemTheme SystemTheme { get; }
 
     public IAppLog Log { get; }
 
@@ -93,6 +98,8 @@ public sealed class AppAdapters : IDisposable
         var downloads = new HttpClient(new SocketsHttpHandler()) { Timeout = TimeSpan.FromMinutes(10) };
         downloads.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
 
+        var systemTheme = new WindowsSystemTheme();
+
         return new AppAdapters(
             time,
             new JsonDatabaseStore(paths.DataFile),
@@ -102,10 +109,12 @@ public sealed class AppAdapters : IDisposable
             new VerifiedDownloader(downloads, Path.Combine(Path.GetTempPath(), "SubTrackr", "updates")),
             new InnoSetupLauncher(),
             new BackupFiles(),
+            systemTheme,
             new FileLog(paths.LogsFolder, time),
             paths.Root,
             web,
-            downloads);
+            downloads,
+            systemTheme);
     }
 
     public void Dispose()

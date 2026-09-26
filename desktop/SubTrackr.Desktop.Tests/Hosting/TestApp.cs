@@ -1,3 +1,4 @@
+using System.Windows;
 using Microsoft.Extensions.Time.Testing;
 using SubTrackr.Core.Contracts;
 using SubTrackr.Core.Storage;
@@ -9,8 +10,9 @@ namespace SubTrackr.Desktop.Tests.Hosting;
 
 /// <summary>
 /// The whole app graph on fakes: an in-memory store with the first-run sample data (no websites, so
-/// no logo is fetched), fixed rates, a fake cloud and release channel, and dialogs that answer on
-/// their own.
+/// no logo is fetched), fixed rates, a fake cloud and release channel, a Windows theme the test
+/// sets, and dialogs that answer on their own. View model tests theme a private resource
+/// dictionary; render tests pass the WPF host's application resources.
 /// </summary>
 public sealed class TestApp : IDisposable
 {
@@ -18,35 +20,35 @@ public sealed class TestApp : IDisposable
 
     public static readonly DateTimeOffset Now = new(2026, 9, 26, 10, 0, 0, TimeSpan.Zero);
 
-    private TestApp(AppGraph graph, FakeTimeProvider time, InMemoryDatabaseStore store, RecordingDialogs dialogs, RecordingDesktop desktop, FakeUpdateChannel releases, FakeSyncProvider cloud, InMemoryBackupFiles files)
+    private TestApp()
     {
-        Graph = graph;
-        Time = time;
-        Store = store;
-        Dialogs = dialogs;
-        Desktop = desktop;
-        Releases = releases;
-        Cloud = cloud;
-        Files = files;
     }
 
-    public AppGraph Graph { get; }
+    public required AppGraph Graph { get; init; }
 
-    public FakeTimeProvider Time { get; }
+    public required FakeTimeProvider Time { get; init; }
 
-    public InMemoryDatabaseStore Store { get; }
+    public required InMemoryDatabaseStore Store { get; init; }
 
-    public RecordingDialogs Dialogs { get; }
+    public required RecordingDialogs Dialogs { get; init; }
 
-    public RecordingDesktop Desktop { get; }
+    public required RecordingDesktop Desktop { get; init; }
 
-    public FakeUpdateChannel Releases { get; }
+    public required FakeUpdateChannel Releases { get; init; }
 
-    public FakeSyncProvider Cloud { get; }
+    public required FakeSyncProvider Cloud { get; init; }
 
-    public InMemoryBackupFiles Files { get; }
+    public required InMemoryBackupFiles Files { get; init; }
 
-    public static TestApp Create(Database? database = null, string version = "0.3.0", PublishedRelease? latest = null)
+    public required FakeSystemTheme SystemTheme { get; init; }
+
+    public required ResourceDictionary Resources { get; init; }
+
+    public static TestApp Create(
+        Database? database = null,
+        string version = "0.3.0",
+        PublishedRelease? latest = null,
+        ResourceDictionary? resources = null)
     {
         var time = new FakeTimeProvider(Now);
         var store = new InMemoryDatabaseStore(database ?? SampleDatabase());
@@ -55,9 +57,22 @@ public sealed class TestApp : IDisposable
         var releases = new FakeUpdateChannel { Latest = latest };
         var cloud = new FakeSyncProvider();
         var files = new InMemoryBackupFiles();
-        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, releases, releases, releases, files, new RecordingLog(), DataFolder);
-        var graph = new AppGraph(new BuildInfo(version), adapters, dialogs, desktop);
-        return new TestApp(graph, time, store, dialogs, desktop, releases, cloud, files);
+        var systemTheme = new FakeSystemTheme();
+        resources ??= new ResourceDictionary();
+        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, releases, releases, releases, files, systemTheme, new RecordingLog(), DataFolder);
+        return new TestApp
+        {
+            Graph = new AppGraph(new BuildInfo(version), adapters, resources, dialogs, desktop),
+            Time = time,
+            Store = store,
+            Dialogs = dialogs,
+            Desktop = desktop,
+            Releases = releases,
+            Cloud = cloud,
+            Files = files,
+            SystemTheme = systemTheme,
+            Resources = resources,
+        };
     }
 
     /// <summary>The first-run data without websites, plus a budget, a trial ending soon, and a paused plan.</summary>

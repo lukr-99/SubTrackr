@@ -34,7 +34,7 @@ public partial class App : Application
             log.Error("Fatal unhandled exception", args.ExceptionObject as Exception);
         log.Info($"SubTrackr starting (v{build.Version}).");
 
-        graph = new AppGraph(build, adapters, new WpfDialogService(), new WpfDesktopServices());
+        graph = new AppGraph(build, adapters, Resources, new WpfDialogService(), new WpfDesktopServices());
         var window = new MainWindow(graph.Main);
         MainWindow = window;
         window.Show();

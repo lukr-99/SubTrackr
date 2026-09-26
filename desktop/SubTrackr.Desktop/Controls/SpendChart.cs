@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -9,13 +8,31 @@ namespace SubTrackr.Desktop.Controls;
 /// <summary>
 /// A hand-rendered spending chart — no third-party charting library. Switches between
 /// a donut, a bar chart, and a trend line over the same <see cref="Slices"/> data.
-/// Draws directly to the <see cref="DrawingContext"/> in <see cref="OnRender"/>.
+/// Draws directly to the <see cref="DrawingContext"/> in <see cref="OnRender"/>. Its brushes and
+/// series colors come from the theme through DynamicResource, and it redraws when they or the
+/// slices change.
 /// </summary>
 public sealed class SpendChart : FrameworkElement
 {
     public static readonly DependencyProperty SlicesProperty = DependencyProperty.Register(
         nameof(Slices), typeof(IEnumerable<ChartSlice>), typeof(SpendChart),
+        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnSlicesChanged));
+
+    public static readonly DependencyProperty SeriesColorsProperty = DependencyProperty.Register(
+        nameof(SeriesColors), typeof(IReadOnlyList<Color>), typeof(SpendChart),
         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    public static readonly DependencyProperty TextBrushProperty = DependencyProperty.Register(
+        nameof(TextBrush), typeof(Brush), typeof(SpendChart),
+        new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    public static readonly DependencyProperty MutedBrushProperty = DependencyProperty.Register(
+        nameof(MutedBrush), typeof(Brush), typeof(SpendChart),
+        new FrameworkPropertyMetadata(Brushes.Gray, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    public static readonly DependencyProperty TrackBrushProperty = DependencyProperty.Register(
+        nameof(TrackBrush), typeof(Brush), typeof(SpendChart),
+        new FrameworkPropertyMetadata(Brushes.LightGray, FrameworkPropertyMetadataOptions.AffectsRender));
 
     public static readonly DependencyProperty ChartTypeProperty = DependencyProperty.Register(
         nameof(ChartType), typeof(ChartType), typeof(SpendChart),
@@ -33,6 +50,31 @@ public sealed class SpendChart : FrameworkElement
     {
         get => (IEnumerable<ChartSlice>?)GetValue(SlicesProperty);
         set => SetValue(SlicesProperty, value);
+    }
+
+    /// <summary>The theme's chart colors; a slice takes the one at its index.</summary>
+    public IReadOnlyList<Color>? SeriesColors
+    {
+        get => (IReadOnlyList<Color>?)GetValue(SeriesColorsProperty);
+        set => SetValue(SeriesColorsProperty, value);
+    }
+
+    public Brush TextBrush
+    {
+        get => (Brush)GetValue(TextBrushProperty);
+        set => SetValue(TextBrushProperty, value);
+    }
+
+    public Brush MutedBrush
+    {
+        get => (Brush)GetValue(MutedBrushProperty);
+        set => SetValue(MutedBrushProperty, value);
+    }
+
+    public Brush TrackBrush
+    {
+        get => (Brush)GetValue(TrackBrushProperty);
+        set => SetValue(TrackBrushProperty, value);
     }
 
     public ChartType ChartType
@@ -53,9 +95,6 @@ public sealed class SpendChart : FrameworkElement
         set => SetValue(CenterSubtextProperty, value);
     }
 
-    private static readonly Brush TextBrush = new SolidColorBrush(Color.FromRgb(0xF1, 0xF3, 0xF5));
-    private static readonly Brush MutedBrush = new SolidColorBrush(Color.FromRgb(0x9A, 0xA0, 0xA6));
-    private static readonly Brush TrackBrush = new SolidColorBrush(Color.FromRgb(0x3A, 0x3B, 0x42));
     private static readonly Typeface Face = new("Segoe UI Variable");
     private static readonly Typeface FaceSemibold =
         new(new FontFamily("Segoe UI Variable"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal);
@@ -99,7 +138,7 @@ public sealed class SpendChart : FrameworkElement
             var sweep = s.Value / total * 360.0;
             if (sweep <= 0) continue;
             var geo = RingSegment(new Point(cx, cy), inner, outer, startAngle, startAngle + sweep);
-            dc.DrawGeometry(new SolidColorBrush(s.Color), null, geo);
+            dc.DrawGeometry(new SolidColorBrush(ColorOf(s)), null, geo);
             startAngle += sweep;
         }
 
@@ -127,7 +166,7 @@ public sealed class SpendChart : FrameworkElement
             var x = i * slot + (slot - barW) / 2;
             var y = bottom - barH;
             var rect = new Rect(x, y, barW, Math.Max(2, barH));
-            dc.DrawRoundedRectangle(new SolidColorBrush(s.Color), null, rect, 5, 5);
+            dc.DrawRoundedRectangle(new SolidColorBrush(ColorOf(s)), null, rect, 5, 5);
 
             DrawCentered(dc, TrimLabel(s.Label), MutedBrush, 11, false,
                 new Point(x + barW / 2, bottom + 14));
@@ -161,7 +200,7 @@ public sealed class SpendChart : FrameworkElement
         for (var i = 1; i < n; i++) fig.Segments.Add(new LineSegment(PointFor(i), false));
         fig.Segments.Add(new LineSegment(new Point(right, bottom), false));
         var area = new PathGeometry(new[] { fig });
-        var accent = slices[0].Color;
+        var accent = ColorOf(slices[0]);
         dc.DrawGeometry(new SolidColorBrush(Color.FromArgb(46, accent.R, accent.G, accent.B)), null, area);
 
         // line
@@ -180,6 +219,30 @@ public sealed class SpendChart : FrameworkElement
     }
 
     // --- helpers ---
+
+    private static void OnSlicesChanged(DependencyObject owner, DependencyPropertyChangedEventArgs e)
+    {
+        var chart = (SpendChart)owner;
+        if (e.OldValue is INotifyCollectionChanged old)
+        {
+            old.CollectionChanged -= chart.OnSlicesCollectionChanged;
+        }
+
+        if (e.NewValue is INotifyCollectionChanged added)
+        {
+            added.CollectionChanged += chart.OnSlicesCollectionChanged;
+        }
+    }
+
+    private void OnSlicesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => InvalidateVisual();
+
+    private Color ColorOf(ChartSlice slice)
+    {
+        var colors = SeriesColors;
+        return colors is { Count: > 0 }
+            ? colors[((slice.ColorIndex % colors.Count) + colors.Count) % colors.Count]
+            : Colors.Gray;
+    }
 
     private static string TrimLabel(string s) => s.Length <= 8 ? s : s[..7] + "…";
 

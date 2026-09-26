@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="{Binding Title}" Width="460" SizeToContent="Height" MaxHeight="860"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="{StaticResource Bg}" Foreground="{StaticResource TextPrimary}"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource TextPrimary}"
         FontFamily="Segoe UI Variable, Segoe UI">
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="FieldLabel">
-            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
@@ -44,7 +44,7 @@
 
                 <Popup PlacementTarget="{Binding ElementName=IconToggle}" Placement="Bottom" AllowsTransparency="True"
                        StaysOpen="False" IsOpen="{Binding IsChecked, ElementName=IconToggle, Mode=TwoWay}">
-                    <Border Background="{StaticResource Surface}" BorderBrush="{StaticResource Border}" BorderThickness="1"
+                    <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="1"
                             CornerRadius="10" Padding="6" Margin="0,4,0,0" Width="292">
                         <ItemsControl ItemsSource="{Binding IconChoices}">
                             <ItemsControl.ItemsPanel>
@@ -134,7 +134,7 @@
                 <TextBlock Text="Website (for the logo, e.g. netflix.com)" Style="{StaticResource FieldLabel}" />
                 <TextBox Text="{Binding Website, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Text="Shows the real logo. Clear this to use the emoji icon instead."
-                           FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                           FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
 
             <!-- Toggles -->
@@ -146,7 +146,7 @@
                 <DatePicker SelectedDate="{Binding TrialEnd}" Width="160" HorizontalAlignment="Left" />
             </StackPanel>
 
-            <TextBlock Text="{Binding Error}" Foreground="{StaticResource Negative}" TextWrapping="Wrap"
+            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Negative}" TextWrapping="Wrap"
                        Margin="0,14,0,0" Visibility="{Binding Error, Converter={StaticResource StrVis}}" />
         </StackPanel>
 

@@ -1,6 +1,7 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SubTrackr.Core.Contracts;
 using SubTrackr.Core.Currency;
 using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Subscriptions;
@@ -10,9 +11,9 @@ using SubTrackr.Desktop.Services;
 namespace SubTrackr.Desktop.ViewModels;
 
 /// <summary>
-/// The settings page: base currency, worth threshold and budget (saved together), rates, the data
-/// folder, the version and updates, and the sync project. <see cref="Load"/> resets the form to what
-/// is stored each time the page opens.
+/// The settings page: base currency, worth threshold and budget (saved together), the theme (applied
+/// at once), rates, the data folder, backups, updates, and the sync project. <see cref="Load"/>
+/// resets the form to what is stored each time the page opens.
 /// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
@@ -62,6 +63,13 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<string> Currencies => Formatting.CommonCurrencies;
 
+    public IReadOnlyList<ThemeOption> ThemeOptions { get; } =
+    [
+        new(ThemeMode.System, "Same as Windows"),
+        new(ThemeMode.Light, "Light"),
+        new(ThemeMode.Dark, "Dark"),
+    ];
+
     /// <summary>The version and update card.</summary>
     public UpdatesViewModel Updates { get; }
 
@@ -91,6 +99,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string syncStatus = "";
 
+    [ObservableProperty]
+    private ThemeOption? selectedTheme;
+
     /// <summary>Resets every field to the stored settings.</summary>
     public void Load()
     {
@@ -101,6 +112,16 @@ public sealed partial class SettingsViewModel : ObservableObject
         SyncUrl = ledger.Settings.SyncUrl;
         SyncKey = ledger.Settings.SyncKey;
         SyncStatus = "";
+        SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Mode == ledger.Settings.ThemeMode) ?? ThemeOptions[0];
+    }
+
+    // The theme applies and saves on the spot; it is not part of Save.
+    partial void OnSelectedThemeChanged(ThemeOption? value)
+    {
+        if (value is not null && value.Mode != ledger.Settings.ThemeMode)
+        {
+            ledger.UpdateSettings(settings => settings.ThemeMode = value.Mode);
+        }
     }
 
     [RelayCommand]

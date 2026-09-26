@@ -1,3 +1,4 @@
+using System.Windows;
 using System.Windows.Threading;
 using SubTrackr.Core.Backup;
 using SubTrackr.Core.Currency;
@@ -5,14 +6,16 @@ using SubTrackr.Core.Subscriptions;
 using SubTrackr.Core.Sync;
 using SubTrackr.Core.Updates;
 using SubTrackr.Desktop.Services;
+using SubTrackr.Desktop.Theming;
 using SubTrackr.Desktop.ViewModels;
 
 namespace SubTrackr.Desktop.Composition;
 
 /// <summary>
 /// The one composition root: builds the domain services from the adapters and hands them to the
-/// view models through constructors. <see cref="Start"/> begins the launch work (sync, rates, the
-/// update check) and the periodic sync. Lives as long as the process.
+/// view models through constructors, and applies the stored theme to <c>resources</c> before any
+/// window opens. <see cref="Start"/> begins the launch work (sync, rates, the update check) and the
+/// periodic sync. Lives as long as the process.
 /// </summary>
 public sealed class AppGraph : IDisposable
 {
@@ -21,9 +24,10 @@ public sealed class AppGraph : IDisposable
     private readonly AppAdapters adapters;
     private DispatcherTimer? syncTimer;
 
-    public AppGraph(BuildInfo build, AppAdapters adapters, IDialogService dialogs, IDesktopServices desktop)
+    public AppGraph(BuildInfo build, AppAdapters adapters, ResourceDictionary resources, IDialogService dialogs, IDesktopServices desktop)
     {
         ArgumentNullException.ThrowIfNull(build);
+        ArgumentNullException.ThrowIfNull(resources);
         ArgumentNullException.ThrowIfNull(adapters);
         ArgumentNullException.ThrowIfNull(dialogs);
         ArgumentNullException.ThrowIfNull(desktop);
@@ -31,6 +35,16 @@ public sealed class AppGraph : IDisposable
         Build = build;
 
         Ledger = SubscriptionLedger.Open(adapters.Store, adapters.Time);
+        Theme = new ThemeApplier(DesignTokens.LoadEmbedded(), resources, adapters.SystemTheme);
+        Theme.Apply(Ledger.Settings.ThemeMode);
+        Ledger.Changed += (_, change) =>
+        {
+            if (change is (LedgerChange.Settings or LedgerChange.Restored) && Ledger.Settings.ThemeMode != Theme.Mode)
+            {
+                Theme.Apply(Ledger.Settings.ThemeMode);
+            }
+        };
+
         Rates = new ExchangeRates(adapters.Rates, adapters.Time, adapters.Log, Ledger.BaseCurrency);
         Sync = new SyncRunner(Ledger, adapters.SyncProviders, adapters.Log);
         UpdateService = new UpdateService(adapters.Releases, adapters.Downloads, adapters.Installer, adapters.Log, build.Version);
@@ -55,6 +69,8 @@ public sealed class AppGraph : IDisposable
     public BuildInfo Build { get; }
 
     public SubscriptionLedger Ledger { get; }
+
+    public ThemeApplier Theme { get; }
 
     public ExchangeRates Rates { get; }
 

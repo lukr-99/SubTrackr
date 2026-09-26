@@ -1,6 +1,6 @@
 using System.Windows;
 using SubTrackr.Core.Contracts;
-using SubTrackr.Desktop.Services;
+using SubTrackr.Desktop.Theming;
 using SubTrackr.Desktop.ViewModels;
 
 namespace SubTrackr.Desktop.Views;
@@ -16,7 +16,7 @@ public partial class EditSubscriptionWindow : Window
     public EditSubscriptionWindow(EditSubscriptionViewModel vm)
     {
         InitializeComponent();
-        DarkTitleBar.Apply(this);
+        TitleBarTheme.Attach(this);
         _vm = vm;
         DataContext = vm;
     }

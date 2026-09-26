@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Windows.Media;
 using SubTrackr.Core;
 using SubTrackr.Core.Analytics;
 using SubTrackr.Core.Contracts;
@@ -66,13 +65,8 @@ public sealed class SubscriptionRowViewModel
         _ => "—",
     };
 
-    public Brush VerdictBrush => _spend.Verdict switch
-    {
-        WorthVerdict.Worth => new SolidColorBrush(Color.FromRgb(0x3D, 0xD6, 0x8C)),
-        WorthVerdict.NotWorth => new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B)),
-        WorthVerdict.Essential => new SolidColorBrush(Color.FromRgb(0x4C, 0x8D, 0xFF)),
-        _ => new SolidColorBrush(Color.FromRgb(0x6C, 0x72, 0x7A)),
-    };
+    /// <summary>The verdict; the view colors the badge from the theme by it.</summary>
+    public WorthVerdict Verdict => _spend.Verdict;
 
     public bool HasVerdict => _spend.Verdict != WorthVerdict.Unknown;
 
