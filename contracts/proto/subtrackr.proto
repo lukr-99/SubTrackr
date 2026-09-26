@@ -38,6 +38,13 @@ enum WorthMode {
   NOT_WORTH = 3;  // user forces "not worth it"
 }
 
+// Which color theme the app shows. Device-local; see SPEC.md section 10.
+enum ThemeMode {
+  SYSTEM = 0; // follow the operating system (default)
+  LIGHT  = 1;
+  DARK   = 2;
+}
+
 // Money is stored as integer minor units to avoid binary-float drift.
 // value = minor_units / 10^exponent   (e.g. 5.12 EUR -> {EUR, 512, 2})
 message Money {
@@ -74,9 +81,10 @@ message Settings {
   string schema_version = 2;
   // Sync config is DEVICE-LOCAL (never pushed to the remote). See SPEC.md §8.
   string sync_url = 3; // Supabase project URL, e.g. https://xxxx.supabase.co
-  string sync_key = 4; // Supabase anon key
+  string sync_key = 4; // Supabase publishable (anon) key; identifies the project, not the user
   double worth_threshold = 5; // cost-per-use cutoff in base currency; 0 = currency-aware default
   double monthly_budget = 6;  // optional monthly spend budget in base currency; 0 = no budget
+  ThemeMode theme_mode = 7;   // SYSTEM, LIGHT or DARK
 }
 
 // Root document. This is exactly what gets persisted / synced.

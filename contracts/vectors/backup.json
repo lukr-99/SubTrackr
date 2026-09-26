@@ -1,0 +1,2230 @@
+{
+  "spec": "SPEC.md#9-backup-and-restore",
+  "note": "restore(local, backup, mode). Tests serialize `backup` to text (or use `backupText` as is) and feed it through the real parser. `expected.subscriptions` lists id/updatedAt/deletedAt of the result sorted by id. `expected.settings` lists only the keys to check. When ok is false, the local database must be unchanged.",
+  "cases": [
+    {
+      "id": "merge-adds-updates-and-keeps",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "11111111-1111-4111-8111-111111111111",
+              "name": "Alpha renamed",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-03T10:00:00Z",
+              "deletedAt": ""
+            },
+            {
+              "id": "22222222-2222-4222-8222-222222222222",
+              "name": "Bravo old",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-02T10:00:00Z",
+              "deletedAt": ""
+            },
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 1,
+        "updated": 1,
+        "unchanged": 1,
+        "total": 3,
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "updatedAt": "2026-09-03T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "33333333-3333-4333-8333-333333333333",
+            "updatedAt": "2026-09-04T10:00:00Z",
+            "deletedAt": ""
+          }
+        ],
+        "settings": {
+          "baseCurrency": "CZK"
+        }
+      }
+    },
+    {
+      "id": "merge-tombstone-wins-tie",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "EUR",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-02T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "11111111-1111-4111-8111-111111111111",
+              "name": "Alpha",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-02T10:00:00Z",
+              "deletedAt": "2026-09-02T10:00:00Z"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 0,
+        "updated": 1,
+        "unchanged": 0,
+        "total": 1,
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "updatedAt": "2026-09-02T10:00:00Z",
+            "deletedAt": "2026-09-02T10:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-identical-is-unchanged",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "EUR",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-02T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "11111111-1111-4111-8111-111111111111",
+              "name": "Alpha",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-02T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 0,
+        "updated": 0,
+        "unchanged": 1,
+        "total": 1,
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "updatedAt": "2026-09-02T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-keeps-tombstones-from-backup",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "EUR",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": []
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "44444444-4444-4444-8444-444444444444",
+              "name": "Delta",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-03T10:00:00Z",
+              "deletedAt": "2026-09-03T10:00:00Z"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 1,
+        "updated": 0,
+        "unchanged": 0,
+        "total": 1,
+        "subscriptions": [
+          {
+            "id": "44444444-4444-4444-8444-444444444444",
+            "updatedAt": "2026-09-03T10:00:00Z",
+            "deletedAt": "2026-09-03T10:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "replace-takes-backup-but-keeps-device-sync-config",
+      "mode": "REPLACE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "https://project-a.example",
+          "syncKey": "publishable-key-a",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "DARK"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "USD",
+            "schemaVersion": "0.1",
+            "syncUrl": "https://project-b.example",
+            "syncKey": "publishable-key-b",
+            "worthThreshold": 2.5,
+            "monthlyBudget": 120,
+            "themeMode": "LIGHT"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            },
+            {
+              "id": "44444444-4444-4444-8444-444444444444",
+              "name": "Delta",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-03T10:00:00Z",
+              "deletedAt": "2026-09-03T10:00:00Z"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 2,
+        "updated": 0,
+        "unchanged": 0,
+        "total": 2,
+        "subscriptions": [
+          {
+            "id": "33333333-3333-4333-8333-333333333333",
+            "updatedAt": "2026-09-04T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "44444444-4444-4444-8444-444444444444",
+            "updatedAt": "2026-09-03T10:00:00Z",
+            "deletedAt": "2026-09-03T10:00:00Z"
+          }
+        ],
+        "settings": {
+          "baseCurrency": "USD",
+          "worthThreshold": 2.5,
+          "monthlyBudget": 120,
+          "themeMode": "LIGHT",
+          "syncUrl": "https://project-a.example",
+          "syncKey": "publishable-key-a"
+        }
+      }
+    },
+    {
+      "id": "int64-as-json-number-is-accepted",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "EUR",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": []
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": 999,
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 1,
+        "updated": 0,
+        "unchanged": 0,
+        "total": 1,
+        "subscriptions": [
+          {
+            "id": "33333333-3333-4333-8333-333333333333",
+            "updatedAt": "2026-09-04T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "unknown-fields-are-ignored",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "EUR",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": []
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM",
+            "futureSetting": 7
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": "",
+              "futureField": "ignored"
+            }
+          ]
+        },
+        "futureTopLevel": {
+          "anything": true
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 1,
+        "updated": 0,
+        "unchanged": 0,
+        "total": 1,
+        "subscriptions": [
+          {
+            "id": "33333333-3333-4333-8333-333333333333",
+            "updatedAt": "2026-09-04T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing-fields-take-defaults",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "EUR",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": []
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "cost": {
+                "currency": "EUR"
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": true,
+        "added": 1,
+        "updated": 0,
+        "unchanged": 0,
+        "total": 1,
+        "subscriptions": [
+          {
+            "id": "33333333-3333-4333-8333-333333333333",
+            "updatedAt": "2026-09-04T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "not-json",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backupText": "{\"format\": ",
+      "expected": {
+        "ok": false,
+        "error": "INVALID_JSON"
+      }
+    },
+    {
+      "id": "json-array",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backupText": "[]",
+      "expected": {
+        "ok": false,
+        "error": "INVALID_JSON"
+      }
+    },
+    {
+      "id": "wrong-format",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "something-else",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "UNSUPPORTED_FORMAT"
+      }
+    },
+    {
+      "id": "newer-format-version",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 2,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "UNSUPPORTED_VERSION"
+      }
+    },
+    {
+      "id": "missing-format-version",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "UNSUPPORTED_VERSION"
+      }
+    },
+    {
+      "id": "format-version-as-string",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": "1",
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "UNSUPPORTED_VERSION"
+      }
+    },
+    {
+      "id": "format-version-zero",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 0,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "UNSUPPORTED_VERSION"
+      }
+    },
+    {
+      "id": "missing-database",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop"
+      },
+      "expected": {
+        "ok": false,
+        "error": "INVALID_RECORD"
+      }
+    },
+    {
+      "id": "id-not-a-uuid",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "not-a-uuid",
+              "name": "Bad",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "INVALID_RECORD"
+      }
+    },
+    {
+      "id": "duplicate-id",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "One",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            },
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Two",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-03T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "INVALID_RECORD"
+      }
+    },
+    {
+      "id": "lowercase-currency",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "eur",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "INVALID_RECORD"
+      }
+    },
+    {
+      "id": "exponent-out-of-range",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 7
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "2026-09-04T10:00:00Z",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "INVALID_RECORD"
+      }
+    },
+    {
+      "id": "empty-updated-at",
+      "mode": "MERGE",
+      "local": {
+        "schemaVersion": "0.1",
+        "settings": {
+          "baseCurrency": "CZK",
+          "schemaVersion": "0.1",
+          "syncUrl": "",
+          "syncKey": "",
+          "worthThreshold": 0,
+          "monthlyBudget": 0,
+          "themeMode": "SYSTEM"
+        },
+        "subscriptions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Alpha",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-01T10:00:00Z",
+            "deletedAt": ""
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Bravo",
+            "cost": {
+              "currency": "EUR",
+              "minorUnits": "999",
+              "exponent": 2
+            },
+            "billingCycle": "MONTHLY",
+            "customDays": 0,
+            "nextRenewal": "2026-10-01",
+            "category": "Sample",
+            "iconRef": "",
+            "autoPay": false,
+            "status": "ACTIVE",
+            "usesPerMonth": 0,
+            "notes": "",
+            "worthMode": "AUTO",
+            "trialEnd": "",
+            "website": "",
+            "createdAt": "2026-09-01T08:00:00Z",
+            "updatedAt": "2026-09-05T10:00:00Z",
+            "deletedAt": ""
+          }
+        ]
+      },
+      "backup": {
+        "format": "subtrackr-backup",
+        "formatVersion": 1,
+        "exportedAt": "2026-09-26T10:00:00Z",
+        "appVersion": "0.3.0",
+        "platform": "desktop",
+        "database": {
+          "schemaVersion": "0.1",
+          "settings": {
+            "baseCurrency": "EUR",
+            "schemaVersion": "0.1",
+            "syncUrl": "",
+            "syncKey": "",
+            "worthThreshold": 0,
+            "monthlyBudget": 0,
+            "themeMode": "SYSTEM"
+          },
+          "subscriptions": [
+            {
+              "id": "33333333-3333-4333-8333-333333333333",
+              "name": "Charlie",
+              "cost": {
+                "currency": "EUR",
+                "minorUnits": "999",
+                "exponent": 2
+              },
+              "billingCycle": "MONTHLY",
+              "customDays": 0,
+              "nextRenewal": "2026-10-01",
+              "category": "Sample",
+              "iconRef": "",
+              "autoPay": false,
+              "status": "ACTIVE",
+              "usesPerMonth": 0,
+              "notes": "",
+              "worthMode": "AUTO",
+              "trialEnd": "",
+              "website": "",
+              "createdAt": "2026-09-01T08:00:00Z",
+              "updatedAt": "",
+              "deletedAt": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ok": false,
+        "error": "INVALID_RECORD"
+      }
+    }
+  ]
+}

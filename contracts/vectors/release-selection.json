@@ -1,0 +1,314 @@
+{
+  "spec": "SPEC.md#11-updates",
+  "note": "select(release, current, platform) -> expected. checksumFiles: parse(text) -> lowercase hex or null when the file is not a SHA-256.",
+  "cases": [
+    {
+      "id": "newer-desktop",
+      "platform": "desktop",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe.sha256"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": true,
+        "version": "0.3.1",
+        "asset": "SubTrackr-Setup-0.3.1.exe",
+        "checksumAsset": "SubTrackr-Setup-0.3.1.exe.sha256"
+      }
+    },
+    {
+      "id": "newer-android",
+      "platform": "android",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe.sha256"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": true,
+        "version": "0.3.1",
+        "asset": "SubTrackr-0.3.1.apk",
+        "checksumAsset": "SubTrackr-0.3.1.apk.sha256"
+      }
+    },
+    {
+      "id": "same-version",
+      "platform": "desktop",
+      "current": "0.3.1",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe.sha256"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "older-release",
+      "platform": "android",
+      "current": "0.10.0",
+      "release": {
+        "tag_name": "v0.9.9",
+        "assets": [
+          {
+            "name": "SubTrackr-0.9.9.apk",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.9.9.apk"
+          },
+          {
+            "name": "SubTrackr-0.9.9.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.9.9.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "numeric-not-lexical",
+      "platform": "desktop",
+      "current": "0.9.0",
+      "release": {
+        "tag_name": "v0.10.0",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.10.0.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.10.0.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.10.0.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.10.0.exe.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": true,
+        "version": "0.10.0",
+        "asset": "SubTrackr-Setup-0.10.0.exe",
+        "checksumAsset": "SubTrackr-Setup-0.10.0.exe.sha256"
+      }
+    },
+    {
+      "id": "dev-build-never-checks",
+      "platform": "desktop",
+      "current": "0.3.0-dev",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe.sha256"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "missing-checksum",
+      "platform": "desktop",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "other-platform-asset-only",
+      "platform": "android",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "unexpected-name-ignored",
+      "platform": "desktop",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-latest.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-latest.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-latest.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-latest.exe.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "plain-http-rejected",
+      "platform": "android",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "v0.3.1",
+        "assets": [
+          {
+            "name": "SubTrackr-0.3.1.apk",
+            "browser_download_url": "http://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    },
+    {
+      "id": "tag-not-semver",
+      "platform": "desktop",
+      "current": "0.3.0",
+      "release": {
+        "tag_name": "nightly",
+        "assets": [
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe"
+          },
+          {
+            "name": "SubTrackr-Setup-0.3.1.exe.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-Setup-0.3.1.exe.sha256"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk"
+          },
+          {
+            "name": "SubTrackr-0.3.1.apk.sha256",
+            "browser_download_url": "https://github.com/lukr-99/SubTrackr/releases/download/v0.3.1/SubTrackr-0.3.1.apk.sha256"
+          }
+        ]
+      },
+      "expected": {
+        "offer": false
+      }
+    }
+  ],
+  "checksumFiles": [
+    {
+      "id": "sha256sum-output",
+      "text": "3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a  SubTrackr-Setup-0.3.1.exe\n",
+      "expected": "3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a"
+    },
+    {
+      "id": "hash-only",
+      "text": "3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a",
+      "expected": "3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a"
+    },
+    {
+      "id": "uppercase-normalized",
+      "text": "3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A3F5A\r\n",
+      "expected": "3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a3f5a"
+    },
+    {
+      "id": "too-short",
+      "text": "3f5a3f5a",
+      "expected": null
+    },
+    {
+      "id": "not-hex",
+      "text": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+      "expected": null
+    },
+    {
+      "id": "empty",
+      "text": "",
+      "expected": null
+    }
+  ]
+}

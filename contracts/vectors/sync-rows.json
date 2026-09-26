@@ -1,0 +1,143 @@
+{
+  "spec": "SPEC.md#83-rows",
+  "note": "direction both: toRow(subscription, userId) equals row and fromRow(row) equals subscription. fromRow: only the second check. Compare numbers by value (8 equals 8.0); minorUnits may be a string in the subscription and is a number in the row.",
+  "userId": "9b2e6f3a-5c1d-4e8f-a7b6-0c1d2e3f4a5b",
+  "cases": [
+    {
+      "id": "full-record",
+      "direction": "both",
+      "subscription": {
+        "id": "eb90294c-78d8-40d1-83a3-0596708b1797",
+        "name": "Netflix",
+        "cost": {
+          "currency": "CZK",
+          "minorUnits": "19900",
+          "exponent": 2
+        },
+        "billingCycle": "MONTHLY",
+        "customDays": 0,
+        "nextRenewal": "2026-10-04",
+        "category": "Entertainment",
+        "iconRef": "🎬",
+        "autoPay": true,
+        "status": "ACTIVE",
+        "usesPerMonth": 8,
+        "notes": "Family plan",
+        "worthMode": "AUTO",
+        "trialEnd": "",
+        "website": "netflix.com",
+        "createdAt": "2026-08-28T10:00:00Z",
+        "updatedAt": "2026-08-29T11:30:00Z",
+        "deletedAt": ""
+      },
+      "row": {
+        "user_id": "9b2e6f3a-5c1d-4e8f-a7b6-0c1d2e3f4a5b",
+        "id": "eb90294c-78d8-40d1-83a3-0596708b1797",
+        "name": "Netflix",
+        "cost_currency": "CZK",
+        "cost_minor": 19900,
+        "cost_exponent": 2,
+        "billing_cycle": "MONTHLY",
+        "custom_days": 0,
+        "next_renewal": "2026-10-04",
+        "category": "Entertainment",
+        "icon_ref": "🎬",
+        "auto_pay": true,
+        "status": "ACTIVE",
+        "uses_per_month": 8,
+        "worth_mode": "AUTO",
+        "trial_end": "",
+        "website": "netflix.com",
+        "notes": "Family plan",
+        "created_at": "2026-08-28T10:00:00Z",
+        "updated_at": "2026-08-29T11:30:00Z",
+        "deleted_at": ""
+      }
+    },
+    {
+      "id": "paused-custom-cycle-tombstone",
+      "direction": "both",
+      "subscription": {
+        "id": "0280b4d6-4b7c-4b86-afec-044c1be90b49",
+        "name": "City transit pass",
+        "cost": {
+          "currency": "CZK",
+          "minorUnits": "240000",
+          "exponent": 2
+        },
+        "billingCycle": "CUSTOM_DAYS",
+        "customDays": 45,
+        "nextRenewal": "2026-11-10",
+        "category": "Transport",
+        "iconRef": "",
+        "autoPay": false,
+        "status": "PAUSED",
+        "usesPerMonth": 12.5,
+        "notes": "",
+        "worthMode": "NOT_WORTH",
+        "trialEnd": "2026-10-01",
+        "website": "",
+        "createdAt": "2026-08-28T10:00:00Z",
+        "updatedAt": "2026-09-02T09:00:00Z",
+        "deletedAt": "2026-09-02T09:00:00Z"
+      },
+      "row": {
+        "user_id": "9b2e6f3a-5c1d-4e8f-a7b6-0c1d2e3f4a5b",
+        "id": "0280b4d6-4b7c-4b86-afec-044c1be90b49",
+        "name": "City transit pass",
+        "cost_currency": "CZK",
+        "cost_minor": 240000,
+        "cost_exponent": 2,
+        "billing_cycle": "CUSTOM_DAYS",
+        "custom_days": 45,
+        "next_renewal": "2026-11-10",
+        "category": "Transport",
+        "icon_ref": "",
+        "auto_pay": false,
+        "status": "PAUSED",
+        "uses_per_month": 12.5,
+        "worth_mode": "NOT_WORTH",
+        "trial_end": "2026-10-01",
+        "website": "",
+        "notes": "",
+        "created_at": "2026-08-28T10:00:00Z",
+        "updated_at": "2026-09-02T09:00:00Z",
+        "deleted_at": "2026-09-02T09:00:00Z"
+      }
+    },
+    {
+      "id": "sparse-row-reads-defaults",
+      "direction": "fromRow",
+      "row": {
+        "id": "33333333-3333-4333-8333-333333333333",
+        "name": "Charlie",
+        "updated_at": "2026-09-04T10:00:00Z",
+        "billing_cycle": "FORTNIGHTLY"
+      },
+      "subscription": {
+        "id": "33333333-3333-4333-8333-333333333333",
+        "name": "Charlie",
+        "cost": {
+          "currency": "",
+          "minorUnits": "0",
+          "exponent": 0
+        },
+        "billingCycle": "MONTHLY",
+        "customDays": 0,
+        "nextRenewal": "",
+        "category": "",
+        "iconRef": "",
+        "autoPay": false,
+        "status": "ACTIVE",
+        "usesPerMonth": 0,
+        "notes": "",
+        "worthMode": "AUTO",
+        "trialEnd": "",
+        "website": "",
+        "createdAt": "",
+        "updatedAt": "2026-09-04T10:00:00Z",
+        "deletedAt": ""
+      }
+    }
+  ]
+}
