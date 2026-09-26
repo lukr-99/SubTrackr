@@ -24,10 +24,16 @@
     <ProjectReference Include="..\SubTrackr.Desktop\SubTrackr.Desktop.csproj" />
   </ItemGroup>
 
-  <!-- The contract color tokens next to the test binary, to check the app's palettes against. -->
+  <!-- The contract color tokens and logo, and the app icon, next to the test binary to check. -->
   <ItemGroup>
     <None Include="..\..\contracts\design\tokens.json"
           Link="design\tokens.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\contracts\design\logo.json"
+          Link="design\logo.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\SubTrackr.Desktop\Assets\SubTrackr.ico"
+          Link="Assets\SubTrackr.ico"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

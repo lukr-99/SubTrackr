@@ -10,9 +10,9 @@ namespace SubTrackr.Desktop.Tests.Hosting;
 
 /// <summary>
 /// The whole app graph on fakes: an in-memory store with the first-run sample data (no websites, so
-/// no logo is fetched), fixed rates, a fake Supabase and release channel, a Windows theme the test
-/// sets, and dialogs that answer on their own. View model tests theme a private resource
-/// dictionary; render tests pass the WPF host's application resources.
+/// no logo is fetched), fixed rates, a fake Supabase and release channel, a Windows theme and motion
+/// setting the test sets, and dialogs that answer on their own. View model tests theme a private
+/// resource dictionary; render tests pass the WPF host's application resources.
 /// </summary>
 public sealed class TestApp : IDisposable
 {
@@ -44,6 +44,8 @@ public sealed class TestApp : IDisposable
 
     public required FakeSystemTheme SystemTheme { get; init; }
 
+    public required FakeMotionPreference Motion { get; init; }
+
     public required ResourceDictionary Resources { get; init; }
 
     public static TestApp Create(
@@ -61,8 +63,9 @@ public sealed class TestApp : IDisposable
         var sessions = new InMemorySessionStore();
         var files = new InMemoryBackupFiles();
         var systemTheme = new FakeSystemTheme();
+        var motion = new FakeMotionPreference();
         resources ??= new ResourceDictionary();
-        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, cloud, sessions, new RecordingDelay(), releases, releases, releases, files, systemTheme, new RecordingLog(), DataFolder);
+        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, cloud, sessions, new RecordingDelay(), releases, releases, releases, files, systemTheme, motion, new RecordingLog(), DataFolder);
         return new TestApp
         {
             Graph = new AppGraph(new BuildInfo(version), adapters, resources, dialogs, desktop),
@@ -75,6 +78,7 @@ public sealed class TestApp : IDisposable
             Sessions = sessions,
             Files = files,
             SystemTheme = systemTheme,
+            Motion = motion,
             Resources = resources,
         };
     }

@@ -52,6 +52,20 @@ Release builds check `lukr-99/SubTrackr` on launch and from Settings. They take 
 and then hand it to the system installer. Debug builds are `X.Y.Z-dev` and never check. Settings
 also links to the releases page for a manual install.
 
+## Logo and launch
+
+The launcher icon, its Android 13 themed (monochrome) layer, and the splash icon are vector
+drawables mapped from [`contracts/design/logo.json`](../contracts/design/logo.json) and the `brand`
+colors in `tokens.json`: the launcher bars at 72/256 scale with an 18 dp offset on the 108 dp canvas,
+the splash mark at 56/256 with a 26 dp offset. `LauncherIconTest` and `SplashIconTest` fail when
+the drawables drift from those files.
+
+`core-splashscreen` shows the mark at launch. From Android 12 the bars grow in one after another
+(`drawable-v31/splash_icon.xml`); earlier versions show the still mark. On a cold start the splash
+stays until the 540 ms animation has played, never on a warm start or with animations off. The
+splash follows the system's light or dark setting; the app applies its own theme choice right
+after.
+
 ## Screenshots
 
 Robolectric and Roborazzi render the main screens in light and dark on the JVM. `testDebugUnitTest`

@@ -29,7 +29,7 @@ public sealed class PageRenderTests
         using var app = TestApp.Create(resources: Application.Current.Resources);
         await app.Graph.Rates.RefreshAsync(app.Graph.Ledger.BaseCurrency, CancellationToken.None);
 
-        var window = OffScreen(new MainWindow(app.Graph.Main), 1280, 820);
+        var window = OffScreen(new MainWindow(app.Graph.Main, app.Motion), 1280, 820);
         window.Show();
         try
         {
@@ -92,7 +92,7 @@ public sealed class PageRenderTests
     public Task ThemeSwitch_RepaintsAnOpenWindow() => WpfHost.RunAsync(async () =>
     {
         using var app = TestApp.Create(resources: Application.Current.Resources);
-        var window = OffScreen(new MainWindow(app.Graph.Main), 1280, 820);
+        var window = OffScreen(new MainWindow(app.Graph.Main, app.Motion), 1280, 820);
         window.Show();
         try
         {
@@ -161,7 +161,7 @@ public sealed class PageRenderTests
         element.UpdateLayout();
         var bitmap = new RenderTargetBitmap((int)element.ActualWidth, (int)element.ActualHeight, 96, 96, PixelFormats.Pbgra32);
         bitmap.Render(element);
-        Save(bitmap, name);
+        Screenshots.Save(bitmap, name);
     }
 
     // An element taller than the window (a page's scrolled content), on the window background.
@@ -178,22 +178,6 @@ public sealed class PageRenderTests
 
         var bitmap = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, PixelFormats.Pbgra32);
         bitmap.Render(visual);
-        Save(bitmap, name);
-    }
-
-    private static void Save(BitmapSource bitmap, string name)
-    {
-        Assert.True(bitmap.PixelWidth > 0 && bitmap.PixelHeight > 0);
-        var folder = Environment.GetEnvironmentVariable("SUBTRACKR_SCREENSHOTS");
-        if (string.IsNullOrEmpty(folder))
-        {
-            return;
-        }
-
-        Directory.CreateDirectory(folder);
-        var encoder = new PngBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(bitmap));
-        using var output = File.Create(Path.Combine(folder, name + ".png"));
-        encoder.Save(output);
+        Screenshots.Save(bitmap, name);
     }
 }

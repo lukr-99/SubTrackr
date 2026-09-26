@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The launch animation of logo.json: the last bar's stagger plus one bar's growth. -->
+    <integer name="splash_animation_ms">540</integer>
+</resources>

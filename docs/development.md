@@ -27,6 +27,13 @@ on any binding error. Set `SUBTRACKR_SCREENSHOTS` to a folder to keep the PNGs:
 $env:SUBTRACKR_SCREENSHOTS = "$env:TEMP\subtrackr-shots"; dotnet test desktop/SubTrackr.Desktop.Tests
 ```
 
+The app icon (`desktop/SubTrackr.Desktop/Assets/SubTrackr.ico`) is rendered from
+`contracts/design/logo.json` and the `brand` colors in `tokens.json`. After changing either, run
+`powershell -ExecutionPolicy Bypass -File toolsender-desktop-icon.ps1` (Windows PowerShell 5.1,
+or `pwsh -STA`) and commit the `.ico`; `-PngFolder <dir>` also writes each frame as a PNG to review.
+The Android launcher and splash icons are vector drawables checked against the same files by
+unit tests.
+
 A debug build (`X.Y.Z-dev`) keeps its data in `%APPDATA%\SubTrackr Dev` and runs beside an
 installed release.
 

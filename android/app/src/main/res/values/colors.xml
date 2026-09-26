@@ -2,5 +2,4 @@
 <resources>
     <!-- Launch window only. ThemeTokensTest keeps this equal to neutral.light.background. -->
     <color name="bg">#FFF4F5F7</color>
-    <color name="ic_launcher_background">#4C8DFF</color>
 </resources>

@@ -5,6 +5,6 @@
     together with CHANGELOG.md (docs/releasing.md).
   -->
   <PropertyGroup>
-    <SubTrackrVersion>0.3.0</SubTrackrVersion>
+    <SubTrackrVersion>0.4.0</SubTrackrVersion>
   </PropertyGroup>
 </Project>

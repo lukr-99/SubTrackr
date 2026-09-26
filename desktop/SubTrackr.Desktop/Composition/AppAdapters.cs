@@ -8,6 +8,7 @@ using SubTrackr.Core.Diagnostics;
 using SubTrackr.Core.Storage;
 using SubTrackr.Core.Sync;
 using SubTrackr.Core.Updates;
+using SubTrackr.Desktop.Services;
 using SubTrackr.Desktop.Theming;
 using SubTrackr.Infrastructure.Backup;
 using SubTrackr.Infrastructure.Currency;
@@ -43,6 +44,7 @@ public sealed class AppAdapters : IDisposable
         IInstallerLauncher installer,
         IBackupFiles backupFiles,
         ISystemTheme systemTheme,
+        IMotionPreference motion,
         IAppLog log,
         string dataFolder,
         params IDisposable[] owned)
@@ -59,6 +61,7 @@ public sealed class AppAdapters : IDisposable
         Installer = installer;
         BackupFiles = backupFiles;
         SystemTheme = systemTheme;
+        Motion = motion;
         Log = log;
         DataFolder = dataFolder;
         this.owned = owned;
@@ -87,6 +90,8 @@ public sealed class AppAdapters : IDisposable
     public IBackupFiles BackupFiles { get; }
 
     public ISystemTheme SystemTheme { get; }
+
+    public IMotionPreference Motion { get; }
 
     public IAppLog Log { get; }
 
@@ -126,6 +131,7 @@ public sealed class AppAdapters : IDisposable
             new InnoSetupLauncher(),
             new BackupFiles(),
             systemTheme,
+            new WindowsMotionPreference(),
             new FileLog(paths.LogsFolder, time),
             paths.Root,
             web,

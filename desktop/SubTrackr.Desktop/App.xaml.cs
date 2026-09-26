@@ -35,7 +35,7 @@ public partial class App : Application
         log.Info($"SubTrackr starting (v{build.Version}).");
 
         graph = new AppGraph(build, adapters, Resources, new WpfDialogService(), new WpfDesktopServices());
-        var window = new MainWindow(graph.Main);
+        var window = new MainWindow(graph.Main, adapters.Motion);
         MainWindow = window;
         window.Show();
         graph.Start();

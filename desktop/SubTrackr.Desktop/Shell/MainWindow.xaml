@@ -3,8 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:SubTrackr.Desktop.ViewModels"
         xmlns:views="clr-namespace:SubTrackr.Desktop.Views"
+        xmlns:controls="clr-namespace:SubTrackr.Desktop.Controls"
         Title="{Binding WindowTitle}" Height="770" Width="1200" MinHeight="640" MinWidth="1000"
         WindowStartupLocation="CenterScreen"
+        Icon="/SubTrackr;component/Assets/SubTrackr.ico"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource TextPrimary}"
         FontFamily="Segoe UI Variable, Segoe UI">
 
@@ -17,11 +19,8 @@
         <!-- ==================== NAV RAIL ==================== -->
         <Border Grid.Column="0" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
             <StackPanel>
-                <Border Width="34" Height="34" CornerRadius="9" Margin="0,16,0,22" HorizontalAlignment="Center"
-                        Background="{DynamicResource Accent}">
-                    <TextBlock Text="S" FontWeight="Bold" FontSize="19" Foreground="{DynamicResource OnAccent}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Border>
+                <controls:LogoMark x:Name="LaunchMark" Width="36" Height="36" Margin="0,15,0,21"
+                                   HorizontalAlignment="Center" ToolTip="SubTrackr" />
 
                 <RadioButton Style="{StaticResource NavButton}" ToolTip="Dashboard"
                              IsChecked="{Binding IsDashboardPage, Mode=OneWay}"

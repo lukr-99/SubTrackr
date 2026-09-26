@@ -97,6 +97,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
 
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The whole logo (contracts/design/logo.json) as the launch icon, still: the 256 square mapped
+    onto 56 units in the middle of the 108 canvas (x' = 26 + x * 56 / 256), so its rounded corners
+    stay inside the splash screen's visible circle (radius 36). drawable-v31 animates the bars.
+    SplashIconTest checks both files.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M36.5,26 H71.5 A10.5,10.5 0 0 1 82,36.5 V71.5 A10.5,10.5 0 0 1 71.5,82 H36.5 A10.5,10.5 0 0 1 26,71.5 V36.5 A10.5,10.5 0 0 1 36.5,26 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="26"
+                android:startY="26"
+                android:endX="82"
+                android:endY="82"
+                android:startColor="#4C8DFF"
+                android:endColor="#B084FF" />
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#F5F6FF"
+        android:pathData="M42.40625,55.75 H47.21875 A0.875,0.875 0 0 1 48.09375,56.625 V65.8125 A0.875,0.875 0 0 1 47.21875,66.6875 H42.40625 A0.875,0.875 0 0 1 41.53125,65.8125 V56.625 A0.875,0.875 0 0 1 42.40625,55.75 Z" />
+    <path
+        android:fillColor="#F5F6FF"
+        android:pathData="M51.59375,48.3125 H56.40625 A0.875,0.875 0 0 1 57.28125,49.1875 V65.8125 A0.875,0.875 0 0 1 56.40625,66.6875 H51.59375 A0.875,0.875 0 0 1 50.71875,65.8125 V49.1875 A0.875,0.875 0 0 1 51.59375,48.3125 Z" />
+    <path
+        android:fillColor="#F5F6FF"
+        android:pathData="M60.78125,41.3125 H65.59375 A0.875,0.875 0 0 1 66.46875,42.1875 V65.8125 A0.875,0.875 0 0 1 65.59375,66.6875 H60.78125 A0.875,0.875 0 0 1 59.90625,65.8125 V42.1875 A0.875,0.875 0 0 1 60.78125,41.3125 Z" />
+</vector>

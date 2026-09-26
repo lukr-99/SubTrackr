@@ -34,8 +34,10 @@ SubTrackr.Desktop  -->  SubTrackr.Infrastructure  -->  SubTrackr.Core
   `SupabaseAuthClient` and `SupabaseSubscriptionRemote`, `DpapiSessionStore`,
   `GitHubReleaseSource`, `VerifiedDownloader`, `InnoSetupLauncher`.
 - **`SubTrackr.Desktop`** is the WPF shell: `Composition/`, `Shell/MainWindow`, `Views/`,
-  `ViewModels/`, `Theming/`, `Controls/SpendChart` (drawn in `OnRender`, no chart library), and
-  `Services/` for dialogs and other desktop seams.
+  `ViewModels/`, `Theming/`, `Controls/SpendChart` (drawn in `OnRender`, no chart library),
+  `Controls/LogoMark` (the logo from `contracts/design/logo.json`, with its launch animation), and
+  `Services/` for dialogs and other desktop seams such as the system theme and the motion
+  preference.
 
 **Composition root.** `App.OnStartup` reads `BuildInfo` (release or `-dev`), takes that build's
 single-instance mutex, and calls `AppAdapters.ForUser(build)` to choose the real adapters. `AppGraph`

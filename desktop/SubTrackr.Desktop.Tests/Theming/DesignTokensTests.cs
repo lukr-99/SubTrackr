@@ -28,6 +28,22 @@ public class DesignTokensTests
             palette.Chart.Select(Hex).ToList());
     }
 
+    [Fact]
+    public void EmbeddedBrand_EqualsTheContractFile()
+    {
+        using var file = JsonDocument.Parse(File.ReadAllText(TokensPath));
+        var brand = DesignTokens.LoadEmbedded().Brand;
+
+        Assert.Equal(
+            file.RootElement.GetProperty("brand").EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetString()!.ToUpperInvariant()),
+            new Dictionary<string, string>
+            {
+                ["gradientStart"] = Hex(brand.GradientStart),
+                ["gradientEnd"] = Hex(brand.GradientEnd),
+                ["mark"] = Hex(brand.Mark),
+            });
+    }
+
     [Theory]
     [InlineData("#1A1B1E")]
     [InlineData("#ffffff")]
