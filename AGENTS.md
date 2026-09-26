@@ -31,6 +31,6 @@ contracts, not code.
 ```powershell
 python tools/validate_repository.py --root .
 dotnet format SubTrackr.slnx --verify-no-changes
-dotnet test --solution SubTrackr.slnx -c Release
+dotnet test SubTrackr.slnx -c Release
 cd android; .\gradlew.bat testDebugUnitTest lintDebug assembleDebug
 ```

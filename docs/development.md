@@ -20,6 +20,16 @@ dotnet run --project desktop/SubTrackr.Desktop
 C# models are generated from `contracts/proto/subtrackr.proto` at build time through Grpc.Tools.
 Never edit the generated files.
 
+Desktop UI tests render the real window off screen at (-30000, -30000) in both themes and fail
+on any binding error. Set `SUBTRACKR_SCREENSHOTS` to a folder to keep the PNGs:
+
+```powershell
+$env:SUBTRACKR_SCREENSHOTS = "$env:TEMP\subtrackr-shots"; dotnet test desktop/SubTrackr.Desktop.Tests
+```
+
+A debug build (`X.Y.Z-dev`) keeps its data in `%APPDATA%\SubTrackr Dev` and runs beside an
+installed release.
+
 ## Android
 
 Create `android/local.properties` (git-ignored) with forward slashes:
@@ -47,6 +57,9 @@ cd android
 - WPF `DatePicker` ignores app-level implicit styles for its calendar parts. Scope them in a
   `Calendar` style and attach it through `DatePicker.CalendarStyle`.
 - A WPF `TextBox` template must center `PART_ContentHost` vertically, or single-line text clips.
+- An app-wide implicit `TextBlock` style also recolors text inside control templates, so it must
+  not set a foreground color.
+- `System.Windows.ThemeMode` clashes with the proto's `ThemeMode`; qualify one of them.
 - WPF `ProgressBar.Value` binds two-way by default. Use `Mode=OneWay` for read-only view-model
   properties.
 - First-run seed rows use the fixed IDs in `contracts/vectors/seed-data.json`. Rows seeded with
