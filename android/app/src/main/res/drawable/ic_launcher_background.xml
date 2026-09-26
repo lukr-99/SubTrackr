@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The brand gradient of contracts/design/tokens.json, running corner to corner across the inner
+    72dp (the logo's 256 square) and held flat beyond it, so the masked icon shows the same hues
+    as the desktop mark.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M0,0 H108 V108 H0 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="18"
+                android:startY="18"
+                android:endX="90"
+                android:endY="90"
+                android:startColor="#4C8DFF"
+                android:endColor="#B084FF"
+                android:tileMode="clamp" />
+        </aapt:attr>
+    </path>
+</vector>

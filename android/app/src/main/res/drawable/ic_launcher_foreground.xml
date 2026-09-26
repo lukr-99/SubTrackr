@@ -1,9 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The three bars of contracts/design/logo.json, mapped from its 256 square onto the inner 72dp
+    of the 108dp adaptive-icon canvas (x' = 18 + x * 72 / 256). LauncherIconTest checks them.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:fillColor="#FFFFFF" android:pathData="M38,58 h12 v20 h-12 z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M54,46 h12 v32 h-12 z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M70,36 h12 v42 h-12 z" />
+    <path
+        android:fillColor="#F5F6FF"
+        android:pathData="M39.09375,56.25 H45.28125 A1.125,1.125 0 0 1 46.40625,57.375 V69.1875 A1.125,1.125 0 0 1 45.28125,70.3125 H39.09375 A1.125,1.125 0 0 1 37.96875,69.1875 V57.375 A1.125,1.125 0 0 1 39.09375,56.25 Z" />
+    <path
+        android:fillColor="#F5F6FF"
+        android:pathData="M50.90625,46.6875 H57.09375 A1.125,1.125 0 0 1 58.21875,47.8125 V69.1875 A1.125,1.125 0 0 1 57.09375,70.3125 H50.90625 A1.125,1.125 0 0 1 49.78125,69.1875 V47.8125 A1.125,1.125 0 0 1 50.90625,46.6875 Z" />
+    <path
+        android:fillColor="#F5F6FF"
+        android:pathData="M62.71875,37.6875 H68.90625 A1.125,1.125 0 0 1 70.03125,38.8125 V69.1875 A1.125,1.125 0 0 1 68.90625,70.3125 H62.71875 A1.125,1.125 0 0 1 61.59375,69.1875 V38.8125 A1.125,1.125 0 0 1 62.71875,37.6875 Z" />
 </vector>
