@@ -34,7 +34,7 @@ jobs:
 
       - name: Check PowerShell syntax
         shell: pwsh
-        run: ./tools/test-powershell-syntax.ps1
+        run: ./tools/test-powershell-syntax.ps1 -Roots tools,installer,scripts,android/tools
 
   supabase:
     name: Supabase migrations and row security
