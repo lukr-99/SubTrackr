@@ -15,11 +15,11 @@ public static class Normalization
     public static decimal MonthlyEquivalent(decimal cost, BillingCycle cycle, int customDays = 0)
         => cycle switch
         {
-            BillingCycle.Weekly     => cost * 52m / 12m,
-            BillingCycle.Monthly    => cost,
-            BillingCycle.Quarterly  => cost / 3m,
+            BillingCycle.Weekly => cost * 52m / 12m,
+            BillingCycle.Monthly => cost,
+            BillingCycle.Quarterly => cost / 3m,
             BillingCycle.Semiannual => cost / 6m,
-            BillingCycle.Annual     => cost / 12m,
+            BillingCycle.Annual => cost / 12m,
             BillingCycle.CustomDays => customDays > 0
                 ? cost * AvgDaysPerMonth / customDays
                 : throw new ArgumentOutOfRangeException(nameof(customDays),

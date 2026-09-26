@@ -8,9 +8,19 @@ public static class Formatting
 {
     private static readonly Dictionary<string, string> Symbols = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["EUR"] = "€", ["USD"] = "$", ["GBP"] = "£", ["CZK"] = "Kč", ["PLN"] = "zł",
-        ["JPY"] = "¥", ["CHF"] = "CHF", ["SEK"] = "kr", ["NOK"] = "kr", ["DKK"] = "kr",
-        ["HUF"] = "Ft", ["CAD"] = "$", ["AUD"] = "$",
+        ["EUR"] = "€",
+        ["USD"] = "$",
+        ["GBP"] = "£",
+        ["CZK"] = "Kč",
+        ["PLN"] = "zł",
+        ["JPY"] = "¥",
+        ["CHF"] = "CHF",
+        ["SEK"] = "kr",
+        ["NOK"] = "kr",
+        ["DKK"] = "kr",
+        ["HUF"] = "Ft",
+        ["CAD"] = "$",
+        ["AUD"] = "$",
     };
 
     /// <summary>Currencies offered in pickers (superset of what we have offline rates for).</summary>

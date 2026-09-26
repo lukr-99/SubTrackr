@@ -76,7 +76,7 @@ public sealed class SpendChart : FrameworkElement
         switch (ChartType)
         {
             case ChartType.Donut: DrawDonut(dc, slices, w, h); break;
-            case ChartType.Bars:  DrawBars(dc, slices, w, h); break;
+            case ChartType.Bars: DrawBars(dc, slices, w, h); break;
             case ChartType.Trend: DrawTrend(dc, slices, w, h); break;
         }
     }

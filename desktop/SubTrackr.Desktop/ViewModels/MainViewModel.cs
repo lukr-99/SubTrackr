@@ -250,7 +250,9 @@ public sealed partial class MainViewModel : ObservableObject
             var rest = cats.Skip(maxSlices).Sum(c => c.MonthlyBase);
             ChartSlices.Add(new ChartSlice
             {
-                Label = "Other", Value = (double)rest, Color = Palette.At(maxSlices),
+                Label = "Other",
+                Value = (double)rest,
+                Color = Palette.At(maxSlices),
                 ValueLabel = Formatting.Money(rest, _state.BaseCurrency),
             });
         }
