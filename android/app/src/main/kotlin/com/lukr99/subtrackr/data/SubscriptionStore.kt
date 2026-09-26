@@ -1,14 +1,15 @@
 package com.lukr99.subtrackr.data
 
+import com.lukr99.subtrackr.application.store.DatabaseStore
 import com.lukr99.subtrackr.model.Database
 import kotlinx.serialization.json.Json
 import java.io.File
 
 /**
- * Loads/saves the whole [Database] as one JSON file (mirrors the WPF DataStore). JSON field names
- * match the proto so the format stays sync-compatible. Atomic writes (temp + rename).
+ * Loads and saves the whole [Database] as one JSON file (mirrors the desktop DataStore). JSON field
+ * names match the proto so the format stays sync-compatible. Writes go to a temp file first.
  */
-class SubscriptionStore(private val file: File) {
+class SubscriptionStore(private val file: File) : DatabaseStore {
 
     private val json = Json {
         prettyPrint = true
@@ -16,7 +17,7 @@ class SubscriptionStore(private val file: File) {
         encodeDefaults = true
     }
 
-    fun load(): Database {
+    override fun load(): Database {
         if (!file.exists()) {
             val seeded = SeedData.createInitialDatabase()
             save(seeded)
@@ -29,7 +30,7 @@ class SubscriptionStore(private val file: File) {
         return migrated
     }
 
-    fun save(db: Database) {
+    override fun save(db: Database) {
         file.parentFile?.mkdirs()
         val tmp = File(file.parentFile, file.name + ".tmp")
         tmp.writeText(json.encodeToString(Database.serializer(), db))

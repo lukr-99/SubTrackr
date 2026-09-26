@@ -12,7 +12,8 @@
     "supabase/migrations"
   ],
   "type_scan_roots": [
-    "desktop"
+    "desktop",
+    "android/app/src"
   ],
   "type_policy_excludes": [
     "**/generated/**",
