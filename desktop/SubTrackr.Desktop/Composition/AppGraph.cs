@@ -9,6 +9,7 @@ using SubTrackr.Core.Updates;
 using SubTrackr.Desktop.Services;
 using SubTrackr.Desktop.Theming;
 using SubTrackr.Desktop.ViewModels;
+using SubTrackr.Infrastructure.Storage;
 
 namespace SubTrackr.Desktop.Composition;
 
@@ -36,6 +37,11 @@ public sealed class AppGraph : IDisposable
         Build = build;
 
         Ledger = SubscriptionLedger.Open(adapters.Store, adapters.Time);
+        if (adapters.Store is JsonDatabaseStore { SetAsidePath: { } setAside })
+        {
+            adapters.Log.Error($"data.json could not be read; it was kept as {System.IO.Path.GetFileName(setAside)} and the app started fresh.");
+        }
+
         Theme = new ThemeApplier(DesignTokens.LoadEmbedded(), resources, adapters.SystemTheme);
         Theme.Apply(Ledger.Settings.ThemeMode);
         Ledger.Changed += (_, change) =>

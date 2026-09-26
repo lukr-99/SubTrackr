@@ -24,6 +24,10 @@ See `subtrackr.proto` for the fields. Key decisions:
 - Soft delete: a non-empty `deleted_at` makes the record a tombstone. The UI hides it; sync keeps it
   so the deletion reaches other devices.
 - `updated_at` changes on every edit and drives last-writer-wins.
+- Each app keeps the whole `Database` in one JSON file and saves it through a temporary file, so a
+  crash leaves the old or the new file. A file that cannot be parsed is renamed to
+  `data.json.unreadable-<UTC time>` and never overwritten; the app then starts with the first-run
+  data.
 
 ## 2. Monthly-equivalent normalization
 

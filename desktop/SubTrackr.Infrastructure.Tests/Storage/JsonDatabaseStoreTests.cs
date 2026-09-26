@@ -15,6 +15,22 @@ public class JsonDatabaseStoreTests
     }
 
     [Fact]
+    public void Load_UnreadableFile_SetsItAsideAndReturnsNull()
+    {
+        using var folder = new TemporaryDirectory();
+        var path = folder.File("data.json");
+        File.WriteAllText(path, "{ this is not json");
+        var time = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(new DateTimeOffset(2026, 9, 26, 10, 0, 0, TimeSpan.Zero));
+        var store = new JsonDatabaseStore(path, time);
+
+        Assert.Null(store.Load());
+
+        Assert.False(File.Exists(path));
+        Assert.Equal(path + ".unreadable-20260926T100000Z", store.SetAsidePath);
+        Assert.Equal("{ this is not json", File.ReadAllText(store.SetAsidePath!));
+    }
+
+    [Fact]
     public void Save_ThenLoad_RoundTrips()
     {
         using var folder = new TemporaryDirectory();

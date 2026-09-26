@@ -115,7 +115,7 @@ public sealed class AppAdapters : IDisposable
 
         return new AppAdapters(
             time,
-            new JsonDatabaseStore(paths.DataFile),
+            new JsonDatabaseStore(paths.DataFile, time),
             new FrankfurterRateProvider(web),
             new SupabaseAuthClient(web),
             new SupabaseSubscriptionRemote(web),

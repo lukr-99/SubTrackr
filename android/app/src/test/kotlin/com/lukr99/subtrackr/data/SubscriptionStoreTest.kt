@@ -10,10 +10,27 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 
 class SubscriptionStoreTest {
     @get:Rule
     val temp = TemporaryFolder()
+
+    @Test
+    fun load_unreadableFile_isSetAsideAndNeverOverwritten() {
+        val file = File(temp.root, "data.json")
+        file.writeText("{ this is not json")
+        val clock = Clock.fixed(Instant.parse("2026-09-26T10:00:00Z"), ZoneOffset.UTC)
+        val store = SubscriptionStore(file, clock)
+
+        store.load()
+
+        val setAside = File(temp.root, "data.json.unreadable-20260926T100000Z")
+        assertEquals(setAside, store.setAsideFile)
+        assertEquals("{ this is not json", setAside.readText())
+    }
 
     @Test
     fun save_replacesTheFileAndLeavesNoTempFile() {
