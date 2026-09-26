@@ -10,16 +10,16 @@ namespace SubTrackr.Desktop;
 /// <summary>Process lifetime: single instance, the composition root, then the main window.</summary>
 public partial class App : Application
 {
-    private const string InstanceName = "SubTrackr_SingleInstance_7f3a";
-
     private Mutex? instance;
     private AppGraph? graph;
     private IAppLog? log;
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        // Single instance: if SubTrackr is already running, this copy just exits.
-        instance = new Mutex(true, InstanceName, out var isPrimary);
+        // Single instance per build kind: a second copy just exits. Dev builds use their own mutex,
+        // so they run beside the installed release.
+        var build = BuildInfo.FromAssembly(typeof(App).Assembly);
+        instance = new Mutex(true, build.InstanceMutexName, out var isPrimary);
         if (!isPrimary)
         {
             Shutdown();
@@ -27,7 +27,6 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
-        var build = BuildInfo.FromAssembly(typeof(App).Assembly);
         var adapters = AppAdapters.ForUser(build);
         log = adapters.Log;
         DispatcherUnhandledException += OnDispatcherUnhandledException;

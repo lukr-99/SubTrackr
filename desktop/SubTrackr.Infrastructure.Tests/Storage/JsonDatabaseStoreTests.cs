@@ -54,6 +54,27 @@ public class JsonDatabaseStoreTests
         Assert.Contains("\"minorUnits\": \"999\"", File.ReadAllText(folder.File("data.json")), StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Load_FieldsFromANewerBuild_AreIgnored()
+    {
+        using var folder = new TemporaryDirectory();
+        File.WriteAllText(folder.File("data.json"), """
+            {
+              "schemaVersion": "0.1",
+              "settings": { "baseCurrency": "EUR", "futureSetting": 7 },
+              "subscriptions": [
+                { "id": "11111111-1111-4111-8111-111111111111", "name": "Alpha", "futureField": { "any": true } }
+              ],
+              "futureTopLevel": []
+            }
+            """);
+
+        var database = new JsonDatabaseStore(folder.File("data.json")).Load();
+
+        Assert.Equal("EUR", database!.Settings.BaseCurrency);
+        Assert.Equal("Alpha", Assert.Single(database.Subscriptions).Name);
+    }
+
     private static Database SampleDatabase()
     {
         var database = new Database

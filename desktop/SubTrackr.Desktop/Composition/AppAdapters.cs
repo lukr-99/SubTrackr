@@ -72,7 +72,7 @@ public sealed class AppAdapters : IDisposable
     public static AppAdapters ForUser(BuildInfo build)
     {
         ArgumentNullException.ThrowIfNull(build);
-        var paths = AppDataPaths.ForUser();
+        var paths = AppDataPaths.ForUser(build.IsDevBuild);
         var time = TimeProvider.System;
         var userAgent = $"SubTrackr/{build.Version}";
 

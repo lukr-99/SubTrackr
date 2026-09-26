@@ -7,13 +7,15 @@ namespace SubTrackr.Infrastructure.Storage;
 /// <summary>
 /// Keeps the whole <see cref="Database"/> in one JSON file (the protobuf JSON mapping). Saves
 /// write a temporary file next to it and swap it in, so a crash mid-save keeps the old file.
+/// Loading ignores fields this build does not know, so a file a newer build wrote still opens.
 /// </summary>
 public sealed class JsonDatabaseStore : IDatabaseStore
 {
     private static readonly JsonFormatter Formatter =
         new(JsonFormatter.Settings.Default.WithIndentation("  "));
 
-    private static readonly JsonParser Parser = new(JsonParser.Settings.Default);
+    private static readonly JsonParser Parser =
+        new(JsonParser.Settings.Default.WithIgnoreUnknownFields(true));
 
     private readonly string filePath;
 

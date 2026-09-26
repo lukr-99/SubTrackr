@@ -34,10 +34,18 @@ public class MainViewModelTests
     }
 
     [Fact]
-    public void WindowTitle_IsTheProductName()
+    public void WindowTitle_Release_IsSubTrackr()
     {
-        using var app = TestApp.Create();
+        using var app = TestApp.Create(version: "0.3.0");
 
         Assert.Equal("SubTrackr", app.Graph.Main.WindowTitle);
+    }
+
+    [Fact]
+    public void WindowTitle_DevBuild_SaysDev()
+    {
+        using var app = TestApp.Create(version: "0.3.0-dev");
+
+        Assert.Equal("SubTrackr Dev", app.Graph.Main.WindowTitle);
     }
 }

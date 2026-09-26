@@ -37,7 +37,7 @@ public sealed class AppGraph : IDisposable
         Dashboard = new DashboardViewModel(Ledger, Rates, dialogs, adapters.Time);
         Updates = new UpdatesViewModel(UpdateService, dialogs, desktop);
         Settings = new SettingsViewModel(Ledger, Rates, Sync, Updates, desktop, adapters.Log, adapters.Time, adapters.DataFolder);
-        Main = new MainViewModel("SubTrackr", Dashboard, Settings, () => new WhatIfViewModel(Ledger, Rates));
+        Main = new MainViewModel(build.ProductName, Dashboard, Settings, () => new WhatIfViewModel(Ledger, Rates));
     }
 
     public BuildInfo Build { get; }

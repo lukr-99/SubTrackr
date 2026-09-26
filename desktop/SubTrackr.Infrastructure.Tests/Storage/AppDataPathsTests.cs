@@ -4,6 +4,8 @@ namespace SubTrackr.Infrastructure.Tests.Storage;
 
 public class AppDataPathsTests
 {
+    private static readonly string RoamingAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
     [Fact]
     public void Files_LiveUnderTheRoot()
     {
@@ -14,10 +16,14 @@ public class AppDataPathsTests
     }
 
     [Fact]
-    public void ForUser_UsesRoamingAppData()
+    public void ForUser_Release_UsesTheInstalledAppFolder()
     {
-        var expected = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SubTrackr");
+        Assert.Equal(Path.Combine(RoamingAppData, "SubTrackr"), AppDataPaths.ForUser(isDevBuild: false).Root);
+    }
 
-        Assert.Equal(expected, AppDataPaths.ForUser().Root);
+    [Fact]
+    public void ForUser_DevBuild_KeepsItsDataApart()
+    {
+        Assert.Equal(Path.Combine(RoamingAppData, "SubTrackr Dev"), AppDataPaths.ForUser(isDevBuild: true).Root);
     }
 }
