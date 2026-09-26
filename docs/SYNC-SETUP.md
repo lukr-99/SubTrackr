@@ -27,8 +27,17 @@ body of both the **Magic link** and the **Confirm signup** templates with the co
 [`supabase/templates/sign-in-code.html`](../supabase/templates/sign-in-code.html), and set the
 subject to "Your SubTrackr sign-in code". The template shows `{{ .Token }}`, which is the code.
 
-Supabase's built-in mail sender only allows a few emails per hour. That is enough for a couple of
-devices; configure your own SMTP server under **Authentication, Emails** if you need more.
+On the free tier Supabase only lets you edit templates once a custom SMTP server is set under
+**Authentication, Emails, SMTP Settings**; its built-in sender also allows just a few emails per
+hour. Any SMTP provider works. With Resend: host `smtp.resend.com`, port `587`, user `resend`, your
+Resend API key as the password, and a sender on a domain you verified there (Resend's test sender
+`onboarding@resend.dev` only delivers to your own Resend account address).
+
+The templates can also be set from the CLI. Put a `supabase/config.toml` that declares only
+`[auth.email.template.magic_link]` and `[auth.email.template.confirmation]` (as in this repository's
+file) in a scratch folder, check `npx supabase config diff --workdir <folder> --project-ref <ref>`,
+then run `npx supabase config push` with the same flags. Do not push this repository's whole
+`config.toml`: it describes the local stack, such as a `127.0.0.1` site URL.
 
 ## 4. Find the URL and key
 
