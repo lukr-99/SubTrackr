@@ -1,36 +1,44 @@
-# .NET
+# Build output
 bin/
 obj/
-*.user
-.vs/
-
-# Rider
-.idea/
-
-# Build / publish output
-publish/
-Releases/
+build/
+TestResults/
 artifacts/
+publish/
+dist/
+installer/publish/
+installer/dist/
+installer/*.exe
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+__pycache__/
+*.py[cod]
+*.log
+*.tmp
 
-# Local app data / secrets
+# Android
+.gradle/
+.kotlin/
+local.properties
+keystore.properties
+*.jks
+*.keystore
+
+# Local data, secrets, environment
+.env
+.env.*
 *.db
 *.db-shm
 *.db-wal
 appsettings.Local.json
 
-# Android (later)
-android/.gradle/
-android/local.properties
-android/keystore.properties
-android/*.jks
-android/*.keystore
-android/**/build/
-android/.idea/
+# Supabase CLI state
+supabase/.temp/
+supabase/.branches/
 
 # OS
 Thumbs.db
 .DS_Store
-
-# Installer build artifacts (attach to GitHub Releases, do not commit)
-installer/*.exe
-installer/publish/

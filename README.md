@@ -1,36 +1,50 @@
 # SubTrackr
 
-A personal subscription tracker for **Windows (WPF)** and **Android (Kotlin)** —
-multi-currency, custom charts, a "worth it?" decision helper, free-trial tracking,
-real service logos, and cross-device sync via Supabase. Private, versioned, auto-updating.
+A subscription tracker for Windows (WPF) and Android (Kotlin/Compose). It totals what you pay
+across currencies, tells you which subscriptions earn their cost, tracks free trials and upcoming
+renewals, and syncs between your devices through a Supabase project you own.
 
-> **Picking this up on another machine? Start with [HANDOFF.md](HANDOFF.md).**
+The two apps share no code. They share `contracts/`: a protobuf data shape, golden test vectors
+that both test suites run, and [SPEC.md](contracts/SPEC.md).
+
+## Features
+
+- Monthly and yearly totals in a base currency, with live ECB rates from Frankfurter and a built-in
+  fallback table when offline.
+- Donut, bar, and trend charts drawn by the apps themselves.
+- A worth-it verdict from cost per use, with a manual override (Essential, Always worth, Not
+  worth).
+- A what-if calculator, a monthly budget bar, free-trial and renewal alerts, and service logos.
+- Optional sync through your own Supabase project. Only subscriptions sync; settings stay on each
+  device.
 
 ## Layout
 
-```
-contracts/           # source of truth shared by BOTH apps (no app owns it)
-  proto/             #   data-shape contract (protobuf) -> codegen C# + Kotlin
-  vectors/           #   behavior contract (golden test vectors)
-  SPEC.md            #   human-readable spec
-desktop/             # WPF / C# / .NET 10 app
-  SubTrackr.Core/    #   domain logic + generated models (no UI deps)
-  SubTrackr.Desktop/ #   WPF UI (MVVM)
-android/             # Kotlin / Jetpack Compose app (later phase)
+```text
+contracts/   shared data shape (proto), golden vectors, SPEC.md
+desktop/     WPF app, .NET 10
+android/     Kotlin/Compose app
+supabase/    sync schema migrations
+installer/   Inno Setup script and build script
+docs/        setup and sync guides
 ```
 
-## Status
+## Build
 
-**v0.2.2 — feature-complete and running on real hardware** (desktop installed, Android on device,
-Supabase sync live). Full status, setup on a new machine, gotchas, and next steps are in
-[HANDOFF.md](HANDOFF.md). Spec: [`contracts/SPEC.md`](contracts/SPEC.md).
-
-## Desktop — build & run
-
-```bash
+```powershell
 dotnet build SubTrackr.slnx
-dotnet run --project desktop/SubTrackr.Desktop
+dotnet test SubTrackr.slnx
+cd android; .\gradlew.bat testDebugUnitTest assembleDebug
 ```
 
-Requires the .NET 10 SDK. C# models are generated from `contracts/proto/*.proto`
-at build time (via Grpc.Tools) — do not edit generated model files by hand.
+[docs/development.md](docs/development.md) covers prerequisites and known pitfalls, and
+[docs/SYNC-SETUP.md](docs/SYNC-SETUP.md) explains how to connect a Supabase project.
+
+## Data
+
+Each app keeps everything in one JSON file: `%APPDATA%\SubTrackr\data.json` on Windows and
+`files/data.json` in app storage on Android. Installer updates leave it alone.
+
+## License
+
+[PolyForm Noncommercial 1.0.0](LICENSE.md).
