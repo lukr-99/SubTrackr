@@ -1,0 +1,17 @@
+{
+  "format": "subtrackr-logo",
+  "version": 1,
+  "note": "The SubTrackr mark on a 256-unit square: a rounded square filled with a diagonal gradient (brand.gradientStart at the top left to brand.gradientEnd at the bottom right, from tokens.json) and three rising bars in brand.mark, centered both ways. Launch animations grow each bar from its baseline in order.",
+  "canvas": 256,
+  "cornerRadius": 48,
+  "barWidth": 30,
+  "barGap": 12,
+  "barCornerRadius": 4,
+  "baseline": 186,
+  "barHeights": [50, 84, 116],
+  "animation": {
+    "barDurationMs": 320,
+    "staggerMs": 110,
+    "easing": "decelerate"
+  }
+}

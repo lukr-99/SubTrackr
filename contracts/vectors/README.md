@@ -25,5 +25,6 @@ red.
 | `release-selection.json` | Section 11, update discovery, asset choice, checksum files |
 | `seed-data.json` | Fixed IDs of the first-run sample subscriptions |
 
-The theme palette in [`../design/tokens.json`](../design/tokens.json) works the same way: both apps
-test their colors against it.
+The theme palette in [`../design/tokens.json`](../design/tokens.json) and the logo in
+[`../design/logo.json`](../design/logo.json) work the same way: both apps
+test against them.

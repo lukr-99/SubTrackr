@@ -221,6 +221,12 @@ Validation runs before anything changes and stops at the first failure:
   touching surfaces. Chart colors have their own list per theme.
 - Each app has a test that compares its palettes with `tokens.json`.
 - The desktop title bar follows the active theme.
+- The logo is [`design/logo.json`](design/logo.json) in the `brand` colors of `tokens.json`,
+  the same in both themes: a gradient rounded square with three rising bars, centered. Every
+  place that shows it (the desktop `.ico` and side-bar mark, the Android launcher, themed, and
+  splash icons) takes its geometry from that file, and both apps test that they do.
+- At launch the bars grow from their baseline one after another (Android 12+ splash screen,
+  desktop side-bar mark). The motion is skipped when the system asks for reduced motion.
 
 ## 11. Updates
 
