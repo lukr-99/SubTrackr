@@ -6,6 +6,7 @@
         xmlns:controls="clr-namespace:SubTrackr.Desktop.Controls"
         Title="{Binding WindowTitle}" Height="770" Width="1200" MinHeight="640" MinWidth="1000"
         WindowStartupLocation="CenterScreen"
+        Icon="/SubTrackr;component/Assets/SubTrackr.ico"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource TextPrimary}"
         FontFamily="Segoe UI Variable, Segoe UI">
 

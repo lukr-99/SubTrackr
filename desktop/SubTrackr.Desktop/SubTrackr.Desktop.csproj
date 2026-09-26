@@ -19,6 +19,14 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>
 
+  <!--
+    The icon again as a WPF resource, for the main window's title bar. tools/render-desktop-icon.ps1
+    renders it from logo.json and the brand colors.
+  -->
+  <ItemGroup>
+    <Resource Include="Assets\SubTrackr.ico" />
+  </ItemGroup>
+
   <!-- The shared color tokens, built in: the app's only source of theme colors (SPEC.md section 10). -->
   <ItemGroup>
     <EmbeddedResource Include="..\..\contracts\design\tokens.json"
