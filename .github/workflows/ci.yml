@@ -62,6 +62,22 @@ jobs:
       - name: Full chain, pgTAP, and isolated migrations
         run: python tools/supabase_migrations.py test
 
+      - name: Collect container logs
+        if: failure()
+        run: |
+          mkdir -p supabase-logs
+          for name in $(docker ps -a --format '{{.Names}}' | grep '^supabase_'); do
+            docker logs "$name" > "supabase-logs/$name.log" 2>&1 || true
+          done
+
+      - name: Upload container logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: supabase-logs
+          path: supabase-logs/
+          if-no-files-found: warn
+
       - name: Stop the local stack
         if: always()
         run: npx supabase stop --no-backup
