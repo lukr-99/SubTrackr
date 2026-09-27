@@ -137,9 +137,9 @@ jobs:
           # The action's default also asks for the retired "tools" package.
           packages: platform-tools
 
-      - name: Build, unit test, and lint
+      - name: Format check, build, unit test, and lint
         # AGP downloads the compile SDK and build tools it needs; setup-android accepted the licenses.
-        run: ./gradlew testDebugUnitTest lintDebug assembleDebug --stacktrace
+        run: ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug --stacktrace
 
       - name: Upload reports
         if: always()
