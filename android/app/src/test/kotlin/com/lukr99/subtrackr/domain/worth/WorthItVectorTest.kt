@@ -16,8 +16,13 @@ class WorthItVectorTest {
 
     @Serializable
     data class Case(
-        val id: String, val mode: String, val monthlyBase: String, val usesPerMonth: Double,
-        val threshold: String, val expectedCostPerUse: String, val expectedVerdict: String,
+        val id: String,
+        val mode: String,
+        val monthlyBase: String,
+        val usesPerMonth: Double,
+        val threshold: String,
+        val expectedCostPerUse: String,
+        val expectedVerdict: String,
     )
 
     @Test

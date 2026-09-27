@@ -6,6 +6,28 @@ All notable changes to SubTrackr. The format follows
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-27
+
+### Added
+
+- A "Show service logos" switch in Settings on both apps. Turned off, the app never asks Google for
+  favicons and shows each subscription's emoji instead. It is saved per device and included in
+  backups.
+- Android keeps a crash log in its app storage (app version and stack frames only, no personal
+  data).
+- `CONTEXT.md` defines SubTrackr's terms.
+
+### Changed
+
+- Android shows the emoji while a service logo loads or when it fails.
+- CI checks Kotlin formatting and keeps the Supabase logs when the migration job fails.
+- The desktop styles and dashboard, and the Android dashboard screen, are split into smaller parts
+  with no visible change.
+
+### Fixed
+
+- The icon script path in docs/development.md.
+
 ## [0.4.0] - 2026-09-26
 
 ### Added
@@ -113,7 +135,8 @@ All notable changes to SubTrackr. The format follows
 - Desktop app: dashboard with totals, donut, bar, and trend charts, multi-currency with live rates,
   what-if calculator, worth-it verdict, and an Inno Setup installer.
 
-[Unreleased]: https://github.com/lukr-99/SubTrackr/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/lukr-99/SubTrackr/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/lukr-99/SubTrackr/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/lukr-99/SubTrackr/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/lukr-99/SubTrackr/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/lukr-99/SubTrackr/compare/v0.2.1...v0.2.2

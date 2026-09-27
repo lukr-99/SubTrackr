@@ -78,7 +78,11 @@ class BackupRestoreVectorTest {
             )
             val expectedSubs = expected.getValue("subscriptions").jsonArray.map {
                 val o = it.jsonObject
-                Triple(o.getValue("id").jsonPrimitive.content, o.getValue("updatedAt").jsonPrimitive.content, o.getValue("deletedAt").jsonPrimitive.content)
+                Triple(
+                    o.getValue("id").jsonPrimitive.content,
+                    o.getValue("updatedAt").jsonPrimitive.content,
+                    o.getValue("deletedAt").jsonPrimitive.content,
+                )
             }
             val actualSubs = store.saved.subscriptions.sortedBy { it.id }.map { Triple(it.id, it.updatedAt, it.deletedAt) }
             assertEquals("case $id subscriptions", expectedSubs, actualSubs)

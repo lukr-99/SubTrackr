@@ -53,6 +53,8 @@ object SeedData {
             candidate.billingCycle == template.billingCycle &&
             candidate.website == template.website
 
+    // One seed per line reads as a table; wrapping one row would break it.
+    @Suppress("ktlint:standard:max-line-length")
     fun createInitialDatabase(): Database {
         val subs = listOf(
             sub("eb90294c-78d8-40d1-83a3-0596708b1797", "Netflix", "199", "CZK", BillingCycle.MONTHLY, "Entertainment", "🎬", 8.0, true, 4, website = "netflix.com"),
@@ -72,9 +74,18 @@ object SeedData {
     }
 
     private fun sub(
-        id: String, name: String, amount: String, currency: String, cycle: BillingCycle,
-        category: String, icon: String, usesPerMonth: Double, autoPay: Boolean,
-        day: Int, monthsAhead: Long = 0, website: String = "",
+        id: String,
+        name: String,
+        amount: String,
+        currency: String,
+        cycle: BillingCycle,
+        category: String,
+        icon: String,
+        usesPerMonth: Double,
+        autoPay: Boolean,
+        day: Int,
+        monthsAhead: Long = 0,
+        website: String = "",
     ): Subscription {
         val now = java.time.Instant.now().toString()
         val minor = BigDecimal(amount).movePointRight(2).setScale(0, RoundingMode.HALF_UP).toLong()

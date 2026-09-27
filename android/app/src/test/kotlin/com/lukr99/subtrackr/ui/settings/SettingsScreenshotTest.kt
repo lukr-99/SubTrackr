@@ -9,10 +9,10 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.lukr99.subtrackr.application.sync.SyncStatus
 import com.lukr99.subtrackr.domain.update.AppVersion
 import com.lukr99.subtrackr.domain.update.ReleaseAsset
 import com.lukr99.subtrackr.domain.update.UpdateOffer
-import com.lukr99.subtrackr.application.sync.SyncStatus
 import com.lukr99.subtrackr.model.ThemeMode
 import com.lukr99.subtrackr.ui.SCREENSHOT_DIR
 import com.lukr99.subtrackr.ui.SampleData
@@ -56,8 +56,10 @@ class SettingsScreenshotTest {
             monthlyBudget = BigDecimal("1500"),
             ratesLabel = "CZK · 2026-09-25",
             themeMode = ThemeMode.SYSTEM,
+            showServiceLogos = true,
             appVersion = "0.3.0",
             onSetThemeMode = {},
+            onSetShowServiceLogos = {},
             onSetBaseCurrency = {},
             onSetThreshold = {},
             onSetBudget = {},

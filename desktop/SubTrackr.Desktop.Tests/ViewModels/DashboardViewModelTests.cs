@@ -14,10 +14,10 @@ public class DashboardViewModelTests
         var dashboard = app.Graph.Dashboard;
 
         Assert.Equal("CZK", dashboard.BaseCurrency);
-        Assert.Equal(7, dashboard.ActiveCount);
-        Assert.Equal(8, dashboard.Subscriptions.Count);
-        Assert.EndsWith(" Kč", dashboard.MonthlyText, StringComparison.Ordinal);
-        Assert.True(dashboard.HasBudget);
+        Assert.Equal(7, dashboard.Totals.ActiveCount);
+        Assert.Equal(8, dashboard.List.Subscriptions.Count);
+        Assert.EndsWith(" Kč", dashboard.Totals.MonthlyText, StringComparison.Ordinal);
+        Assert.True(dashboard.Totals.HasBudget);
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class DashboardViewModelTests
     {
         using var app = TestApp.Create();
 
-        Assert.Contains(app.Graph.Dashboard.Alerts, alert => alert.Title == "Claude trial ends" && alert.Detail.StartsWith("in 2 days", StringComparison.Ordinal));
+        Assert.Contains(app.Graph.Dashboard.Upcoming.Alerts, alert => alert.Title == "Claude trial ends" && alert.Detail.StartsWith("in 2 days", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -34,9 +34,9 @@ public class DashboardViewModelTests
         using var app = TestApp.Create();
         var dashboard = app.Graph.Dashboard;
 
-        dashboard.SearchText = "transport";
+        dashboard.List.SearchText = "transport";
 
-        Assert.Equal(["City transit pass", "Ride pass"], dashboard.Subscriptions.Select(r => r.Name).Order());
+        Assert.Equal(["City transit pass", "Ride pass"], dashboard.List.Subscriptions.Select(r => r.Name).Order());
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class DashboardViewModelTests
         app.Graph.Dashboard.AddCommand.Execute(null);
 
         Assert.Contains(app.Store.Stored!.Subscriptions, s => s.Name == "Newspaper" && s.Cost.MinorUnits == 450);
-        Assert.Contains(app.Graph.Dashboard.Subscriptions, r => r.Name == "Newspaper");
+        Assert.Contains(app.Graph.Dashboard.List.Subscriptions, r => r.Name == "Newspaper");
     }
 
     [Fact]
@@ -62,23 +62,23 @@ public class DashboardViewModelTests
     {
         using var app = TestApp.Create();
         app.Dialogs.ConfirmAnswer = false;
-        var row = app.Graph.Dashboard.Subscriptions[0];
+        var row = app.Graph.Dashboard.List.Subscriptions[0];
 
         app.Graph.Dashboard.DeleteCommand.Execute(row);
 
         Assert.Single(app.Dialogs.Questions);
-        Assert.Contains(app.Graph.Dashboard.Subscriptions, r => r.Name == row.Name);
+        Assert.Contains(app.Graph.Dashboard.List.Subscriptions, r => r.Name == row.Name);
     }
 
     [Fact]
     public void DeleteCommand_Confirmed_LeavesTombstone()
     {
         using var app = TestApp.Create();
-        var row = app.Graph.Dashboard.Subscriptions[0];
+        var row = app.Graph.Dashboard.List.Subscriptions[0];
 
         app.Graph.Dashboard.DeleteCommand.Execute(row);
 
-        Assert.DoesNotContain(app.Graph.Dashboard.Subscriptions, r => r.Name == row.Name);
+        Assert.DoesNotContain(app.Graph.Dashboard.List.Subscriptions, r => r.Name == row.Name);
         Assert.NotEmpty(app.Store.Stored!.Subscriptions.Single(s => s.Id == row.Model.Id).DeletedAt);
     }
 
@@ -91,7 +91,7 @@ public class DashboardViewModelTests
 
         Assert.Equal("EUR", app.Store.Stored!.Settings.BaseCurrency);
         Assert.Equal("EUR", app.Graph.Rates.Table.Anchor);
-        Assert.StartsWith("€", app.Graph.Dashboard.MonthlyText, StringComparison.Ordinal);
+        Assert.StartsWith("€", app.Graph.Dashboard.Totals.MonthlyText, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -99,10 +99,10 @@ public class DashboardViewModelTests
     {
         using var app = TestApp.Create();
 
-        app.Graph.Dashboard.SetChartCommand.Execute(ChartType.Trend);
+        app.Graph.Dashboard.Chart.SetChartCommand.Execute(ChartType.Trend);
 
-        Assert.Equal(12, app.Graph.Dashboard.ChartSlices.Count);
-        Assert.Equal("Sep", app.Graph.Dashboard.ChartSlices[0].Label);
+        Assert.Equal(12, app.Graph.Dashboard.Chart.ChartSlices.Count);
+        Assert.Equal("Sep", app.Graph.Dashboard.Chart.ChartSlices[0].Label);
     }
 
     [Fact]
@@ -110,9 +110,9 @@ public class DashboardViewModelTests
     {
         using var app = TestApp.Create();
 
-        var paused = app.Graph.Dashboard.Subscriptions.Single(r => r.IsPaused);
+        var paused = app.Graph.Dashboard.List.Subscriptions.Single(r => r.IsPaused);
 
         Assert.Equal(SubStatus.Paused, paused.Model.Status);
-        Assert.Equal(7, app.Graph.Dashboard.ActiveCount);
+        Assert.Equal(7, app.Graph.Dashboard.Totals.ActiveCount);
     }
 }

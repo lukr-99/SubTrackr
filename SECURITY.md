@@ -19,7 +19,7 @@ vulnerability"). Please do not open a public issue for something that is still e
 | Updates | Release metadata, installers, and APKs from GitHub Releases | HTTPS only, exact asset names, SHA-256 verified before anything runs, and the user agrees first. Android's installer also checks the APK's signing key, and the release workflow refuses an APK signed by any other certificate. |
 | Backup files | JSON the user picks | Size-limited, validated in full (format, version, IDs, currency, exponent) before anything changes; written in one atomic save. Backups never hold the sync project or the session. |
 | Exchange rates | Rate tables from the Frankfurter API | HTTPS, read-only. A failure falls back to the built-in table. |
-| Service logos | Favicons for the website a user entered | Fetched from Google's favicon service over HTTPS, so Google learns those domains. Display only. |
+| Service logos | Favicons for the website a user entered | Fetched from Google's favicon service over HTTPS while service logos are on, so Google learns those domains. The Settings switch stops every request. Display only. |
 | Local data | `data.json` in the user's app data folder | Operating-system file permissions. |
 
 ## Recovery

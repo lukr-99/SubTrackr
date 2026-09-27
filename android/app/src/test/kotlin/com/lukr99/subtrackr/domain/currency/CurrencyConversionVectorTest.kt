@@ -12,8 +12,10 @@ class CurrencyConversionVectorTest {
 
     @Serializable
     data class File(
-        val comparePrecision: Int, val anchor: String,
-        val ratesPerAnchor: Map<String, String>, val cases: List<Case>,
+        val comparePrecision: Int,
+        val anchor: String,
+        val ratesPerAnchor: Map<String, String>,
+        val cases: List<Case>,
     )
 
     @Serializable

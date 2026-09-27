@@ -62,6 +62,22 @@ jobs:
       - name: Full chain, pgTAP, and isolated migrations
         run: python tools/supabase_migrations.py test
 
+      - name: Collect container logs
+        if: failure()
+        run: |
+          mkdir -p supabase-logs
+          for name in $(docker ps -a --format '{{.Names}}' | grep '^supabase_'); do
+            docker logs "$name" > "supabase-logs/$name.log" 2>&1 || true
+          done
+
+      - name: Upload container logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: supabase-logs
+          path: supabase-logs/
+          if-no-files-found: warn
+
       - name: Stop the local stack
         if: always()
         run: npx supabase stop --no-backup
@@ -121,9 +137,9 @@ jobs:
           # The action's default also asks for the retired "tools" package.
           packages: platform-tools
 
-      - name: Build, unit test, and lint
+      - name: Format check, build, unit test, and lint
         # AGP downloads the compile SDK and build tools it needs; setup-android accepted the licenses.
-        run: ./gradlew testDebugUnitTest lintDebug assembleDebug --stacktrace
+        run: ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug --stacktrace
 
       - name: Upload reports
         if: always()

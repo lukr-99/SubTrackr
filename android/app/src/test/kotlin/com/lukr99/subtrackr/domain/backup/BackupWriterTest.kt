@@ -29,6 +29,7 @@ class BackupWriterTest {
             worthThreshold = 2.5,
             monthlyBudget = 1200.0,
             themeMode = ThemeMode.DARK,
+            hideServiceLogos = true,
         ),
         subscriptions = listOf(
             Subscription(
@@ -92,6 +93,7 @@ class BackupWriterTest {
         val settings = root.getValue("database").jsonObject.getValue("settings").jsonObject
         assertEquals("", settings.getValue("syncUrl").jsonPrimitive.content)
         assertEquals("DARK", settings.getValue("themeMode").jsonPrimitive.content)
+        assertEquals(JsonPrimitive(true), settings.getValue("hideServiceLogos"))
     }
 
     @Test

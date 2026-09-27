@@ -45,10 +45,14 @@ class UpdateServiceTest {
     @Test
     fun check_devBuild_isDisabledAndNeverContactsTheSource() = runTest {
         var contacted = false
-        val service = service("0.3.0-dev", FakeArtifactDownloader(emptyMap()), ReleaseSource {
-            contacted = true
-            release
-        })
+        val service = service(
+            "0.3.0-dev",
+            FakeArtifactDownloader(emptyMap()),
+            ReleaseSource {
+                contacted = true
+                release
+            },
+        )
 
         assertEquals(UpdateCheck.Disabled, service.check())
         assertFalse(contacted)

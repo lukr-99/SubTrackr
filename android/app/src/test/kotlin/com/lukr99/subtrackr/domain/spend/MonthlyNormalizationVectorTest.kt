@@ -16,8 +16,12 @@ class MonthlyNormalizationVectorTest {
 
     @Serializable
     data class Case(
-        val id: String, val cost: String, val currency: String,
-        val cycle: String, val customDays: Int, val expectedMonthly: String,
+        val id: String,
+        val cost: String,
+        val currency: String,
+        val cycle: String,
+        val customDays: Int,
+        val expectedMonthly: String,
     )
 
     @Test

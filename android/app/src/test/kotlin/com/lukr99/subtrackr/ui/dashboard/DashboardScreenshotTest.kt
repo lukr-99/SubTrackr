@@ -27,6 +27,7 @@ class DashboardScreenshotTest {
             budget = SampleData.budget,
             onEdit = {},
             today = SampleData.today,
+            showServiceLogos = true,
         )
     }
 

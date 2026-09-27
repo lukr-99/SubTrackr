@@ -137,7 +137,7 @@ public class SyncViewModelTests
     {
         using var app = await SignedIn();
 
-        app.Graph.Dashboard.DeleteCommand.Execute(app.Graph.Dashboard.Subscriptions[0]);
+        app.Graph.Dashboard.DeleteCommand.Execute(app.Graph.Dashboard.List.Subscriptions[0]);
         await app.Graph.Sync.SyncNowAsync(CancellationToken.None);
 
         Assert.Single(app.Cloud.Rows, r => r.DeletedAt.Length > 0);

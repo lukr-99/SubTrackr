@@ -16,6 +16,9 @@ junit = "4.13.2"
 robolectric = "4.16"
 # 1.60.0 is the newest Roborazzi built with Kotlin 2.0; later releases need a Kotlin 2.2+ compiler.
 roborazzi = "1.60.0"
+# Formatting. Spotless runs ktlint in its own class loader, so ktlint's Kotlin never meets the build's.
+spotless = "7.0.4"
+ktlint = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -53,3 +56,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

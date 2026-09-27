@@ -36,8 +36,8 @@ SubTrackr.Desktop  -->  SubTrackr.Infrastructure  -->  SubTrackr.Core
 - **`SubTrackr.Desktop`** is the WPF shell: `Composition/`, `Shell/MainWindow`, `Views/`,
   `ViewModels/`, `Theming/`, `Controls/SpendChart` (drawn in `OnRender`, no chart library),
   `Controls/LogoMark` (the logo from `contracts/design/logo.json`, with its launch animation), and
-  `Services/` for dialogs and other desktop seams such as the system theme and the motion
-  preference.
+  `Services/` for dialogs and other desktop seams such as the system theme, the motion preference,
+  and the service logo source.
 
 **Composition root.** `App.OnStartup` reads `BuildInfo` (release or `-dev`), takes that build's
 single-instance mutex, and calls `AppAdapters.ForUser(build)` to choose the real adapters. `AppGraph`
@@ -100,5 +100,8 @@ own rows; nothing deletes. The apps call the Auth and PostgREST REST endpoints d
 
 - The desktop installer is not Authenticode-signed yet; the published SHA-256 is the integrity
   check.
-- Service logos come from Google's favicon service, which learns the website domains a user enters.
+- Service logos come from Google's favicon service, which learns the website domains a user enters,
+  unless the user turns service logos off in Settings.
+- Android writes uncaught crashes (version and stack frames, no messages or data) to
+  `files/crash.log`; the desktop logs to its data folder.
 - Supabase's built-in mail sender allows only a few sign-in emails per hour.

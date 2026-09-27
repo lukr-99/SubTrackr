@@ -37,7 +37,7 @@ class SubscriptionStoreTest {
         val file = File(temp.root, "data.json")
         val store = SubscriptionStore(file)
         val first = Database(settings = Settings(baseCurrency = "EUR"), subscriptions = listOf(Subscription(id = "a", updatedAt = "1")))
-        val second = first.copy(settings = Settings(baseCurrency = "CZK", themeMode = ThemeMode.DARK))
+        val second = first.copy(settings = Settings(baseCurrency = "CZK", themeMode = ThemeMode.DARK, hideServiceLogos = true))
 
         store.save(first)
         store.save(second)
@@ -47,13 +47,14 @@ class SubscriptionStoreTest {
     }
 
     @Test
-    fun load_fileWithoutThemeMode_readsSystem() {
+    fun load_fileWithoutThemeModeOrLogoSetting_readsTheDefaults() {
         val file = File(temp.root, "data.json")
         file.writeText("""{"schemaVersion":"0.1","settings":{"baseCurrency":"CZK"},"subscriptions":[]}""")
 
         val loaded = SubscriptionStore(file).load()
 
         assertEquals(ThemeMode.SYSTEM, loaded.settings.themeMode)
+        assertFalse(loaded.settings.hideServiceLogos)
         assertEquals("CZK", loaded.settings.baseCurrency)
     }
 }

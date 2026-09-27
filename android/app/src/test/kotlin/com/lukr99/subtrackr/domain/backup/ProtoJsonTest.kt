@@ -34,12 +34,15 @@ class ProtoJsonTest {
         assertEquals("", settings.schemaVersion)
         assertEquals(ThemeMode.SYSTEM, settings.themeMode)
         assertEquals(0.0, settings.monthlyBudget, 0.0)
+        assertEquals(false, settings.hideServiceLogos)
     }
 
     @Test
     fun decode_acceptsProtoNamesNumbersAsStringsAndEnumNumbers() {
         val sub = ProtoJson.decodeSubscription(
-            obj("""{"id":"a","cost":{"currency":"EUR","minor_units":999,"exponent":"2"},"billing_cycle":5,"status":"PAUSED","usesPerMonth":"8","autoPay":true,"worthMode":"SOMETHING_NEW","notes":null}"""),
+            obj(
+                """{"id":"a","cost":{"currency":"EUR","minor_units":999,"exponent":"2"},"billing_cycle":5,"status":"PAUSED","usesPerMonth":"8","autoPay":true,"worthMode":"SOMETHING_NEW","notes":null}""",
+            ),
         )
 
         assertEquals(Money("EUR", 999, 2), sub.cost)
@@ -66,5 +69,13 @@ class ProtoJsonTest {
 
         assertEquals("120", json.getValue("monthlyBudget").toString())
         assertEquals("2.5", json.getValue("worthThreshold").toString())
+    }
+
+    @Test
+    fun hideServiceLogos_readsBothNamesAndRejectsText() {
+        assertEquals(true, ProtoJson.decodeSettings(obj("""{"hideServiceLogos":true}""")).hideServiceLogos)
+        assertEquals(true, ProtoJson.decodeSettings(obj("""{"hide_service_logos":true}""")).hideServiceLogos)
+        assertEquals(false, ProtoJson.decodeSettings(obj("""{"hideServiceLogos":null}""")).hideServiceLogos)
+        assertThrows(ProtoJsonException::class.java) { ProtoJson.decodeSettings(obj("""{"hideServiceLogos":"true"}""")) }
     }
 }

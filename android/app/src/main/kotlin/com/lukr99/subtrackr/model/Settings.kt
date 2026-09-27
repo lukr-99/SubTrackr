@@ -17,4 +17,6 @@ data class Settings(
     val monthlyBudget: Double = 0.0,
     /** Light, dark, or follow the system. Stored per device and included in backups. */
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    /** True: never fetch service logos (favicons) and show the emoji icon. Per device, in backups. */
+    val hideServiceLogos: Boolean = false,
 )

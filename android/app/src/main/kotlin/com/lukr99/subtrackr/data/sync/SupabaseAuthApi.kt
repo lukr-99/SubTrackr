@@ -27,23 +27,39 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class SupabaseAuthApi(private val client: OkHttpClient) : AuthApi {
 
     override suspend fun sendCode(endpoint: SyncEndpoint, email: String) {
-        post(endpoint, "/auth/v1/otp", buildJsonObject {
-            put("email", email)
-            put("create_user", true)
-        }).close()
+        post(
+            endpoint,
+            "/auth/v1/otp",
+            buildJsonObject {
+                put("email", email)
+                put("create_user", true)
+            },
+        ).close()
     }
 
     override suspend fun verify(endpoint: SyncEndpoint, email: String, code: String): AuthTokens =
-        tokens(post(endpoint, "/auth/v1/verify", buildJsonObject {
-            put("type", "email")
-            put("email", email)
-            put("token", code)
-        }))
+        tokens(
+            post(
+                endpoint,
+                "/auth/v1/verify",
+                buildJsonObject {
+                    put("type", "email")
+                    put("email", email)
+                    put("token", code)
+                },
+            ),
+        )
 
     override suspend fun refresh(endpoint: SyncEndpoint, refreshToken: String): AuthTokens =
-        tokens(post(endpoint, "/auth/v1/token?grant_type=refresh_token", buildJsonObject {
-            put("refresh_token", refreshToken)
-        }))
+        tokens(
+            post(
+                endpoint,
+                "/auth/v1/token?grant_type=refresh_token",
+                buildJsonObject {
+                    put("refresh_token", refreshToken)
+                },
+            ),
+        )
 
     override suspend fun logout(endpoint: SyncEndpoint, accessToken: String) {
         val request = Request.Builder()

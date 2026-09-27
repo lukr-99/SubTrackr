@@ -66,7 +66,9 @@ fun WhatIfScreen(
     val monthlyBase = if (amt != null && amt >= BigDecimal.ZERO) {
         val own = Normalization.monthlyEquivalent(amt, c, 30)
         if (rates.knows(currency)) rates.convert(own, currency, baseCurrency) else own
-    } else null
+    } else {
+        null
+    }
     val newMonthly = monthlyBase?.let { currentMonthly + it }
     val usesVal = uses.toDoubleOrNull() ?: 0.0
 
@@ -87,11 +89,20 @@ fun WhatIfScreen(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
                     Text("Currently", color = SubTrackrTheme.colors.textSecondary, fontSize = 11.sp)
-                    Text(Format.money(currentMonthly, baseCurrency), color = SubTrackrTheme.colors.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        Format.money(currentMonthly, baseCurrency),
+                        color = SubTrackrTheme.colors.textPrimary,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                     Text("per month", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(Format.money(currentMonthly.multiply(BigDecimal(12)), baseCurrency), color = SubTrackrTheme.colors.textPrimary, fontSize = 16.sp)
+                    Text(
+                        Format.money(currentMonthly.multiply(BigDecimal(12)), baseCurrency),
+                        color = SubTrackrTheme.colors.textPrimary,
+                        fontSize = 16.sp,
+                    )
                     Text("per year", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
                 }
             }
@@ -119,18 +130,23 @@ fun WhatIfScreen(
                     Text("New total", color = SubTrackrTheme.colors.textSecondary, fontSize = 11.sp)
                     Text(
                         newMonthly?.let { Format.money(it, baseCurrency) } ?: "—",
-                        color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold,
+                        color = SubTrackrTheme.colors.textPrimary,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.testTag(WhatIfTags.NEW_TOTAL),
                     )
                     Text(
                         newMonthly?.let { Format.money(it.multiply(BigDecimal(12)), baseCurrency) + " / yr" } ?: "",
-                        color = SubTrackrTheme.colors.textMuted, fontSize = 12.sp,
+                        color = SubTrackrTheme.colors.textMuted,
+                        fontSize = 12.sp,
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         monthlyBase?.let { "+ " + Format.money(it, baseCurrency) } ?: "—",
-                        color = SubTrackrTheme.colors.warning, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                        color = SubTrackrTheme.colors.warning,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                     )
                     Text("added / mo", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
                 }
@@ -150,7 +166,8 @@ fun WhatIfScreen(
                         WorthVerdict.UNKNOWN -> ""
                     },
                     color = if (verdict == WorthVerdict.WORTH) SubTrackrTheme.colors.positive else SubTrackrTheme.colors.negative,
-                    fontSize = 17.sp, fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             } else {
                 Text("Set uses/month to judge worth", color = SubTrackrTheme.colors.textMuted, fontSize = 13.sp)

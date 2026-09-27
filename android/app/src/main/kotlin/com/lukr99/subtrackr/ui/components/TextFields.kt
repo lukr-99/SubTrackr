@@ -96,7 +96,10 @@ fun PickerField(
             options.forEach { opt ->
                 DropdownMenuItem(
                     text = { Text(opt, color = SubTrackrTheme.colors.textPrimary) },
-                    onClick = { onSelect(opt); expanded = false },
+                    onClick = {
+                        onSelect(opt)
+                        expanded = false
+                    },
                 )
             }
         }

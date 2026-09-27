@@ -37,6 +37,17 @@ class AppRepositoryTest {
     }
 
     @Test
+    fun hideServiceLogos_defaultsOffAndIsSaved() {
+        val repo = repository()
+        assertEquals(false, repo.hideServiceLogos)
+
+        repo.setHideServiceLogos(true)
+
+        assertEquals(true, repo.hideServiceLogos)
+        assertEquals(true, store.saved.settings.hideServiceLogos)
+    }
+
+    @Test
     fun delete_existingSubscription_leavesSavedTombstone() {
         store.saved = store.saved.copy(
             subscriptions = listOf(Subscription(id = "a", name = "Alpha", updatedAt = "2026-09-01T10:00:00Z")),

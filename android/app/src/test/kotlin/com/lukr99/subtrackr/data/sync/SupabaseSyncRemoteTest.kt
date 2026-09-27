@@ -25,14 +25,24 @@ class SupabaseSyncRemoteTest {
     private val server = MockWebServer().apply { start(InetAddress.getByName("127.0.0.1"), 0) }
     private val endpoint = SyncEndpoint.parse("http://127.0.0.1:${server.port}", "publishable-key", allowLocalHttp = true)!!
     private val remote = SupabaseSyncRemote(OkHttpClient())
-    private val sub = Subscription(id = "11111111-1111-4111-8111-111111111111", name = "Alpha", cost = Money("EUR", 999, 2), updatedAt = "2026-09-01T10:00:00Z")
+    private val sub =
+        Subscription(
+            id = "11111111-1111-4111-8111-111111111111",
+            name = "Alpha",
+            cost = Money("EUR", 999, 2),
+            updatedAt = "2026-09-01T10:00:00Z",
+        )
 
     @After
     fun tearDown() = server.shutdown()
 
     @Test
     fun pull_readsRowsWithTheUsersToken() = runTest {
-        server.enqueue(MockResponse().setBody("""[{"user_id":"u","id":"${sub.id}","name":"Alpha","cost_currency":"EUR","cost_minor":999,"cost_exponent":2,"updated_at":"2026-09-01T10:00:00Z"}]"""))
+        server.enqueue(
+            MockResponse().setBody(
+                """[{"user_id":"u","id":"${sub.id}","name":"Alpha","cost_currency":"EUR","cost_minor":999,"cost_exponent":2,"updated_at":"2026-09-01T10:00:00Z"}]""",
+            ),
+        )
 
         val rows = remote.pull(endpoint, "access-1")
 

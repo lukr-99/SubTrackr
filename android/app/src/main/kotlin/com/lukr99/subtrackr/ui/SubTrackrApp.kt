@@ -112,6 +112,7 @@ fun SubTrackrApp(viewModelFactory: ViewModelProvider.Factory) {
                                 editorOpen = true
                             },
                             today = vm.today,
+                            showServiceLogos = vm.showServiceLogos,
                         )
                         AppTab.WHATIF -> WhatIfScreen(
                             baseCurrency = vm.baseCurrency,

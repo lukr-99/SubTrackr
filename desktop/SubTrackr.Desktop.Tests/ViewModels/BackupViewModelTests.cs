@@ -65,7 +65,7 @@ public class BackupViewModelTests
     {
         using var app = TestApp.Create();
         var backup = app.Graph.Backups.CreateBackup();
-        app.Graph.Dashboard.DeleteCommand.Execute(app.Graph.Dashboard.Subscriptions[0]);
+        app.Graph.Dashboard.DeleteCommand.Execute(app.Graph.Dashboard.List.Subscriptions[0]);
         app.Graph.Dashboard.BaseCurrency = "EUR";
         app.Files.Files[BackupPath] = backup;
         app.Dialogs.OpenPath = BackupPath;
@@ -74,7 +74,7 @@ public class BackupViewModelTests
         app.Graph.Settings.Backup.RestoreCommand.Execute(null);
 
         Assert.Equal("Restored: 8 added, 0 updated, 0 unchanged. 8 subscriptions in total.", app.Graph.Settings.Backup.ResultText);
-        Assert.Equal(8, app.Graph.Dashboard.Subscriptions.Count);
+        Assert.Equal(8, app.Graph.Dashboard.List.Subscriptions.Count);
         Assert.Equal("CZK", app.Graph.Dashboard.BaseCurrency);
         Assert.Equal("CZK", app.Graph.Settings.BaseCurrency);
         Assert.Equal("CZK", app.Graph.Rates.Table.Anchor);

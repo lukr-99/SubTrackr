@@ -45,6 +45,7 @@ public sealed class AppAdapters : IDisposable
         IBackupFiles backupFiles,
         ISystemTheme systemTheme,
         IMotionPreference motion,
+        IServiceLogoSource serviceLogos,
         IAppLog log,
         string dataFolder,
         params IDisposable[] owned)
@@ -62,6 +63,7 @@ public sealed class AppAdapters : IDisposable
         BackupFiles = backupFiles;
         SystemTheme = systemTheme;
         Motion = motion;
+        ServiceLogos = serviceLogos;
         Log = log;
         DataFolder = dataFolder;
         this.owned = owned;
@@ -92,6 +94,8 @@ public sealed class AppAdapters : IDisposable
     public ISystemTheme SystemTheme { get; }
 
     public IMotionPreference Motion { get; }
+
+    public IServiceLogoSource ServiceLogos { get; }
 
     public IAppLog Log { get; }
 
@@ -132,6 +136,7 @@ public sealed class AppAdapters : IDisposable
             new BackupFiles(),
             systemTheme,
             new WindowsMotionPreference(),
+            new FaviconServiceLogoSource(),
             new FileLog(paths.LogsFolder, time),
             paths.Root,
             web,

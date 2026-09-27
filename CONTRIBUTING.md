@@ -14,7 +14,7 @@ dotnet test SubTrackr.slnx -c Release
 Android, from `android/`:
 
 ```powershell
-.\gradlew.bat testDebugUnitTest lintDebug assembleDebug
+.\gradlew.bat spotlessCheck testDebugUnitTest lintDebug assembleDebug
 ```
 
 Setup, SDK paths, and the gotchas that already cost time are in

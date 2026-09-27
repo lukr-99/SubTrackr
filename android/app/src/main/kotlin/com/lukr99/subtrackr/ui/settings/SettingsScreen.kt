@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -41,8 +40,10 @@ fun SettingsScreen(
     monthlyBudget: BigDecimal,
     ratesLabel: String,
     themeMode: ThemeMode,
+    showServiceLogos: Boolean,
     appVersion: String,
     onSetThemeMode: (ThemeMode) -> Unit,
+    onSetShowServiceLogos: (Boolean) -> Unit,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onSetBudget: (BigDecimal) -> Unit,
@@ -68,7 +69,7 @@ fun SettingsScreen(
         Text("Settings", color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
 
-        AppearanceCard(themeMode, onSetThemeMode)
+        AppearanceCard(themeMode, onSetThemeMode, showServiceLogos, onSetShowServiceLogos)
         Spacer(Modifier.height(12.dp))
 
         SectionCard {

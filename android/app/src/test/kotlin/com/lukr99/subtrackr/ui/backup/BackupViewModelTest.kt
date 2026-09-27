@@ -26,7 +26,13 @@ class BackupViewModelTest {
     @get:Rule
     val main = MainDispatcherRule()
 
-    private val sub = Subscription(id = "11111111-1111-4111-8111-111111111111", name = "Alpha", cost = Money("EUR", 999, 2), updatedAt = "2026-09-01T10:00:00Z")
+    private val sub =
+        Subscription(
+            id = "11111111-1111-4111-8111-111111111111",
+            name = "Alpha",
+            cost = Money("EUR", 999, 2),
+            updatedAt = "2026-09-01T10:00:00Z",
+        )
     private val store = InMemoryDatabaseStore(Database(subscriptions = listOf(sub)))
     private val documents = FakeDocuments()
     private val clock = Clock.fixed(Instant.parse("2026-09-26T10:00:00Z"), ZoneOffset.UTC)

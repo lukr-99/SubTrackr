@@ -1,0 +1,15 @@
+# Kotlin formatting for the Android app. The repository root .editorconfig still sets charset,
+# LF endings, and indentation; Spotless runs ktlint with this file (./gradlew spotlessCheck).
+
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+max_line_length = 140
+insert_final_newline = true
+# Matches kotlin.code.style=official in gradle.properties.
+ktlint_code_style = intellij_idea
+# Composables are PascalCase functions.
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# Signatures stay as written: one line when short, one parameter per line when long.
+ktlint_standard_class-signature = disabled
+ktlint_standard_function-signature = disabled

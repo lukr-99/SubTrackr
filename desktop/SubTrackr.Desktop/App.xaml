@@ -5,7 +5,14 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes/Styles.xaml" />
+                <!-- Control styles by family. Base text first; no dictionary uses another's keys. -->
+                <ResourceDictionary Source="Themes/Typography.xaml" />
+                <ResourceDictionary Source="Themes/Buttons.xaml" />
+                <ResourceDictionary Source="Themes/Inputs.xaml" />
+                <ResourceDictionary Source="Themes/ScrollBars.xaml" />
+                <ResourceDictionary Source="Themes/DataGrid.xaml" />
+                <ResourceDictionary Source="Themes/Calendar.xaml" />
+                <ResourceDictionary Source="Themes/Cards.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <conv:BoolToVisibilityConverter x:Key="BoolVis" />
             <conv:StringToVisibilityConverter x:Key="StrVis" />

@@ -45,6 +45,7 @@ object ProtoJson {
         put("worthThreshold", number(s.worthThreshold))
         put("monthlyBudget", number(s.monthlyBudget))
         put("themeMode", s.themeMode.name)
+        put("hideServiceLogos", s.hideServiceLogos)
     }
 
     fun encodeSubscription(s: Subscription): JsonObject = buildJsonObject {
@@ -93,6 +94,7 @@ object ProtoJson {
             worthThreshold = double(o.field("worthThreshold", "worth_threshold")),
             monthlyBudget = double(o.field("monthlyBudget", "monthly_budget")),
             themeMode = enum(o.field("themeMode", "theme_mode"), ThemeMode.entries, ThemeMode.SYSTEM),
+            hideServiceLogos = bool(o.field("hideServiceLogos", "hide_service_logos")),
         )
     }
 
@@ -180,12 +182,20 @@ object ProtoJson {
     }
 
     private fun int64(value: JsonElement?): Long =
-        if (value == null) 0 else runCatching { integral(value).longValueExact() }
-            .getOrElse { throw ProtoJsonException("int64 out of range: $value") }
+        if (value == null) {
+            0
+        } else {
+            runCatching { integral(value).longValueExact() }
+                .getOrElse { throw ProtoJsonException("int64 out of range: $value") }
+        }
 
     private fun int32(value: JsonElement?): Int =
-        if (value == null) 0 else runCatching { integral(value).intValueExact() }
-            .getOrElse { throw ProtoJsonException("int32 out of range: $value") }
+        if (value == null) {
+            0
+        } else {
+            runCatching { integral(value).intValueExact() }
+                .getOrElse { throw ProtoJsonException("int32 out of range: $value") }
+        }
 
     private fun double(value: JsonElement?): Double {
         if (value == null) return 0.0
