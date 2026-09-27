@@ -28,6 +28,16 @@ system file picker and restores one with Merge (the default) or Replace after a 
 restore validates the file and builds the result in memory before the single atomic save, so a bad
 file or a failed save changes nothing. Backups never contain the sync URL, key, or sign-in session.
 
+## Crash log
+
+`SubTrackrApplication` installs an uncaught-exception handler before anything else. It appends
+one entry per crash to `files/crash.log` (time, app version, thread, and each exception in the
+cause chain as its class and stack frames), then hands the crash to the handler Android had
+before. Exception messages are left out because they can carry names, addresses, or tokens. The
+file stays under 64 KB by dropping the oldest entries. On the debug build,
+`.\tools\pull-debug-files.ps1 -Destination artifacts\device-files -FilePattern '\.log$'` copies it
+off an emulator.
+
 ## Sync
 
 Settings > Sync takes a Supabase project URL and publishable key, then signs in with an emailed
