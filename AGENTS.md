@@ -6,7 +6,8 @@ contracts, not code.
 ## Read first
 
 1. [ARCHITECTURE.md](ARCHITECTURE.md) before changing module seams or dependency direction.
-2. [contracts/SPEC.md](contracts/SPEC.md) before changing behavior either app implements.
+2. [contracts/SPEC.md](contracts/SPEC.md) before changing behavior either app implements, and
+   [CONTEXT.md](CONTEXT.md) for the project's terms.
 3. [CONTRIBUTING.md](CONTRIBUTING.md) for the verification commands and commit rules.
 4. [docs/development.md](docs/development.md) for toolchain setup, the emulator loop, and known
    gotchas.
