@@ -40,8 +40,10 @@ fun SettingsScreen(
     monthlyBudget: BigDecimal,
     ratesLabel: String,
     themeMode: ThemeMode,
+    showServiceLogos: Boolean,
     appVersion: String,
     onSetThemeMode: (ThemeMode) -> Unit,
+    onSetShowServiceLogos: (Boolean) -> Unit,
     onSetBaseCurrency: (String) -> Unit,
     onSetThreshold: (BigDecimal) -> Unit,
     onSetBudget: (BigDecimal) -> Unit,
@@ -67,7 +69,7 @@ fun SettingsScreen(
         Text("Settings", color = SubTrackrTheme.colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
 
-        AppearanceCard(themeMode, onSetThemeMode)
+        AppearanceCard(themeMode, onSetThemeMode, showServiceLogos, onSetShowServiceLogos)
         Spacer(Modifier.height(12.dp))
 
         SectionCard {

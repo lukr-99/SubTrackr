@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.lukr99.subtrackr.domain.spend.SubscriptionSpend
 import com.lukr99.subtrackr.domain.worth.WorthVerdict
 import com.lukr99.subtrackr.model.BillingCycle
@@ -28,23 +26,13 @@ import com.lukr99.subtrackr.ui.theme.SubTrackrTheme
 
 /** One subscription in the dashboard list: its icon, name and worth verdict, and costs. */
 @Composable
-internal fun SubscriptionRow(spend: SubscriptionSpend, base: String, onEdit: (Subscription) -> Unit) {
+internal fun SubscriptionRow(spend: SubscriptionSpend, base: String, showLogos: Boolean, onEdit: (Subscription) -> Unit) {
     val s = spend.subscription
     Row(
         Modifier.fillMaxWidth().clickable { onEdit(s) }.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            if (s.website.isNotBlank()) {
-                AsyncImage(
-                    model = "https://www.google.com/s2/favicons?domain=${s.website}&sz=64",
-                    contentDescription = null,
-                    modifier = Modifier.size(22.dp),
-                )
-            } else {
-                Text(s.iconRef.ifBlank { "•" }, fontSize = 20.sp)
-            }
-        }
+        ServiceIcon(s, showLogos)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

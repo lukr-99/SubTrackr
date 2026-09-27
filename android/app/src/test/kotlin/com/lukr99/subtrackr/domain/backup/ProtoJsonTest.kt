@@ -34,6 +34,7 @@ class ProtoJsonTest {
         assertEquals("", settings.schemaVersion)
         assertEquals(ThemeMode.SYSTEM, settings.themeMode)
         assertEquals(0.0, settings.monthlyBudget, 0.0)
+        assertEquals(false, settings.hideServiceLogos)
     }
 
     @Test
@@ -68,5 +69,13 @@ class ProtoJsonTest {
 
         assertEquals("120", json.getValue("monthlyBudget").toString())
         assertEquals("2.5", json.getValue("worthThreshold").toString())
+    }
+
+    @Test
+    fun hideServiceLogos_readsBothNamesAndRejectsText() {
+        assertEquals(true, ProtoJson.decodeSettings(obj("""{"hideServiceLogos":true}""")).hideServiceLogos)
+        assertEquals(true, ProtoJson.decodeSettings(obj("""{"hide_service_logos":true}""")).hideServiceLogos)
+        assertEquals(false, ProtoJson.decodeSettings(obj("""{"hideServiceLogos":null}""")).hideServiceLogos)
+        assertThrows(ProtoJsonException::class.java) { ProtoJson.decodeSettings(obj("""{"hideServiceLogos":"true"}""")) }
     }
 }

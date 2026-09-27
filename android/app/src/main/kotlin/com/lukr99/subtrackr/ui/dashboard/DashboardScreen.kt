@@ -41,6 +41,7 @@ fun DashboardScreen(
     budget: BigDecimal,
     onEdit: (Subscription) -> Unit,
     today: LocalDate,
+    showServiceLogos: Boolean,
 ) {
     val active = summary.perSub.count { it.subscription.status == SubStatus.ACTIVE }
     var chart by remember { mutableStateOf(ChartType.DONUT) }
@@ -82,7 +83,7 @@ fun DashboardScreen(
             FilterBar(filter, categories) { filter = it }
             Spacer(Modifier.height(8.dp))
         }
-        items(rows) { spend -> SubscriptionRow(spend, baseCurrency, onEdit) }
+        items(rows) { spend -> SubscriptionRow(spend, baseCurrency, showServiceLogos, onEdit) }
         item { Spacer(Modifier.height(90.dp)) }
     }
 }

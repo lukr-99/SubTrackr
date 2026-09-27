@@ -7,6 +7,7 @@ object SettingsTags {
     const val ROOT = "settings"
     const val UPDATE_STATUS = "settings_update_status"
     const val CHECK_UPDATES = "settings_check_updates"
+    const val SHOW_SERVICE_LOGOS = "settings_show_service_logos"
 
     fun theme(mode: ThemeMode): String = "settings_theme_${mode.name.lowercase()}"
 }

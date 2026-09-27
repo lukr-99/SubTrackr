@@ -118,6 +118,10 @@ class AppRepository(
 
     fun setThemeMode(mode: ThemeMode) = change { it.copy(settings = it.settings.copy(themeMode = mode)) }
 
+    val hideServiceLogos: Boolean get() = db.settings.hideServiceLogos
+
+    fun setHideServiceLogos(hide: Boolean) = change { it.copy(settings = it.settings.copy(hideServiceLogos = hide)) }
+
     suspend fun refreshRates() {
         rates = rateSource.latest(baseCurrency)
     }

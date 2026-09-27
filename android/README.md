@@ -55,6 +55,13 @@ Settings offers System, Light, and Dark. Every color comes from
 [`contracts/design/tokens.json`](../contracts/design/tokens.json), which Gradle puts on the main
 Java resources; `ThemeTokensTest` fails when the app's palettes and the file disagree.
 
+## Service logos
+
+The dashboard shows each subscription's website favicon from Google's favicon service, with the
+emoji while it loads, when it fails, or when there is no website (SPEC.md section 12). Settings >
+Appearance > "Show service logos" stores `hideServiceLogos` (default off, so logos show); with logos
+hidden, `ServiceIcon` never hands Coil a request. The setting is per device and goes into backups.
+
 ## Updates
 
 Release builds check `lukr-99/SubTrackr` on launch and from Settings. They take only

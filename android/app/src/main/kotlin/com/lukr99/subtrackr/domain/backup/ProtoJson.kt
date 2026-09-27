@@ -45,6 +45,7 @@ object ProtoJson {
         put("worthThreshold", number(s.worthThreshold))
         put("monthlyBudget", number(s.monthlyBudget))
         put("themeMode", s.themeMode.name)
+        put("hideServiceLogos", s.hideServiceLogos)
     }
 
     fun encodeSubscription(s: Subscription): JsonObject = buildJsonObject {
@@ -93,6 +94,7 @@ object ProtoJson {
             worthThreshold = double(o.field("worthThreshold", "worth_threshold")),
             monthlyBudget = double(o.field("monthlyBudget", "monthly_budget")),
             themeMode = enum(o.field("themeMode", "theme_mode"), ThemeMode.entries, ThemeMode.SYSTEM),
+            hideServiceLogos = bool(o.field("hideServiceLogos", "hide_service_logos")),
         )
     }
 

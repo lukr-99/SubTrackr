@@ -72,6 +72,18 @@ class BackupServiceTest {
     }
 
     @Test
+    fun hiddenServiceLogos_travelThroughExportAndReplace() = runTest {
+        store.saved = store.saved.copy(settings = store.saved.settings.copy(hideServiceLogos = true))
+        service().exportTo("content://backup")
+        assertTrue(Regex("\"hideServiceLogos\"\\s*:\\s*true").containsMatchIn(documents.files.getValue("content://backup")))
+
+        store.saved = Database()
+        service().restoreFrom("content://backup", RestoreMode.REPLACE)
+
+        assertTrue(store.saved.settings.hideServiceLogos)
+    }
+
+    @Test
     fun export_writeFailure_isReported() = runTest {
         documents.failWrites = true
 

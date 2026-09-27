@@ -25,6 +25,10 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
     var themeMode by mutableStateOf(repo.themeMode)
         private set
 
+    /** The inverse of Settings.hideServiceLogos, as the Settings switch reads. */
+    var showServiceLogos by mutableStateOf(!repo.hideServiceLogos)
+        private set
+
     init {
         // Restores and sync passes change the repository too; the screens follow every change.
         viewModelScope.launch { repo.database.collect { refresh() } }
@@ -43,10 +47,16 @@ class SubTrackrViewModel(private val repo: AppRepository) : ViewModel() {
         baseCurrency = repo.baseCurrency
         ratesLabel = ratesText()
         themeMode = repo.themeMode
+        showServiceLogos = !repo.hideServiceLogos
     }
 
     fun changeThemeMode(mode: ThemeMode) {
         repo.setThemeMode(mode)
+        refresh()
+    }
+
+    fun changeShowServiceLogos(show: Boolean) {
+        repo.setHideServiceLogos(!show)
         refresh()
     }
 
