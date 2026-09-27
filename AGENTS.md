@@ -38,5 +38,5 @@ contracts, not code.
 python tools/validate_repository.py --root .
 dotnet format SubTrackr.slnx --verify-no-changes
 dotnet test SubTrackr.slnx -c Release
-cd android; .\gradlew.bat testDebugUnitTest lintDebug assembleDebug
+cd android; .\gradlew.bat spotlessCheck testDebugUnitTest lintDebug assembleDebug
 ```

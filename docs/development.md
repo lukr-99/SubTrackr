@@ -60,6 +60,8 @@ This loop covers most Android work without a phone:
 - `android/tools/emulator.ps1` starts a headless emulator; `build-and-install.ps1` and
   `ui-check.ps1` install the debug build and capture the screen and UI tree.
 - `maestro test android/.maestro/launch-smoke.yaml` runs the launch smoke flow.
+- `.\gradlew.bat spotlessCheck` checks Kotlin formatting (ktlint through Spotless, configured by
+  `android/.editorconfig`); `spotlessApply` fixes it. CI runs the check.
 - `.\gradlew.bat recordRoborazziDebug` rewrites the JVM screenshots in
   `app/src/test/screenshots/`; `verifyRoborazziDebug` compares against them. The references were
   recorded on Windows, so verify there. Plain `testDebugUnitTest` renders without comparing.

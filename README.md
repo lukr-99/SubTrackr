@@ -14,7 +14,8 @@ the theme tokens, and [SPEC.md](contracts/SPEC.md).
   table for offline use.
 - Donut, bar, and trend charts, a monthly budget bar, and a what-if calculator.
 - A worth-it verdict from cost per use, with a manual override (Essential, Always worth, Not worth).
-- Free-trial and renewal alerts, search, category filter, and service logos.
+- Free-trial and renewal alerts, search, and a category filter.
+- Service logos from each subscription's website, with a switch to turn them off.
 - Light, dark, and system themes.
 - Backup and restore through a JSON file that either app can read.
 - Optional sync with email-code sign-in. Each user sees only their own rows; settings stay on each
@@ -41,8 +42,8 @@ the email template, and running Supabase locally are in [docs/SYNC-SETUP.md](doc
   Installer updates leave the data alone.
 - Settings, Backup writes a full copy you can restore on either platform.
 - Network use: Frankfurter for exchange rates, GitHub for update checks, your own Supabase project
-  if you turn on sync, and Google's favicon service for logos, which sees the website domains you
-  enter.
+  if you turn on sync, and Google's favicon service for service logos, which sees the website
+  domains you enter. Turn service logos off in Settings and no favicon request is made.
 
 ## Build
 
