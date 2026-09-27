@@ -247,3 +247,11 @@ Both apps update from the GitHub Releases of `lukr-99/SubTrackr`.
 - Install: only after the user agrees. The desktop starts the installer and exits once it is
   running; Android hands the APK to the system installer, which also checks the signing key.
 - Manual path: both apps link to the releases page.
+
+## 12. Service logos
+
+- A subscription with a `website` shows that site's favicon, fetched from
+  `https://www.google.com/s2/favicons?domain=<website>&sz=64`, so Google learns the domain. Without a
+  website, or while the image loads or fails, the emoji `icon_ref` shows instead.
+- `Settings.hide_service_logos` (default false) turns this off: the app then makes no favicon
+  request at all and shows only emoji icons. It is stored per device and included in backups.

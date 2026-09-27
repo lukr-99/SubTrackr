@@ -85,6 +85,7 @@ message Settings {
   double worth_threshold = 5; // cost-per-use cutoff in base currency; 0 = currency-aware default
   double monthly_budget = 6;  // optional monthly spend budget in base currency; 0 = no budget
   ThemeMode theme_mode = 7;   // SYSTEM, LIGHT or DARK
+  bool hide_service_logos = 8; // true = never fetch favicons; show the emoji icon instead
 }
 
 // Root document. This is exactly what gets persisted / synced.
