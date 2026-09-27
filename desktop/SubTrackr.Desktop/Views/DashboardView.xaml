@@ -17,7 +17,7 @@
                 <TextBlock Text="SubTrackr" FontSize="26" FontWeight="Bold" />
                 <Border Background="{DynamicResource SurfaceAlt}" CornerRadius="10" Padding="9,3" Margin="12,4,0,0" VerticalAlignment="Center">
                     <TextBlock VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextSecondary}">
-                        <Run Text="{Binding ActiveCount, Mode=OneWay}" /><Run Text=" active" />
+                        <Run Text="{Binding Totals.ActiveCount, Mode=OneWay}" /><Run Text=" active" />
                     </TextBlock>
                 </Border>
             </StackPanel>
@@ -33,10 +33,10 @@
         <!-- Alerts -->
         <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,14" Padding="14"
                 BorderBrush="{DynamicResource Warning}"
-                Visibility="{Binding HasAlerts, Converter={StaticResource BoolVis}}">
+                Visibility="{Binding Upcoming.HasAlerts, Converter={StaticResource BoolVis}}">
             <StackPanel>
                 <TextBlock Text="⏰ ALERTS" Style="{StaticResource CardTitle}" />
-                <ItemsControl ItemsSource="{Binding Alerts}">
+                <ItemsControl ItemsSource="{Binding Upcoming.Alerts}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type vm:AlertLine}">
                             <Grid Margin="0,4">
@@ -74,14 +74,14 @@
                             <ColumnDefinition Width="190" />
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
-                            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding List.SearchText, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBlock Text="Search subscriptions…" Foreground="{DynamicResource TextMuted}" FontSize="13"
                                        Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"
-                                       Visibility="{Binding ShowSearchPlaceholder, Converter={StaticResource BoolVis}}" />
+                                       Visibility="{Binding List.ShowSearchPlaceholder, Converter={StaticResource BoolVis}}" />
                         </Grid>
-                        <ComboBox Grid.Column="2" ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" />
+                        <ComboBox Grid.Column="2" ItemsSource="{Binding List.Categories}" SelectedItem="{Binding List.SelectedCategory}" />
                     </Grid>
-                    <DataGrid Grid.Row="1" x:Name="Grid" ItemsSource="{Binding Subscriptions}" MouseDoubleClick="Grid_DoubleClick"
+                    <DataGrid Grid.Row="1" x:Name="Grid" ItemsSource="{Binding List.Subscriptions}" MouseDoubleClick="Grid_DoubleClick"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="NAME" Width="*" SortMemberPath="NameSort" MinWidth="150">
@@ -170,44 +170,44 @@
                         <StackPanel>
                             <Grid>
                                 <TextBlock Text="OVERVIEW" Style="{StaticResource CardTitle}" />
-                                <Button HorizontalAlignment="Right" Style="{StaticResource SegButton}" Command="{Binding ToggleViewCommand}"
-                                        Content="{Binding HeroCaption}" Foreground="{DynamicResource Accent}" />
+                                <Button HorizontalAlignment="Right" Style="{StaticResource SegButton}" Command="{Binding Totals.ToggleViewCommand}"
+                                        Content="{Binding Totals.HeroCaption}" Foreground="{DynamicResource Accent}" />
                             </Grid>
-                            <c:SpendChart Height="230" Margin="0,4,0,8" Slices="{Binding ChartSlices}" ChartType="{Binding ChartType}"
-                                          CenterText="{Binding HeroAmountText}" CenterSubtext="{Binding HeroCaption}"
+                            <c:SpendChart Height="230" Margin="0,4,0,8" Slices="{Binding Chart.ChartSlices}" ChartType="{Binding Chart.ChartType}"
+                                          CenterText="{Binding Totals.HeroAmountText}" CenterSubtext="{Binding Totals.HeroCaption}"
                                           SeriesColors="{DynamicResource ChartColors}" TextBrush="{DynamicResource TextPrimary}"
                                           MutedBrush="{DynamicResource TextSecondary}" TrackBrush="{DynamicResource Border}" />
                             <Border Background="{DynamicResource SurfaceAlt}" CornerRadius="9" Padding="3" HorizontalAlignment="Center">
                                 <StackPanel Orientation="Horizontal">
                                     <Button Content="Donut" Style="{StaticResource SegButton}"
-                                            Command="{Binding SetChartCommand}" CommandParameter="{x:Static c:ChartType.Donut}" />
+                                            Command="{Binding Chart.SetChartCommand}" CommandParameter="{x:Static c:ChartType.Donut}" />
                                     <Button Content="Bars" Style="{StaticResource SegButton}"
-                                            Command="{Binding SetChartCommand}" CommandParameter="{x:Static c:ChartType.Bars}" />
+                                            Command="{Binding Chart.SetChartCommand}" CommandParameter="{x:Static c:ChartType.Bars}" />
                                     <Button Content="Trend" Style="{StaticResource SegButton}"
-                                            Command="{Binding SetChartCommand}" CommandParameter="{x:Static c:ChartType.Trend}" />
+                                            Command="{Binding Chart.SetChartCommand}" CommandParameter="{x:Static c:ChartType.Trend}" />
                                 </StackPanel>
                             </Border>
                             <Border Height="1" Background="{DynamicResource Border}" Margin="0,16,0,14" />
                             <Grid>
                                 <StackPanel HorizontalAlignment="Left">
                                     <TextBlock Text="Per month" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding MonthlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding Totals.MonthlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" />
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Right">
                                     <TextBlock Text="Per year" FontSize="11" Foreground="{DynamicResource TextSecondary}" HorizontalAlignment="Right" />
-                                    <TextBlock Text="{Binding YearlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" HorizontalAlignment="Right" />
+                                    <TextBlock Text="{Binding Totals.YearlyText}" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0" HorizontalAlignment="Right" />
                                 </StackPanel>
                             </Grid>
-                            <StackPanel Margin="0,16,0,0" Visibility="{Binding HasBudget, Converter={StaticResource BoolVis}}">
+                            <StackPanel Margin="0,16,0,0" Visibility="{Binding Totals.HasBudget, Converter={StaticResource BoolVis}}">
                                 <Grid Margin="0,0,0,6">
                                     <TextBlock Text="Budget" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding BudgetRemainingText}" HorizontalAlignment="Right" FontSize="11"
+                                    <TextBlock Text="{Binding Totals.BudgetRemainingText}" HorizontalAlignment="Right" FontSize="11"
                                                FontWeight="SemiBold">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Foreground" Value="{DynamicResource Positive}" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding OverBudget}" Value="True">
+                                                    <DataTrigger Binding="{Binding Totals.OverBudget}" Value="True">
                                                         <Setter Property="Foreground" Value="{DynamicResource Negative}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -215,19 +215,19 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </Grid>
-                                <ProgressBar Value="{Binding BudgetFraction, Mode=OneWay}" Minimum="0" Maximum="1">
+                                <ProgressBar Value="{Binding Totals.BudgetFraction, Mode=OneWay}" Minimum="0" Maximum="1">
                                     <ProgressBar.Style>
                                         <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
                                             <Setter Property="Foreground" Value="{DynamicResource Positive}" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding OverBudget}" Value="True">
+                                                <DataTrigger Binding="{Binding Totals.OverBudget}" Value="True">
                                                     <Setter Property="Foreground" Value="{DynamicResource Negative}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </ProgressBar.Style>
                                 </ProgressBar>
-                                <TextBlock Text="{Binding BudgetText}" FontSize="11" Foreground="{DynamicResource TextMuted}" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding Totals.BudgetText}" FontSize="11" Foreground="{DynamicResource TextMuted}" Margin="0,4,0,0" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -235,7 +235,7 @@
                     <Border Style="{StaticResource Card}" Margin="0,18,0,0">
                         <StackPanel>
                             <TextBlock Text="BY CURRENCY" Style="{StaticResource CardTitle}" />
-                            <ItemsControl ItemsSource="{Binding CurrencyBreakdown}">
+                            <ItemsControl ItemsSource="{Binding Totals.CurrencyBreakdown}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:CurrencyLine}">
                                         <Grid Margin="0,5">
@@ -257,7 +257,7 @@
                     <Border Style="{StaticResource Card}" Margin="0,18,0,0">
                         <StackPanel>
                             <TextBlock Text="UPCOMING RENEWALS" Style="{StaticResource CardTitle}" />
-                            <ItemsControl ItemsSource="{Binding UpcomingRenewals}">
+                            <ItemsControl ItemsSource="{Binding Upcoming.UpcomingRenewals}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:RenewalLine}">
                                         <Grid Margin="0,6">
