@@ -71,6 +71,20 @@ public class JsonDatabaseStoreTests
     }
 
     [Fact]
+    public void Save_HiddenServiceLogos_IsWrittenToDataJsonAndReadBack()
+    {
+        using var folder = new TemporaryDirectory();
+        var store = new JsonDatabaseStore(folder.File("data.json"));
+        var database = SampleDatabase();
+        database.Settings.HideServiceLogos = true;
+
+        store.Save(database);
+
+        Assert.Contains("\"hideServiceLogos\": true", File.ReadAllText(folder.File("data.json")), StringComparison.Ordinal);
+        Assert.True(store.Load()!.Settings.HideServiceLogos);
+    }
+
+    [Fact]
     public void Load_FieldsFromANewerBuild_AreIgnored()
     {
         using var folder = new TemporaryDirectory();

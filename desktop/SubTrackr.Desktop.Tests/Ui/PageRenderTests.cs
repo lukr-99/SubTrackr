@@ -110,6 +110,33 @@ public sealed class PageRenderTests
         }
     });
 
+    [Fact]
+    public Task Dashboard_ServiceLogosHidden_RequestsNoFavicon() => WpfHost.RunAsync(async () =>
+    {
+        using var errors = new BindingErrorRecorder();
+        var database = TestApp.SampleDatabaseWithWebsites();
+        database.Settings.HideServiceLogos = true;
+        using var app = TestApp.Create(database, resources: Application.Current.Resources);
+        var window = OffScreen(new MainWindow(app.Graph.Main, app.Motion), 1280, 820);
+        window.Show();
+        try
+        {
+            await Settle();
+            Assert.Empty(app.ServiceLogos.Requested);
+
+            // The same view with logos on asks the source, so the empty list above is not vacuous.
+            app.Graph.Settings.ShowServiceLogos = true;
+            await Settle();
+            Assert.NotEmpty(app.ServiceLogos.Requested);
+        }
+        finally
+        {
+            window.Close();
+        }
+
+        Assert.True(errors.Errors.Count == 0, string.Join(Environment.NewLine, errors.Errors));
+    });
+
     private static T OffScreen<T>(T window, double width, double height)
         where T : Window
     {

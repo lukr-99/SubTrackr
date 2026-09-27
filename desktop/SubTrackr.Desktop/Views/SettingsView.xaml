@@ -38,6 +38,15 @@
                     </StackPanel>
                 </Border>
 
+                <!-- ==================== Service logos ==================== -->
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <CheckBox Content="Show service logos" IsChecked="{Binding ShowServiceLogos}" />
+                        <TextBlock Style="{StaticResource Hint}" Margin="30,6,0,0"
+                                   Text="Shows each subscription's website icon, fetched from Google, which learns the website. Off, the app never fetches them and shows the emoji icon instead. Applies at once." />
+                    </StackPanel>
+                </Border>
+
                 <!-- ==================== Sync ==================== -->
                 <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Sync}">
                     <StackPanel>

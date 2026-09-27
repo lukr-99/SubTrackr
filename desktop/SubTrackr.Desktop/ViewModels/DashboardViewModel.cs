@@ -24,7 +24,7 @@ public sealed partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private string ratesStatusText = "";
 
-    public DashboardViewModel(SubscriptionLedger ledger, ExchangeRates rates, IDialogService dialogs, TimeProvider time)
+    public DashboardViewModel(SubscriptionLedger ledger, ExchangeRates rates, IDialogService dialogs, TimeProvider time, IServiceLogoSource logos)
     {
         ArgumentNullException.ThrowIfNull(ledger);
         ArgumentNullException.ThrowIfNull(rates);
@@ -34,13 +34,14 @@ public sealed partial class DashboardViewModel : ObservableObject
         this.rates = rates;
         this.dialogs = dialogs;
         this.time = time;
+        List = new SubscriptionListViewModel(logos);
         Chart = new SpendChartViewModel(time);
         ledger.Changed += (_, _) => Refresh();
         rates.Changed += (_, _) => Refresh();
         Refresh();
     }
 
-    public SubscriptionListViewModel List { get; } = new();
+    public SubscriptionListViewModel List { get; }
 
     public SpendTotalsViewModel Totals { get; } = new();
 
@@ -71,7 +72,7 @@ public sealed partial class DashboardViewModel : ObservableObject
     public void Refresh()
     {
         var summary = SpendCalculator.Summarize(ledger.LiveSubscriptions, ledger.BaseCurrency, rates.Table, ledger.WorthThreshold);
-        List.Load(summary, ledger.BaseCurrency);
+        List.Load(summary, ledger.BaseCurrency, !ledger.Settings.HideServiceLogos);
         Totals.Update(summary, ledger.BaseCurrency, ledger.MonthlyBudget, rates.Table);
         Upcoming.Update(summary, Today());
         Chart.Update(summary, ledger.BaseCurrency);

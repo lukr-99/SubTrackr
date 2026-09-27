@@ -1,4 +1,5 @@
 using System.Windows.Media;
+using SubTrackr.Core.Backup;
 using SubTrackr.Core.Contracts;
 using SubTrackr.Desktop.Tests.Hosting;
 using SubTrackr.Desktop.ViewModels;
@@ -93,5 +94,59 @@ public class SettingsViewModelTests
         app.Graph.Settings.OpenDataFolderCommand.Execute(null);
 
         Assert.Equal([TestApp.DataFolder], app.Desktop.OpenedFolders);
+    }
+
+    [Fact]
+    public void ShowServiceLogos_ByDefault_IsOnAndRowsRequestLogos()
+    {
+        using var app = TestApp.Create(TestApp.SampleDatabaseWithWebsites());
+
+        Assert.True(app.Graph.Settings.ShowServiceLogos);
+        Assert.All(app.Graph.Dashboard.List.Subscriptions, row => Assert.NotNull(row.Logo));
+        Assert.Equal(8, app.ServiceLogos.Requested.Count);
+    }
+
+    [Fact]
+    public void ShowServiceLogos_TurnedOff_SavesAtOnceAndNoLogoIsRequested()
+    {
+        using var app = TestApp.Create(TestApp.SampleDatabaseWithWebsites());
+
+        app.Graph.Settings.ShowServiceLogos = false;
+
+        Assert.True(app.Store.Stored!.Settings.HideServiceLogos);
+        Assert.All(app.Graph.Dashboard.List.Subscriptions, row =>
+        {
+            Assert.False(row.HasLogo);
+            Assert.Null(row.Logo);
+        });
+        Assert.Empty(app.ServiceLogos.Requested);
+    }
+
+    [Fact]
+    public void StoredHiddenLogos_AreLoadedIntoTheSwitch()
+    {
+        var database = TestApp.SampleDatabaseWithWebsites();
+        database.Settings.HideServiceLogos = true;
+        using var app = TestApp.Create(database);
+
+        Assert.False(app.Graph.Settings.ShowServiceLogos);
+        Assert.All(app.Graph.Dashboard.List.Subscriptions, row => Assert.Null(row.Logo));
+        Assert.Empty(app.ServiceLogos.Requested);
+    }
+
+    [Fact]
+    public void HiddenLogos_GoIntoTheBackupAndComeBackOnReplace()
+    {
+        using var app = TestApp.Create();
+        app.Graph.Settings.ShowServiceLogos = false;
+        var backup = app.Graph.Backups.CreateBackup();
+        app.Graph.Settings.ShowServiceLogos = true;
+
+        var report = app.Graph.Backups.Restore(backup, RestoreMode.Replace);
+
+        Assert.Contains("\"hideServiceLogos\": true", backup, StringComparison.Ordinal);
+        Assert.True(report.Succeeded);
+        Assert.True(app.Store.Stored!.Settings.HideServiceLogos);
+        Assert.False(app.Graph.Settings.ShowServiceLogos);
     }
 }

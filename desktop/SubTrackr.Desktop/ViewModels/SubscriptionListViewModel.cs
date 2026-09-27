@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SubTrackr.Core.Analytics;
+using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
 
@@ -13,6 +14,7 @@ public sealed partial class SubscriptionListViewModel : ObservableObject
 {
     public const string AllCategories = "All categories";
 
+    private readonly IServiceLogoSource logos;
     private List<SubscriptionRowViewModel> allRows = [];
 
     [ObservableProperty]
@@ -22,19 +24,29 @@ public sealed partial class SubscriptionListViewModel : ObservableObject
     [ObservableProperty]
     private string selectedCategory = AllCategories;
 
+    public SubscriptionListViewModel(IServiceLogoSource logos)
+    {
+        ArgumentNullException.ThrowIfNull(logos);
+        this.logos = logos;
+    }
+
     public ObservableCollection<SubscriptionRowViewModel> Subscriptions { get; } = [];
 
     public ObservableCollection<string> Categories { get; } = [];
 
     public bool ShowSearchPlaceholder => string.IsNullOrEmpty(SearchText);
 
-    /// <summary>Replaces the rows with the summary's subscriptions, keeping the search and filter.</summary>
-    public void Load(SpendSummary summary, string baseCurrency)
+    /// <summary>
+    /// Replaces the rows with the summary's subscriptions, keeping the search and filter. With
+    /// <paramref name="showServiceLogos"/> off no row can request a service logo.
+    /// </summary>
+    public void Load(SpendSummary summary, string baseCurrency, bool showServiceLogos)
     {
         ArgumentNullException.ThrowIfNull(summary);
+        var rowLogos = showServiceLogos ? logos : null;
         allRows = summary.PerSub
             .OrderByDescending(p => p.MonthlyBase)
-            .Select(p => new SubscriptionRowViewModel(p, baseCurrency))
+            .Select(p => new SubscriptionRowViewModel(p, baseCurrency, rowLogos))
             .ToList();
         RebuildCategories();
         ApplyFilter();

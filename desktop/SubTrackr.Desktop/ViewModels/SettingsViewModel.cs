@@ -9,8 +9,8 @@ using SubTrackr.Desktop.Services;
 namespace SubTrackr.Desktop.ViewModels;
 
 /// <summary>
-/// The settings page: base currency, worth threshold and budget (saved together), the theme (applied
-/// at once), rates, the data folder, and the backup, update, and sync cards. <see cref="Load"/>
+/// The settings page: base currency, worth threshold and budget (saved together), the theme and
+/// service logos (each applied at once), rates, the data folder, and the backup, update, and sync cards. <see cref="Load"/>
 /// resets the form to what is stored each time the page opens.
 /// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
@@ -34,6 +34,10 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private ThemeOption? selectedTheme;
+
+    /// <summary>The inverse of <c>Settings.hide_service_logos</c> (SPEC.md section 12).</summary>
+    [ObservableProperty]
+    private bool showServiceLogos = true;
 
     public SettingsViewModel(
         SubscriptionLedger ledger,
@@ -99,6 +103,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         BudgetText = ledger.MonthlyBudget.ToString("0.##", CultureInfo.InvariantCulture);
         RatesText = DescribeRates();
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Mode == ledger.Settings.ThemeMode) ?? ThemeOptions[0];
+        ShowServiceLogos = !ledger.Settings.HideServiceLogos;
         Sync.Load();
     }
 
@@ -108,6 +113,15 @@ public sealed partial class SettingsViewModel : ObservableObject
         if (value is not null && value.Mode != ledger.Settings.ThemeMode)
         {
             ledger.UpdateSettings(settings => settings.ThemeMode = value.Mode);
+        }
+    }
+
+    // Like the theme, applies and saves on the spot. Hidden, the dashboard requests no favicons.
+    partial void OnShowServiceLogosChanged(bool value)
+    {
+        if (value == ledger.Settings.HideServiceLogos)
+        {
+            ledger.UpdateSettings(settings => settings.HideServiceLogos = !value);
         }
     }
 

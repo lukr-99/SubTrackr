@@ -69,7 +69,7 @@ public sealed class AppGraph : IDisposable
             }
         };
 
-        Dashboard = new DashboardViewModel(Ledger, Rates, dialogs, adapters.Time);
+        Dashboard = new DashboardViewModel(Ledger, Rates, dialogs, adapters.Time, adapters.ServiceLogos);
         Updates = new UpdatesViewModel(UpdateService, dialogs, desktop);
         Settings = new SettingsViewModel(
             Ledger,

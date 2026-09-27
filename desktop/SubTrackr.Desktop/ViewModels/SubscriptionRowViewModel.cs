@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Windows.Media;
 using SubTrackr.Core;
 using SubTrackr.Core.Analytics;
 using SubTrackr.Core.Contracts;
@@ -6,16 +7,25 @@ using SubTrackr.Desktop.Services;
 
 namespace SubTrackr.Desktop.ViewModels;
 
-/// <summary>Read-only row for the subscriptions list. Wraps a computed <see cref="SubscriptionSpend"/>.</summary>
+/// <summary>
+/// Read-only row for the subscriptions list. Wraps a computed <see cref="SubscriptionSpend"/>. The
+/// service logo is requested the first time the view asks for it, and never without a logo source
+/// (service logos turned off).
+/// </summary>
 public sealed class SubscriptionRowViewModel
 {
     private readonly SubscriptionSpend _spend;
     private readonly string _baseCurrency;
+    private readonly IServiceLogoSource? _logos;
+    private ImageSource? _logo;
+    private bool _logoRequested;
 
-    public SubscriptionRowViewModel(SubscriptionSpend spend, string baseCurrency)
+    /// <param name="logos">Where service logos come from; null when service logos are off.</param>
+    public SubscriptionRowViewModel(SubscriptionSpend spend, string baseCurrency, IServiceLogoSource? logos)
     {
         _spend = spend;
         _baseCurrency = baseCurrency;
+        _logos = logos;
     }
 
     public Subscription Model => _spend.Subscription;
@@ -23,10 +33,23 @@ public sealed class SubscriptionRowViewModel
     public string Icon => string.IsNullOrWhiteSpace(Model.IconRef) ? "•" : Model.IconRef;
     public string Name => Model.Name;
 
-    public bool HasLogo => !string.IsNullOrWhiteSpace(Model.Website);
-    public string? LogoUrl => HasLogo
-        ? $"https://www.google.com/s2/favicons?domain={Model.Website.Trim()}&sz=64"
-        : null;
+    /// <summary>True when the service logo shows instead of the emoji.</summary>
+    public bool HasLogo => _logos is not null && !string.IsNullOrWhiteSpace(Model.Website);
+
+    public ImageSource? Logo
+    {
+        get
+        {
+            if (HasLogo && !_logoRequested)
+            {
+                _logoRequested = true;
+                _logo = _logos!.Load(Model.Website);
+            }
+
+            return _logo;
+        }
+    }
+
     public string Category => string.IsNullOrWhiteSpace(Model.Category) ? "Uncategorized" : Model.Category;
     public bool AutoPay => Model.AutoPay;
     public bool IsPaused => Model.Status == SubStatus.Paused;

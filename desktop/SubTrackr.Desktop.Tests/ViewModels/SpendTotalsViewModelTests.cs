@@ -1,4 +1,5 @@
 using SubTrackr.Core.Contracts;
+using SubTrackr.Desktop.Services;
 using SubTrackr.Desktop.Tests.Fakes;
 using SubTrackr.Desktop.ViewModels;
 
@@ -33,7 +34,7 @@ public class SpendTotalsViewModelTests
         totals.ToggleViewCommand.Execute(null);
 
         Assert.Equal("Total per year", totals.HeroCaption);
-        Assert.Equal(Services.Formatting.MoneyWhole(1200, "CZK"), totals.HeroAmountText);
+        Assert.Equal(Formatting.MoneyWhole(1200, "CZK"), totals.HeroAmountText);
         Assert.Contains(nameof(SpendTotalsViewModel.HeroAmountText), changed);
         Assert.Contains(nameof(SpendTotalsViewModel.HeroCaption), changed);
     }
@@ -71,9 +72,9 @@ public class SpendTotalsViewModelTests
         totals.Update(Spend.Summarize(Spend.Monthly("A", 100), Spend.Monthly("B", 10, "EUR")), "CZK", 0, Spend.Rates);
 
         var euro = totals.CurrencyBreakdown.Single(l => l.Code == "EUR");
-        Assert.Equal(Services.Formatting.Money(10, "EUR") + " / mo", euro.MonthlyOwnText);
+        Assert.Equal(Formatting.Money(10, "EUR") + " / mo", euro.MonthlyOwnText);
         Assert.Equal("≈ " + Money(250), euro.ConvertedText);
     }
 
-    private static string Money(decimal amount) => Services.Formatting.Money(amount, "CZK");
+    private static string Money(decimal amount) => Formatting.Money(amount, "CZK");
 }

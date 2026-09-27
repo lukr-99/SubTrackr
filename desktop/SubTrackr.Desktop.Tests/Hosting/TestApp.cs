@@ -10,7 +10,7 @@ namespace SubTrackr.Desktop.Tests.Hosting;
 
 /// <summary>
 /// The whole app graph on fakes: an in-memory store with the first-run sample data (no websites, so
-/// no logo is fetched), fixed rates, a fake Supabase and release channel, a Windows theme and motion
+/// no service logo is requested), fixed rates, a fake Supabase and release channel, a Windows theme and motion
 /// setting the test sets, and dialogs that answer on their own. View model tests theme a private
 /// resource dictionary; render tests pass the WPF host's application resources.
 /// </summary>
@@ -46,6 +46,8 @@ public sealed class TestApp : IDisposable
 
     public required FakeMotionPreference Motion { get; init; }
 
+    public required RecordingServiceLogos ServiceLogos { get; init; }
+
     public required ResourceDictionary Resources { get; init; }
 
     public static TestApp Create(
@@ -64,8 +66,9 @@ public sealed class TestApp : IDisposable
         var files = new InMemoryBackupFiles();
         var systemTheme = new FakeSystemTheme();
         var motion = new FakeMotionPreference();
+        var serviceLogos = new RecordingServiceLogos();
         resources ??= new ResourceDictionary();
-        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, cloud, sessions, new RecordingDelay(), releases, releases, releases, files, systemTheme, motion, new RecordingLog(), DataFolder);
+        var adapters = new AppAdapters(time, store, new FixedRateProvider(), cloud, cloud, sessions, new RecordingDelay(), releases, releases, releases, files, systemTheme, motion, serviceLogos, new RecordingLog(), DataFolder);
         return new TestApp
         {
             Graph = new AppGraph(new BuildInfo(version), adapters, resources, dialogs, desktop),
@@ -79,6 +82,7 @@ public sealed class TestApp : IDisposable
             Files = files,
             SystemTheme = systemTheme,
             Motion = motion,
+            ServiceLogos = serviceLogos,
             Resources = resources,
         };
     }
@@ -97,6 +101,18 @@ public sealed class TestApp : IDisposable
         database.Subscriptions[4].Status = SubStatus.Paused;
         database.Subscriptions[1].WorthMode = WorthMode.Essential;
         database.Subscriptions[5].UsesPerMonth = 1;
+        return database;
+    }
+
+    /// <summary>The sample data with a made-up website on every subscription, so each has a service logo.</summary>
+    public static Database SampleDatabaseWithWebsites()
+    {
+        var database = SampleDatabase();
+        foreach (var subscription in database.Subscriptions)
+        {
+            subscription.Website = subscription.Name.Replace(" ", "", StringComparison.Ordinal).ToLowerInvariant() + ".example";
+        }
+
         return database;
     }
 
