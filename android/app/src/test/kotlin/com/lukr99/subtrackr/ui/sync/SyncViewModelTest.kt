@@ -39,7 +39,13 @@ class SyncViewModelTest {
     private val auth = FakeAuthApi()
     private val sessions = InMemorySessionStore()
     private val coordinator = SyncCoordinator(
-        repository, auth, FakeSyncRemote(), sessions, clock, CoroutineScope(UnconfinedTestDispatcher()), pause = {},
+        repository,
+        auth,
+        FakeSyncRemote(),
+        sessions,
+        clock,
+        CoroutineScope(UnconfinedTestDispatcher()),
+        pause = {},
     )
 
     private fun viewModel() = SyncViewModel(coordinator, repository.syncUrl, repository.syncKey, ZoneId.of("Europe/Prague"))

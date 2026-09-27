@@ -23,13 +23,18 @@ class VectorPath private constructor(val bounds: LogoSpec.Rect, val arcRadii: Li
             fun next(): Double = tokens[i++].toDouble()
             while (i < tokens.size) {
                 when (val command = tokens[i++]) {
-                    "M", "L" -> { x = next(); y = next() }
+                    "M", "L" -> {
+                        x = next()
+                        y = next()
+                    }
                     "H" -> x = next()
                     "V" -> y = next()
                     "A" -> {
-                        radii += next(); radii += next()
+                        radii += next()
+                        radii += next()
                         repeat(3) { next() } // rotation, large-arc flag, sweep flag
-                        x = next(); y = next()
+                        x = next()
+                        y = next()
                     }
                     "Z" -> continue
                     else -> error("Unsupported command $command in $data")

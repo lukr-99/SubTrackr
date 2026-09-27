@@ -180,12 +180,20 @@ object ProtoJson {
     }
 
     private fun int64(value: JsonElement?): Long =
-        if (value == null) 0 else runCatching { integral(value).longValueExact() }
-            .getOrElse { throw ProtoJsonException("int64 out of range: $value") }
+        if (value == null) {
+            0
+        } else {
+            runCatching { integral(value).longValueExact() }
+                .getOrElse { throw ProtoJsonException("int64 out of range: $value") }
+        }
 
     private fun int32(value: JsonElement?): Int =
-        if (value == null) 0 else runCatching { integral(value).intValueExact() }
-            .getOrElse { throw ProtoJsonException("int32 out of range: $value") }
+        if (value == null) {
+            0
+        } else {
+            runCatching { integral(value).intValueExact() }
+                .getOrElse { throw ProtoJsonException("int32 out of range: $value") }
+        }
 
     private fun double(value: JsonElement?): Double {
         if (value == null) return 0.0

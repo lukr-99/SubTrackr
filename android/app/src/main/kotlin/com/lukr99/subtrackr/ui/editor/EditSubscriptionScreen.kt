@@ -35,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -120,12 +119,21 @@ fun EditSubscriptionScreen(
     var error by remember { mutableStateOf<String?>(null) }
 
     fun build(): Subscription? {
-        if (name.isBlank()) { error = "Name is required."; return null }
+        if (name.isBlank()) {
+            error = "Name is required."
+            return null
+        }
         val amt = amount.toBigDecimalOrNull()
-        if (amt == null || amt < BigDecimal.ZERO) { error = "Enter a valid amount."; return null }
+        if (amt == null || amt < BigDecimal.ZERO) {
+            error = "Enter a valid amount."
+            return null
+        }
         val cycle = cycleFor(cycleLabel)
         val days = if (cycle == BillingCycle.CUSTOM_DAYS) (customDays.toIntOrNull() ?: 0) else 0
-        if (cycle == BillingCycle.CUSTOM_DAYS && days <= 0) { error = "Interval must be > 0 days."; return null }
+        if (cycle == BillingCycle.CUSTOM_DAYS && days <= 0) {
+            error = "Interval must be > 0 days."
+            return null
+        }
         return Subscription(
             id = initial?.id ?: "",
             name = name.trim(),
@@ -156,9 +164,16 @@ fun EditSubscriptionScreen(
     ) {
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onCancel, modifier = Modifier.testTag(EditorTags.CANCEL)) { Text("Cancel", color = SubTrackrTheme.colors.textSecondary, fontSize = 15.sp) }
+            TextButton(onClick = onCancel, modifier = Modifier.testTag(EditorTags.CANCEL)) {
+                Text("Cancel", color = SubTrackrTheme.colors.textSecondary, fontSize = 15.sp)
+            }
             Spacer(Modifier.weight(1f))
-            Text(if (isNew) "Add subscription" else "Edit", color = SubTrackrTheme.colors.textPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(
+                if (isNew) "Add subscription" else "Edit",
+                color = SubTrackrTheme.colors.textPrimary,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+            )
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = { build()?.let(onSave) },
@@ -176,7 +191,10 @@ fun EditSubscriptionScreen(
                 Box(
                     Modifier
                         .size(44.dp)
-                        .background(if (selected) SubTrackrTheme.colors.accent.copy(alpha = 0.25f) else SubTrackrTheme.colors.surfaceAlt, RoundedCornerShape(10.dp))
+                        .background(
+                            if (selected) SubTrackrTheme.colors.accent.copy(alpha = 0.25f) else SubTrackrTheme.colors.surfaceAlt,
+                            RoundedCornerShape(10.dp),
+                        )
                         .then(if (selected) Modifier.border(1.dp, SubTrackrTheme.colors.accent, RoundedCornerShape(10.dp)) else Modifier)
                         .clickable { icon = e },
                     contentAlignment = Alignment.Center,

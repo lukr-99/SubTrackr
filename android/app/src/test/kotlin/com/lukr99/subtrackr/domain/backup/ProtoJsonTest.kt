@@ -39,7 +39,9 @@ class ProtoJsonTest {
     @Test
     fun decode_acceptsProtoNamesNumbersAsStringsAndEnumNumbers() {
         val sub = ProtoJson.decodeSubscription(
-            obj("""{"id":"a","cost":{"currency":"EUR","minor_units":999,"exponent":"2"},"billing_cycle":5,"status":"PAUSED","usesPerMonth":"8","autoPay":true,"worthMode":"SOMETHING_NEW","notes":null}"""),
+            obj(
+                """{"id":"a","cost":{"currency":"EUR","minor_units":999,"exponent":"2"},"billing_cycle":5,"status":"PAUSED","usesPerMonth":"8","autoPay":true,"worthMode":"SOMETHING_NEW","notes":null}""",
+            ),
         )
 
         assertEquals(Money("EUR", 999, 2), sub.cost)

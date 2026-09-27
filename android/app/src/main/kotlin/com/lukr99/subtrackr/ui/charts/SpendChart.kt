@@ -114,8 +114,11 @@ private fun DrawScope.drawTrend(monthlyBase: Double, line: Color) {
     drawPath(area, line.copy(alpha = 0.18f))
     for (i in 1 until n) {
         drawLine(
-            line, Offset(px(i - 1), py(i - 1)), Offset(px(i), py(i)),
-            strokeWidth = 5f, cap = StrokeCap.Round,
+            line,
+            Offset(px(i - 1), py(i - 1)),
+            Offset(px(i), py(i)),
+            strokeWidth = 5f,
+            cap = StrokeCap.Round,
         )
     }
     for (i in 0 until n) drawCircle(line, 6f, Offset(px(i), py(i)))

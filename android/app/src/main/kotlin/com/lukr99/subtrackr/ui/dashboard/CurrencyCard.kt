@@ -33,7 +33,10 @@ internal fun CurrencyCard(summary: SpendSummary, base: String, rates: ExchangeRa
             val converted = if (rates.knows(c.currency)) rates.convert(c.monthly, c.currency, base) else c.monthly
             Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    Modifier.background(SubTrackrTheme.colors.surfaceAlt, RoundedCornerShape(6.dp)).padding(horizontal = 7.dp, vertical = 2.dp),
+                    Modifier.background(
+                        SubTrackrTheme.colors.surfaceAlt,
+                        RoundedCornerShape(6.dp),
+                    ).padding(horizontal = 7.dp, vertical = 2.dp),
                 ) {
                     Text(c.currency, color = SubTrackrTheme.colors.textPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }

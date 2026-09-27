@@ -39,7 +39,10 @@ class LauncherIconTest {
         val bounds = DrawableXml("drawable/ic_launcher_foreground.xml").root.all("path")
             .map { VectorPath.parse(it.android("pathData")).bounds }
         val group = LogoSpec.Rect(
-            bounds.minOf { it.left }, bounds.minOf { it.top }, bounds.maxOf { it.right }, bounds.maxOf { it.bottom },
+            bounds.minOf { it.left },
+            bounds.minOf { it.top },
+            bounds.maxOf { it.right },
+            bounds.maxOf { it.bottom },
         )
         assertEquals(54.0, group.centerX, EPS)
         assertEquals(54.0, group.centerY, EPS)

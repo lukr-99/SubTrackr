@@ -67,7 +67,11 @@ class SyncCoordinatorTest {
         store.saved = Database(subscriptions = listOf(local))
         val sync = SyncCoordinator(
             AppRepository(store, { OfflineFallback.forAnchor(it) }, clock, { "id" }),
-            auth, remote, sessions, clock, backgroundScope,
+            auth,
+            remote,
+            sessions,
+            clock,
+            backgroundScope,
         )
 
         assertEquals(SyncStatus.Off, sync.sync())
