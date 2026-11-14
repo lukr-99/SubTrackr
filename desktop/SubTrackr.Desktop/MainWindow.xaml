@@ -494,6 +494,103 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- About -->
+                    <TextBlock Text="About" FontSize="24" FontWeight="Bold" Margin="0,34,0,0" />
+
+                    <Border Margin="0,16,0,0" CornerRadius="12" Padding="22">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#384C8DFF" Offset="0" />
+                                <GradientStop Color="{StaticResource SurfaceColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="SubTrackr" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="AboutVersionText" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Accent}"
+                                       HorizontalAlignment="Center" Margin="0,2,0,8" />
+                            <TextBlock Text="A personal subscription tracker. See what you pay each month, in one currency, and whether it is worth it."
+                                       TextWrapping="Wrap" TextAlignment="Center" FontSize="13" Foreground="{StaticResource TextSecondary}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Margin="0,12,0,0" CornerRadius="12" Padding="20" BorderThickness="1" BorderBrush="#994C8DFF">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#2E4C8DFF" Offset="0" />
+                                <GradientStop Color="{StaticResource SurfaceColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="48" Height="48" CornerRadius="24" Background="{StaticResource Accent}">
+                                    <TextBlock Text="L" FontSize="22" FontWeight="Bold" Foreground="{StaticResource Bg}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="Made by" FontSize="12" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="AuthorNameText" FontSize="20" FontWeight="Bold" />
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Text="Feedback is welcome: what works, what does not, what is missing."
+                                       FontSize="13" TextWrapping="Wrap" Margin="0,14,0,12" />
+                            <Button Style="{StaticResource GhostButton}" Click="About_Instagram_Click" HorizontalContentAlignment="Stretch">
+                                <DockPanel LastChildFill="False">
+                                    <TextBlock Text="Instagram" FontWeight="SemiBold" DockPanel.Dock="Left" />
+                                    <TextBlock x:Name="InstagramHandleText" Foreground="{StaticResource Accent}" DockPanel.Dock="Right" />
+                                </DockPanel>
+                            </Button>
+                            <Button Style="{StaticResource GhostButton}" Click="About_GitHub_Click" HorizontalContentAlignment="Stretch" Margin="0,8,0,0">
+                                <DockPanel LastChildFill="False">
+                                    <TextBlock Text="GitHub" FontWeight="SemiBold" DockPanel.Dock="Left" />
+                                    <TextBlock x:Name="GitHubHandleText" Foreground="{StaticResource Accent}" DockPanel.Dock="Right" />
+                                </DockPanel>
+                            </Button>
+                            <Button Style="{StaticResource GhostButton}" Click="About_Issues_Click" HorizontalContentAlignment="Stretch" Margin="0,8,0,0">
+                                <DockPanel LastChildFill="False">
+                                    <TextBlock Text="Report an issue" FontWeight="SemiBold" DockPanel.Dock="Left" />
+                                    <TextBlock Text="SubTrackr on GitHub" Foreground="{StaticResource Accent}" DockPanel.Dock="Right" />
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="The app" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                            <TextBlock Text="Multi-currency totals, charts, a worth-it check, free-trial tracking and optional sync across your devices. It shares its data contract with the Android app."
+                                       FontSize="13" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Credits and licences" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                            <TextBlock x:Name="LicenseText" FontSize="13" TextWrapping="Wrap" Cursor="Hand" MouseLeftButtonUp="About_License_Click" />
+                            <TextBlock Text="Libraries" Style="{StaticResource FieldLabel}" Margin="0,12,0,2" />
+                            <ItemsControl x:Name="LibrariesList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,3,0,0" LastChildFill="False">
+                                            <TextBlock Text="{Binding Name}" FontSize="12" DockPanel.Dock="Left" />
+                                            <TextBlock Text="{Binding Note}" FontSize="12" Foreground="{StaticResource TextMuted}" DockPanel.Dock="Right" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Text="Services" Style="{StaticResource FieldLabel}" Margin="0,12,0,2" />
+                            <ItemsControl x:Name="ServicesList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,3,0,0" LastChildFill="False">
+                                            <TextBlock Text="{Binding Name}" FontSize="12" DockPanel.Dock="Left" />
+                                            <TextBlock Text="{Binding Note}" FontSize="12" Foreground="{StaticResource TextMuted}" DockPanel.Dock="Right" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
                     <Button Content="Save settings" Style="{StaticResource PrimaryButton}" Click="Settings_Save_Click"
                             HorizontalAlignment="Left" Margin="0,18,0,0" />
                 </StackPanel>

@@ -55,12 +55,30 @@ public partial class MainWindow : Window
         BudgetBox.Text = _state.MonthlyBudget.ToString("0.##", CultureInfo.InvariantCulture);
         PathText.Text = new Core.Storage.DataStore().FilePath;
         VersionText.Text = $"SubTrackr v{Updater.CurrentVersion}";
+        AboutVersionText.Text = $"Version {Updater.CurrentVersion}";
+        AuthorNameText.Text = Core.AboutInfo.AuthorName;
+        InstagramHandleText.Text = Core.AboutInfo.InstagramHandle;
+        GitHubHandleText.Text = Core.AboutInfo.GitHubHandle;
+        LicenseText.Text = $"SubTrackr is licensed under {Core.AboutInfo.LicenseName}. Free for noncommercial use.";
+        LibrariesList.ItemsSource = Core.AboutInfo.Libraries;
+        ServicesList.ItemsSource = Core.AboutInfo.Services;
         RatesText.Text = $"{_state.Rates.Anchor} · {_state.Rates.Date:MMM d, yyyy}";
         SyncUrlBox.Text = _state.SyncUrl;
         SyncKeyBox.Text = _state.SyncKey;
         SyncStatus.Text = "";
         _vm.ShowSettings();
     }
+
+    private static void OpenLink(string url)
+    {
+        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
+        catch (Exception ex) { Log.Error("Could not open link", ex); }
+    }
+
+    private void About_Instagram_Click(object sender, RoutedEventArgs e) => OpenLink(Core.AboutInfo.InstagramUrl);
+    private void About_GitHub_Click(object sender, RoutedEventArgs e) => OpenLink(Core.AboutInfo.GitHubUrl);
+    private void About_Issues_Click(object sender, RoutedEventArgs e) => OpenLink(Core.AboutInfo.IssuesUrl);
+    private void About_License_Click(object sender, MouseButtonEventArgs e) => OpenLink(Core.AboutInfo.LicenseUrl);
 
     // ----- add / edit / delete -----
 
