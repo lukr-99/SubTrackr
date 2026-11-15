@@ -129,12 +129,7 @@ fun SettingsScreen(
         updatesCard()
         Spacer(Modifier.height(12.dp))
 
-        SectionCard {
-            Text("About", color = SubTrackrTheme.colors.textSecondary, fontSize = 12.sp)
-            Spacer(Modifier.height(4.dp))
-            Text("SubTrackr for Android · v$appVersion", color = SubTrackrTheme.colors.textPrimary, fontSize = 13.sp)
-            Text("Shares its data contract with the desktop app.", color = SubTrackrTheme.colors.textMuted, fontSize = 11.sp)
-        }
+        AboutSection(appVersion)
         Spacer(Modifier.height(28.dp))
     }
 }

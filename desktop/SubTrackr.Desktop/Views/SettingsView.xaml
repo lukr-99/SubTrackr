@@ -154,6 +154,108 @@
                                    Visibility="{Binding StatusText, Converter={StaticResource StrVis}}" />
                     </StackPanel>
                 </Border>
+
+                <!-- ==================== About ==================== -->
+                <StackPanel Margin="0,16,0,0" DataContext="{Binding About}">
+                    <Border Style="{StaticResource Card}" Padding="0">
+                        <Grid>
+                            <Border CornerRadius="12" Opacity="0.22">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="{DynamicResource AccentColor}" Offset="0" />
+                                        <GradientStop Color="Transparent" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <StackPanel Margin="20" HorizontalAlignment="Center">
+                                <TextBlock Text="SubTrackr" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding VersionText}" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Accent}" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                <TextBlock Style="{StaticResource Hint}" FontSize="13" TextAlignment="Center" Margin="0,8,0,0"
+                                           Text="A personal subscription tracker. See what you pay each month, in one currency, and whether it is worth it." />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,12,0,0" BorderBrush="{DynamicResource Accent}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="48" Height="48" CornerRadius="24" Background="{DynamicResource Accent}">
+                                    <TextBlock Text="{Binding AuthorInitial}" FontSize="22" FontWeight="Bold"
+                                               Foreground="{DynamicResource OnAccent}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="Made by" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding AuthorName}" FontSize="20" FontWeight="Bold" />
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Text="Feedback is welcome: what works, what does not, what is missing."
+                                       FontSize="13" TextWrapping="Wrap" Margin="0,12,0,0" />
+                            <Button Style="{StaticResource GhostButton}" Command="{Binding OpenInstagramCommand}"
+                                    HorizontalAlignment="Left" Margin="0,12,0,0" AutomationProperties.Name="Instagram">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Instagram" />
+                                    <TextBlock Text="{Binding InstagramHandle}" Foreground="{DynamicResource Accent}" Margin="10,0,0,0" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource GhostButton}" Command="{Binding OpenGitHubCommand}"
+                                    HorizontalAlignment="Left" Margin="0,8,0,0" AutomationProperties.Name="GitHub">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="GitHub" />
+                                    <TextBlock Text="{Binding GitHubHandle}" Foreground="{DynamicResource Accent}" Margin="10,0,0,0" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource GhostButton}" Command="{Binding OpenIssuesCommand}"
+                                    HorizontalAlignment="Left" Margin="0,8,0,0" AutomationProperties.Name="Report an issue">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Report an issue" />
+                                    <TextBlock Text="SubTrackr on GitHub" Foreground="{DynamicResource Accent}" Margin="10,0,0,0" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="The app" Style="{StaticResource CardTitle}" Margin="0,0,0,6" />
+                            <TextBlock FontSize="13" TextWrapping="Wrap"
+                                       Text="Multi-currency totals, charts, a worth-it check, free-trial tracking and optional sync across your devices. It shares its data contract with the Android app." />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Credits and licences" Style="{StaticResource CardTitle}" Margin="0,0,0,6" />
+                            <Button Style="{StaticResource GhostButton}" Command="{Binding OpenLicenseCommand}"
+                                    HorizontalAlignment="Left" HorizontalContentAlignment="Left">
+                                <TextBlock Text="{Binding LicenseText}" TextWrapping="Wrap" FontSize="13" />
+                            </Button>
+                            <TextBlock Text="Libraries" Style="{StaticResource CardTitle}" Margin="0,12,0,2" />
+                            <ItemsControl ItemsSource="{Binding Libraries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,4,0,0">
+                                            <TextBlock Text="{Binding Note}" DockPanel.Dock="Right" FontSize="12" Foreground="{DynamicResource TextMuted}" Margin="8,0,0,0" />
+                                            <TextBlock Text="{Binding Name}" FontSize="12" TextWrapping="Wrap" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Text="Services" Style="{StaticResource CardTitle}" Margin="0,12,0,2" />
+                            <ItemsControl ItemsSource="{Binding Services}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,4,0,0">
+                                            <TextBlock Text="{Binding Note}" DockPanel.Dock="Right" FontSize="12" Foreground="{DynamicResource TextMuted}" Margin="8,0,0,0" />
+                                            <TextBlock Text="{Binding Name}" FontSize="12" TextWrapping="Wrap" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </ScrollViewer>
