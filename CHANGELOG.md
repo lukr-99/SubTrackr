@@ -6,6 +6,11 @@ All notable changes to SubTrackr. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A themed About page at the end of Settings on both apps: who made SubTrackr, links for feedback
+  (Instagram, GitHub, the Issues page), the version, and the credits and licences.
+
 ## [0.4.1] - 2026-09-27
 
 ### Added

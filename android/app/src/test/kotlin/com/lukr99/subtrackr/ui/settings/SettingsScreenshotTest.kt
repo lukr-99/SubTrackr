@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
@@ -126,7 +125,7 @@ class SettingsScreenshotTest {
     }
 
     private fun bottom(dark: Boolean) = scrolledTo("settings_bottom", dark) {
-        compose.onNodeWithText("Shares its data contract with the desktop app.").performScrollTo()
+        compose.onNodeWithTag(SettingsTags.ABOUT).performScrollTo()
     }
 
     @Test

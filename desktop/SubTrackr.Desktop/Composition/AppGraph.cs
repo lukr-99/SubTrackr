@@ -77,6 +77,7 @@ public sealed class AppGraph : IDisposable
             Updates,
             new BackupViewModel(Backups, dialogs),
             new SyncViewModel(Account, Sync, adapters.Time),
+            new AboutViewModel(UpdateService.RunningVersion, desktop),
             desktop,
             adapters.DataFolder);
         Main = new MainViewModel(build.ProductName, Dashboard, Settings, () => new WhatIfViewModel(Ledger, Rates));

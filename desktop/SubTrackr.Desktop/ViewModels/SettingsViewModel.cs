@@ -10,7 +10,7 @@ namespace SubTrackr.Desktop.ViewModels;
 
 /// <summary>
 /// The settings page: base currency, worth threshold and budget (saved together), the theme and
-/// service logos (each applied at once), rates, the data folder, and the backup, update, and sync cards. <see cref="Load"/>
+/// service logos (each applied at once), rates, the data folder, and the backup, update, sync, and About cards. <see cref="Load"/>
 /// resets the form to what is stored each time the page opens.
 /// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
@@ -45,6 +45,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         UpdatesViewModel updates,
         BackupViewModel backup,
         SyncViewModel sync,
+        AboutViewModel about,
         IDesktopServices desktop,
         string dataFolder)
     {
@@ -53,6 +54,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(updates);
         ArgumentNullException.ThrowIfNull(backup);
         ArgumentNullException.ThrowIfNull(sync);
+        ArgumentNullException.ThrowIfNull(about);
         ArgumentNullException.ThrowIfNull(desktop);
         this.ledger = ledger;
         this.rates = rates;
@@ -61,6 +63,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         Updates = updates;
         Backup = backup;
         Sync = sync;
+        About = about;
         rates.Changed += (_, _) => RatesText = DescribeRates();
         ledger.Changed += (_, change) =>
         {
@@ -92,6 +95,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     /// <summary>The sync project and sign-in card.</summary>
     public SyncViewModel Sync { get; }
+
+    /// <summary>The About card.</summary>
+    public AboutViewModel About { get; }
 
     public string DataFilePath => ledger.StoreLocation;
 
