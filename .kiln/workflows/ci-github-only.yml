@@ -1,0 +1,32 @@
+# The part of .github/workflows/ci.yml that Kiln cannot run yet. GitHub Actions runs it on every pull
+# request, so it is covered there. This file is OPT-IN: do not run it as part of the normal local CI.
+#
+#   supabase  needs Docker inside the job (the Supabase CLI starts the database and auth containers).
+#             Kiln jobs have no Docker yet, so "npx supabase start" cannot work.
+#   windows   the Desktop.Tests and Infrastructure.Tests projects target net10.0-windows and need the
+#             WindowsDesktop runtime, which a Linux container does not have. ci.yml builds them and runs
+#             the plain net10.0 Core.Tests only.
+#
+# Run it only to see the failure: kiln run .kiln/workflows/ci-github-only.yml --repo .
+name: CI (GitHub only)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  supabase:
+    name: Supabase migrations and row security (needs Docker in jobs)
+    runs-on: ubuntu-latest
+    container: node:22
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install the pinned Supabase CLI
+        run: npm ci
+
+      - name: Start the local stack
+        run: npx supabase start -x studio,imgproxy,vector,logflare,supavisor,storage-api,realtime,edge-runtime,postgres-meta
+
+      - name: Full chain, pgTAP, and isolated migrations
+        run: python3 tools/supabase_migrations.py test

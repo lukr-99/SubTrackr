@@ -1,0 +1,87 @@
+# Local (Kiln) version of .github/workflows/ci.yml. Run it with:
+#   kiln run .kiln/workflows/ci.yml --repo .
+# Kiln runs Linux containers only, so this file holds the jobs that can run there:
+# - migrations: the migration names, lock and fixtures check (the "repository" job, part two);
+# - desktop: restore, format and build of the whole solution on Linux (EnableWindowsTargeting), and the
+#   tests of SubTrackr.Core.Tests, the only test project that targets plain net10.0. The Desktop and
+#   Infrastructure test projects target net10.0-windows and need the WindowsDesktop runtime, so they
+#   stay on GitHub's windows job;
+# - android: spotless, unit tests, lint and the debug build.
+# Left out: the "supabase" job (the Supabase CLI starts Docker containers, which Kiln jobs cannot do yet,
+# see ci-github-only.yml). The repository validation and the PowerShell syntax check are in codeprint.yml.
+name: CI
+
+on:
+  workflow_dispatch:
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  migrations:
+    name: Migration names, lock and fixtures
+    runs-on: ubuntu-latest
+    container: python:3.13
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Migration names, lock, and fixtures
+        run: python tools/supabase_migrations.py verify
+
+  desktop:
+    name: Desktop format, build and core tests (on Linux)
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/dotnet/sdk:10.0
+    timeout-minutes: 25
+    env:
+      # The desktop projects target net10.0-windows. This lets a Linux SDK restore and build them.
+      EnableWindowsTargeting: "true"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Restore
+        run: dotnet restore SubTrackr.slnx
+
+      - name: Check formatting
+        run: dotnet format SubTrackr.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build SubTrackr.slnx -c Release --no-restore
+
+      # Only the plain net10.0 test project can run on Linux.
+      - name: Test (SubTrackr.Core.Tests)
+        run: dotnet test desktop/SubTrackr.Core.Tests/SubTrackr.Core.Tests.csproj -c Release --no-build --results-directory TestResults
+
+  android:
+    name: Android format, build, unit tests and lint
+    runs-on: ubuntu-latest
+    container: ghcr.io/cirruslabs/android-sdk:35
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: android
+    env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      # The image has JDK 21. The build compiles for Java 17 (sourceCompatibility, jvmTarget), so that is enough.
+      - name: Format check, build, unit test, and lint
+        run: |
+          chmod +x gradlew
+          ./gradlew spotlessCheck testDebugUnitTest lintDebug assembleDebug --stacktrace
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-reports
+          path: |
+            android/app/build/reports/
+            android/app/build/test-results/
+          if-no-files-found: warn

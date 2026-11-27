@@ -1,0 +1,32 @@
+# Repository baseline, run by Kiln (local). Mirrors the "repository" job of .github/workflows/ci.yml:
+# validate the repository (CodePrint) and check PowerShell syntax. Each job runs in an image that has its
+# tool, because Kiln's setup-* actions install nothing.
+# Run it with:  kiln run .kiln/workflows/codeprint.yml --repo .
+name: Repository baseline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate repository
+    runs-on: ubuntu-latest
+    container: python:3.13
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate repository (CodePrint)
+        run: python tools/validate_repository.py --root .
+
+  powershell:
+    name: Check PowerShell syntax
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/powershell:lts-ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check PowerShell syntax
+        shell: pwsh
+        run: ./tools/test-powershell-syntax.ps1 -Roots tools,installer,scripts,android/tools
